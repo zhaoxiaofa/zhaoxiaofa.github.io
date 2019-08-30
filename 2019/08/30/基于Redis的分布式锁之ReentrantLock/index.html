@@ -5,15 +5,21 @@
   
 
   
-  <title>Hexo</title>
+  <title>基于Redis的分布式锁之ReentrantLock | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于Redis的分布式锁之ReentrantLock">
+<meta property="og:url" content="http://yoursite.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
 <meta property="og:locale" content="en">
+<meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/redisson-lock.png">
+<meta property="og:updated_time" content="2019-08-30T08:20:56.180Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hexo">
+<meta name="twitter:title" content="基于Redis的分布式锁之ReentrantLock">
+<meta name="twitter:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/redisson-lock.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -60,56 +66,7 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-分布式锁使用场景" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/08/30/分布式锁使用场景/" class="article-date">
-  <time datetime="2019-08-30T08:14:04.000Z" itemprop="datePublished">2019-08-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/30/分布式锁使用场景/">分布式锁使用场景</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="超卖血案"><a href="#超卖血案" class="headerlink" title="超卖血案"></a>超卖血案</h2><h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。</p>
-<p>看下图：</p>
-<p><img src="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/distributed-redis-lock.png" alt="超卖图"></p>
-<p>这是一个典型的电商下订单扣库存的操作流程。</p>
-<p>假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。</p>
-<p>此时A通过2步骤查询到库存还有一个，然后执行3步骤。</p>
-<p>在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。</p>
-<p>当A、B两个线程都执行完3步骤的时候，库存就变成了-1，出现了超卖。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>很明显，我们希望线程A在执行2、3步骤的时候，线程B处于等待状态，等A线程的步骤3执行完毕之后，B线程再执行2步骤。此时B线程查出的库存为0，就直接返回客户端卖完了。</p>
-<p>如果是单机部署方案，可以使用Synchronized将2、3步骤锁起来。</p>
-<p>如果是分布式部署方案，就要使用分布式锁。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2019/08/30/分布式锁使用场景/" data-id="cjzxulp0h0000ce93hv88yfgn" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-基于Redis的分布式锁之ReentrantLock" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main"><article id="post-基于Redis的分布式锁之ReentrantLock" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/" class="article-date">
   <time datetime="2019-08-30T08:14:04.000Z" itemprop="datePublished">2019-08-30</time>
@@ -122,8 +79,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/">基于Redis的分布式锁之ReentrantLock</a>
+    <h1 class="article-title" itemprop="name">
+      基于Redis的分布式锁之ReentrantLock
     </h1>
   
 
@@ -304,11 +261,23 @@
     </footer>
   </div>
   
-</article>
-
+    
+<nav id="article-nav">
+  
+    <a href="/2019/08/30/分布式锁使用场景/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          分布式锁使用场景
+        
+      </div>
+    </a>
+  
+  
+</nav>
 
   
-
+</article>
 
 </section>
         
