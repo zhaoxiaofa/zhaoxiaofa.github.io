@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java, Spring">
+  <meta name="keywords" content="Dubbo,">
 
 
 
@@ -79,17 +79,18 @@
 
 
 
-<meta name="description" content="分布式&amp;amp;微服务          Dubbo">
-<meta property="og:type" content="website">
-<meta property="og:title" content="All tags">
-<meta property="og:url" content="http://yoursite.com/tags/index.html">
+<meta name="description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。 框架的">
+<meta name="keywords" content="Dubbo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于ZooKeeper的分布式锁">
+<meta property="og:url" content="http://yoursite.com/2019/08/30/Dubbo源码分析之-阅读源码的方法/index.html">
 <meta property="og:site_name" content="赵小发的博客">
-<meta property="og:description" content="分布式&amp;amp;微服务          Dubbo">
+<meta property="og:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。 框架的">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-30T09:49:38.777Z">
+<meta property="og:updated_time" content="2019-08-30T09:58:58.081Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="All tags">
-<meta name="twitter:description" content="分布式&amp;amp;微服务          Dubbo">
+<meta name="twitter:title" content="基于ZooKeeper的分布式锁">
+<meta name="twitter:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。 框架的">
 
 
 
@@ -119,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/tags/">
+  <link rel="canonical" href="http://yoursite.com/2019/08/30/Dubbo源码分析之-阅读源码的方法/">
 
 
 
 
 
-  <title>All tags | 赵小发的博客</title>
+  <title>基于ZooKeeper的分布式锁 | 赵小发的博客</title>
   
 
 
@@ -230,40 +231,150 @@
 
   <div id="posts" class="posts-expand">
     
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/30/Dubbo源码分析之-阅读源码的方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发的博客">
+    </span>
+
     
-    
-    <div class="post-block page">
       <header class="post-header">
 
-	<h1 class="post-title" itemprop="name headline">All tags</h1>
-
-
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
         
         
-          <div class="tag-cloud">
-            <div class="tag-cloud-title">
-                目前共计 2 个标签
-            </div>
-            <div class="tag-cloud-tags">
-              <a href="/tags/Dubbo/" style="font-size: 12px; color: #ccc">Dubbo</a> <a href="/tags/分布式-微服务/" style="font-size: 30px; color: #111">分布式&微服务</a>
-            </div>
-          </div>
+          <h1 class="post-title" itemprop="name headline">基于ZooKeeper的分布式锁</h1>
         
-      </div>
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-30T17:39:12+08:00">
+                2019-08-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
       
       
+
+      
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。</p>
+<h2 id="2-fork"><a href="#2-fork" class="headerlink" title="2. fork"></a>2. fork</h2><p>我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。</p>
+<h2 id="3-理清架构"><a href="#3-理清架构" class="headerlink" title="3. 理清架构"></a>3. 理清架构</h2><p>我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。</p>
+<p>框架的架构可以查看官方文档，在大致梳理清楚之后，可以自己手绘一个简单的架构图，绘图工具推荐在线的 processon 。</p>
+<h2 id="4-设计模式"><a href="#4-设计模式" class="headerlink" title="4. 设计模式"></a>4. 设计模式</h2><p>源码大多使用了很多设计模式，所以在看源码之前，建议对基本的设计模式有一定的了解。如果不了解，建议先简单看下常用设计模式。</p>
+<h2 id="5-从-Demo-或-Test-入手"><a href="#5-从-Demo-或-Test-入手" class="headerlink" title="5 从 Demo 或 Test 入手"></a>5 从 Demo 或 Test 入手</h2><p>每看一个模块之前，先从 demo 或者 test 入手，跟着一步步 debug ，比单纯看代码效果要好很多。</p>
+<h2 id="6-站在巨人的肩膀上"><a href="#6-站在巨人的肩膀上" class="headerlink" title="6 站在巨人的肩膀上"></a>6 站在巨人的肩膀上</h2><p>建议读源码时参考相关的书籍，或者是高质量的博客。</p>
+
       
     </div>
     
     
     
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Dubbo/" rel="tag"># Dubbo</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/30/基于ZooKeeper的分布式锁/" rel="next" title="基于ZooKeeper的分布式锁">
+                <i class="fa fa-chevron-left"></i> 基于ZooKeeper的分布式锁
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
   </div>
 
 
@@ -272,6 +383,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -292,8 +407,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -358,6 +482,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-fork"><span class="nav-number">2.</span> <span class="nav-text">2. fork</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-理清架构"><span class="nav-number">3.</span> <span class="nav-text">3. 理清架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-设计模式"><span class="nav-number">4.</span> <span class="nav-text">4. 设计模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-从-Demo-或-Test-入手"><span class="nav-number">5.</span> <span class="nav-text">5 从 Demo 或 Test 入手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-站在巨人的肩膀上"><span class="nav-number">6.</span> <span class="nav-text">6 站在巨人的肩膀上</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
