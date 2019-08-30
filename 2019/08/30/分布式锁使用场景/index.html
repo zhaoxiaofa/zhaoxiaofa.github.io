@@ -88,7 +88,7 @@
 <meta property="og:description" content="超卖血案案例我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。 看下图：  这是一个典型的电商下订单扣库存的操作流程。 假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。 此时A通过2步骤查询到库存还有一个，然后执行3步骤。 在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。 当A">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/distributed-redis-lock.png">
-<meta property="og:updated_time" content="2019-08-30T10:14:12.966Z">
+<meta property="og:updated_time" content="2019-08-30T16:55:57.863Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分布式锁使用场景">
 <meta name="twitter:description" content="超卖血案案例我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。 看下图：  这是一个典型的电商下订单扣库存的操作流程。 假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。 此时A通过2步骤查询到库存还有一个，然后执行3步骤。 在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。 当A">
@@ -150,6 +150,8 @@
   <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-wrapper">
   <div class="site-meta ">
@@ -318,6 +320,37 @@
           
 
           
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  310
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  1
+                </span>
+              
+            </div>
+          
 
           
 
@@ -351,6 +384,41 @@
     
     
     
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/08/30/分布式锁使用场景/">分布式锁使用场景</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
+  <p><span>发布时间:</span>2019年08月30日 - 16:08</p>
+  <p><span>最后更新:</span>2019年08月31日 - 00:08</p>
+  <p><span>原始链接:</span><a href="/2019/08/30/分布式锁使用场景/" title="分布式锁使用场景">http://yoursite.com/2019/08/30/分布式锁使用场景/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2019/08/30/分布式锁使用场景/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
 
     
 
@@ -512,6 +580,10 @@
                     <a href="https://github.com/zhaoxiaofa" title="Github" target="_blank">Github</a>
                   </li>
                 
+                  <li class="links-of-blogroll-item">
+                    <a href="zhaoyuancumt@gmail.com" title="E-Mail" target="_blank">E-Mail</a>
+                  </li>
+                
               </ul>
             </div>
           
@@ -561,7 +633,9 @@
 </div>
 
 
+<!--
   <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
 
 
 
@@ -569,7 +643,9 @@
 
 
 
+<!--
   <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
 
 
 
@@ -582,6 +658,11 @@
     <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
     </div>
 
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共7.5k字</span>
+</div>
         
 
 
