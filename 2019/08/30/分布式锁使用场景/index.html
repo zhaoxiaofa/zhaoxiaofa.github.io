@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>分布式锁使用场景 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="超卖血案案例我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。 看下图：  这是一个典型的电商下订单扣库存的操作流程。 假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。 此时A通过2步骤查询到库存还有一个，然后执行3步骤。 在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。 当A">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分布式锁使用场景">
+<meta property="og:url" content="http://yoursite.com/2019/08/30/分布式锁使用场景/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="超卖血案案例我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。 看下图：  这是一个典型的电商下订单扣库存的操作流程。 假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。 此时A通过2步骤查询到库存还有一个，然后执行3步骤。 在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。 当A">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/distributed-redis-lock.png">
+<meta property="og:updated_time" content="2019-08-30T08:14:47.951Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分布式锁使用场景">
+<meta name="twitter:description" content="超卖血案案例我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。 看下图：  这是一个典型的电商下订单扣库存的操作流程。 假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。 此时A通过2步骤查询到库存还有一个，然后执行3步骤。 在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。 当A">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/distributed-redis-lock.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-分布式锁使用场景" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/08/30/分布式锁使用场景/" class="article-date">
+  <time datetime="2019-08-30T08:14:04.000Z" itemprop="datePublished">2019-08-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      分布式锁使用场景
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="超卖血案"><a href="#超卖血案" class="headerlink" title="超卖血案"></a>超卖血案</h2><h3 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h3><p>我之前有做过p2p理财，其中投资买标会涉及到超募问题，其实和电商中的超卖问题类似。考虑到很多人不了解p2p业务，以下就以电商为例来讲。</p>
+<p>看下图：</p>
+<p><img src="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/distributed-redis-lock.png" alt="超卖图"></p>
+<p>这是一个典型的电商下订单扣库存的操作流程。</p>
+<p>假设现在库存只剩一个，有两个线程A和B查询库存，相隔时间极短。</p>
+<p>此时A通过2步骤查询到库存还有一个，然后执行3步骤。</p>
+<p>在A的步骤3还未执行时，B也通过2步骤查询到库存还有一个，也执行3步骤。</p>
+<p>当A、B两个线程都执行完3步骤的时候，库存就变成了-1，出现了超卖。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>很明显，我们希望线程A在执行2、3步骤的时候，线程B处于等待状态，等A线程的步骤3执行完毕之后，B线程再执行2步骤。此时B线程查出的库存为0，就直接返回客户端卖完了。</p>
+<p>如果是单机部署方案，可以使用Synchronized将2、3步骤锁起来。</p>
+<p>如果是分布式部署方案，就要使用分布式锁。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/08/30/分布式锁使用场景/" data-id="cjzxudxj20000bf93qsawl9al" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">August 2019</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/08/30/分布式锁使用场景/">分布式锁使用场景</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
