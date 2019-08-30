@@ -88,7 +88,7 @@
 <meta property="og:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/distributed/redisson-lock.png">
-<meta property="og:updated_time" content="2019-08-30T10:02:49.186Z">
+<meta property="og:updated_time" content="2019-08-30T10:12:29.201Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于Redis的分布式锁之ReentrantLock">
 <meta name="twitter:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
@@ -294,6 +294,28 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式-微服务/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式&微服务</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
           
 
           
