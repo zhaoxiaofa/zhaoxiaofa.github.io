@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="Java编程">
+<meta name="description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁2. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
 <meta name="keywords" content="分布式锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于ZooKeeper的分布式锁">
 <meta property="og:url" content="http://yoursite.com/2019/08/30/基于ZooKeeper的分布式锁/index.html">
 <meta property="og:site_name" content="赵小发的博客">
-<meta property="og:description" content="Java编程">
+<meta property="og:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁2. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-08-30T10:12:34.970Z">
+<meta property="og:updated_time" content="2019-08-30T10:17:41.432Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
-<meta name="twitter:description" content="Java编程">
+<meta name="twitter:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁2. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
 
 
 
@@ -342,7 +342,17 @@
       
 
       
-        
+        <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>基于ZooKeeper的临时顺序节点。</p>
+<h2 id="2-加锁"><a href="#2-加锁" class="headerlink" title="2. 加锁"></a>2. 加锁</h2><h2 id="2-Curator实现"><a href="#2-Curator实现" class="headerlink" title="2. Curator实现"></a>2. Curator实现</h2><p>使用Curator客户端实现，不用自己手撸代码。</p>
+<p>注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。</p>
+<blockquote>
+<p>org.apache.zookeeper.KeeperException$UnimplementedException:</p>
+</blockquote>
+<p>我的虚拟机上 ZooKeeper 版本是3.4.13 ，Curator 版本如下：</p>
+<blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; &lt;dependency&gt;</span><br><span class="line">&gt;    &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">&gt;    &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">&gt;    &lt;version&gt;2.13.0&lt;/version&gt;</span><br><span class="line">&gt; &lt;/dependency&gt;</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
+</blockquote>
+
       
     </div>
     
@@ -436,8 +446,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -511,6 +530,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-加锁"><span class="nav-number">2.</span> <span class="nav-text">2. 加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Curator实现"><span class="nav-number">3.</span> <span class="nav-text">2. Curator实现</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
