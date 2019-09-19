@@ -1874,7 +1874,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ff88e4;
+  background: #5da7cd;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2429,7 +2429,7 @@ pre .javascript .function {
 }
 @media (min-width: 990px) {
   .gt-container {
-    margin-left: calc(50% + 120px);
+    margin-left: calc(50% + 124px);
     padding: 0;
     width: calc(75% - 252px);
     -webkit-transform: translateX(-50%);
