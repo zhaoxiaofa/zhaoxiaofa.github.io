@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用起来就是瞎用（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如下">
+<meta name="description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
 <meta name="keywords" content="SPI">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java SPI">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/index.html">
 <meta property="og:site_name" content="赵小发的博客">
-<meta property="og:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用起来就是瞎用（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如下">
+<meta property="og:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/spi/java-spi.png">
-<meta property="og:updated_time" content="2019-09-04T12:26:32.217Z">
+<meta property="og:updated_time" content="2019-09-19T12:19:14.343Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java SPI">
-<meta name="twitter:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用起来就是瞎用（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如下">
+<meta name="twitter:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
 <meta name="twitter:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/spi/java-spi.png">
 
 
@@ -351,7 +351,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  293
+                  294
                 </span>
               
 
@@ -389,12 +389,12 @@
 
       
         <h2 id="1-SPI是什么？"><a href="#1-SPI是什么？" class="headerlink" title="1. SPI是什么？"></a>1. SPI是什么？</h2><p>最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。</p>
-<p>SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用起来就是瞎用（参考设计模式）。</p>
+<p>SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。</p>
 <h2 id="2-写个HelloWorld"><a href="#2-写个HelloWorld" class="headerlink" title="2. 写个HelloWorld"></a>2. 写个HelloWorld</h2><p>首先定义一个接口，两个实现类。</p>
 <p>代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xiaofa.common.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SpiService</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xiaofa.common.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpiServiceOne</span> <span class="keyword">implements</span> <span class="title">SpiService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am service one"</span>);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xiaofa.common.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpiServiceOne</span> <span class="keyword">implements</span> <span class="title">SpiService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am service one"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xiaofa.common.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpiServiceTwo</span> <span class="keyword">implements</span> <span class="title">SpiService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am service two"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -430,7 +430,7 @@
   <p><span>本文标题:</span><a href="/2019/09/04/Java-SPI/">Java SPI</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
   <p><span>发布时间:</span>2019年09月04日 - 18:09</p>
-  <p><span>最后更新:</span>2019年09月04日 - 20:09</p>
+  <p><span>最后更新:</span>2019年09月19日 - 20:09</p>
   <p><span>原始链接:</span><a href="/2019/09/04/Java-SPI/" title="Java SPI">https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/" aria-label="复制成功！"></i></span>
   </p>
@@ -485,6 +485,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/19/transient关键字/" rel="prev" title="transient关键字">
+                transient关键字 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -590,7 +594,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -612,7 +616,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -721,7 +725,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共7.9k字</span>
+  <span class="post-count">博客全站共8.9k字</span>
 </div>
         
 
