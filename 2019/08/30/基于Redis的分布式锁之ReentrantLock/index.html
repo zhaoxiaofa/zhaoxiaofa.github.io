@@ -1009,6 +1009,22 @@
 
 
 
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: '1c56c399d722de21b1b4',
+      clientSecret: '71f7f19b6acd027d2d7d07be4ba7bc2e87a9e571',
+      repo: 'zhaoxiaofa.github.io',
+      owner: 'zhaoxiaofa',
+      admin: ['zhaoxiaofa'],
+      id: location.pathname,
+      distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+  </script>
+
 
   
 
