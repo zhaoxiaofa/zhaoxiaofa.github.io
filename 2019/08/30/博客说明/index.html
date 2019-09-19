@@ -814,7 +814,7 @@
       repo: 'zhaoxiaofa.github.io',
       owner: 'zhaoxiaofa',
       admin: ['zhaoxiaofa'],
-      id: location.pathname,
+      id: md5(location.pathname),
       distractionFreeMode: 'true'
     })
     gitalk.render('gitalk-container')
