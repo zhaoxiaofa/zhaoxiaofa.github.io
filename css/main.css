@@ -1874,7 +1874,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #aa1600;
+  background: #ff88e4;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2429,9 +2429,14 @@ pre .javascript .function {
 }
 @media (min-width: 990px) {
   .gt-container {
-    margin-left: 36.5%;
+    margin-left: calc(50% + 120px);
     padding: 0;
     width: calc(75% - 252px);
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    transform: translateX(-50%);
   }
 }
 .page-archive .archive-page-counter {
