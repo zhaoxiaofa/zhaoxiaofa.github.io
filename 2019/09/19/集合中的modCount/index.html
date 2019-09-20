@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0;  可以发现，均使用了 transient 关键字来修饰 modCount。那">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-20T12:40:51.305Z">
+<meta property="og:updated_time" content="2019-09-20T13:29:28.012Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="集合中的modCount">
 <meta name="twitter:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0;  可以发现，均使用了 transient 关键字来修饰 modCount。那">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  713
+                  744
                 </span>
               
 
@@ -392,7 +392,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">* The number of times this list has been &lt;i&gt;structurally modified&lt;/i&gt;.</span><br><span class="line">* Structural modifications are those that change the size of the</span><br><span class="line">* list, or otherwise perturb it in such a fashion that iterations in</span><br><span class="line">* progress may yield incorrect results.</span><br></pre></td></tr></table></figure>
 
 <p>翻译一下就是：</p>
-<p>记录 list 集合结构被修改的次数，结构修改指的是 list 的 size 值发生变化，或者以其他形式扰乱结构，导致在迭代过程中出现错误结果。</p>
+<p>记录 list 集合结构被修改的次数，结构修改指的是 list 的 size 值发生变化，或者以其他形式扰乱 size 值，导致在迭代过程中出现错误结果。</p>
 <h2 id="2-why-modCount"><a href="#2-why-modCount" class="headerlink" title="2. why modCount ?"></a>2. why modCount ?</h2><p>为什么要记录 size 值的修改次数呢？即使记录了，也没有向外提供查询的方法，而且定义为 protected 。很明显 modCount 是自身进行操作时所用的。JDK 的作者并没有打算暴露给开发者使用。</p>
 <p>我们知道，ArrayList 是线程不安全的，可能会有线程 A 读取数据的同时线程 B 正在修改数据。对于这种情况，ArrayList 是怎么处理的呢？</p>
 <p>下面看源码：</p>
@@ -406,9 +406,10 @@
 <blockquote>
 <p>0<br>1<br>2<br>Exception in thread “Thread-0” java.util.ConcurrentModificationException<br>    at java.util.ArrayList.forEach(ArrayList.java:1260)<br>    at com.hema.carloan.ModCountTest$1.run(ModCountTest.java:27)<br>    at java.lang.Thread.run(Thread.java:748)</p>
 </blockquote>
-<p>如执行结果所示，抛出的异常正是 forEach(Consumer&lt;? super E&gt; action)  源码中当 modCount != expectedModCount 时抛出的。</p>
+<p>如执行结果所示，抛出的异常正是 forEach(Consumer&lt;? super E&gt; action)  源码中当 modCount != expectedModCount 时抛出的。这是线程不安全集合的 fail-fast 机制。</p>
 <p><strong>线程不安全的集合类中都有 modCount ，比如 ArrayList、HashMap，而线程安全的集合类中没有 modCount，比如 CopyOnWriteArrayList、ConcurrentHashMap。</strong></p>
-<h2 id="3-why-transient"><a href="#3-why-transient" class="headerlink" title="3. why transient ?"></a>3. why transient ?</h2>
+<h2 id="3-why-transient"><a href="#3-why-transient" class="headerlink" title="3. why transient ?"></a>3. why transient ?</h2><p>现在我们已经知道，modCount 在多线程操作集合</p>
+
       
     </div>
     
@@ -427,7 +428,7 @@
   <p><span>本文标题:</span><a href="/2019/09/19/集合中的modCount/">集合中的modCount</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
   <p><span>发布时间:</span>2019年09月19日 - 21:09</p>
-  <p><span>最后更新:</span>2019年09月20日 - 20:09</p>
+  <p><span>最后更新:</span>2019年09月20日 - 21:09</p>
   <p><span>原始链接:</span><a href="/2019/09/19/集合中的modCount/" title="集合中的modCount">https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/" aria-label="复制成功！"></i></span>
   </p>
@@ -722,7 +723,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共9.7k字</span>
+  <span class="post-count">博客全站共9.8k字</span>
 </div>
         
 
