@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0;  可以发现，均使用了 transient 关键字来修饰 modCount。那">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-20T11:50:35.684Z">
+<meta property="og:updated_time" content="2019-09-20T12:40:51.305Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="集合中的modCount">
 <meta name="twitter:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0;  可以发现，均使用了 transient 关键字来修饰 modCount。那">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  683
+                  713
                 </span>
               
 
@@ -407,7 +407,7 @@
 <p>0<br>1<br>2<br>Exception in thread “Thread-0” java.util.ConcurrentModificationException<br>    at java.util.ArrayList.forEach(ArrayList.java:1260)<br>    at com.hema.carloan.ModCountTest$1.run(ModCountTest.java:27)<br>    at java.lang.Thread.run(Thread.java:748)</p>
 </blockquote>
 <p>如执行结果所示，抛出的异常正是 forEach(Consumer&lt;? super E&gt; action)  源码中当 modCount != expectedModCount 时抛出的。</p>
-<p><strong>思考一下：</strong></p>
+<p><strong>线程不安全的集合类中都有 modCount ，比如 ArrayList、HashMap，而线程安全的集合类中没有 modCount，比如 CopyOnWriteArrayList、ConcurrentHashMap。</strong></p>
 <h2 id="3-why-transient"><a href="#3-why-transient" class="headerlink" title="3. why transient ?"></a>3. why transient ?</h2>
       
     </div>
@@ -427,7 +427,7 @@
   <p><span>本文标题:</span><a href="/2019/09/19/集合中的modCount/">集合中的modCount</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
   <p><span>发布时间:</span>2019年09月19日 - 21:09</p>
-  <p><span>最后更新:</span>2019年09月20日 - 19:09</p>
+  <p><span>最后更新:</span>2019年09月20日 - 20:09</p>
   <p><span>原始链接:</span><a href="/2019/09/19/集合中的modCount/" title="集合中的modCount">https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/" aria-label="复制成功！"></i></span>
   </p>
