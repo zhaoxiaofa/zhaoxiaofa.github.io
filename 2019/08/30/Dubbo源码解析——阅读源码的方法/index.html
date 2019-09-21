@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。 框架的">
+<meta name="description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之">
 <meta name="keywords" content="Dubbo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dubbo源码解析——阅读源码的方法">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/08/30/Dubbo源码解析——阅读源码的方法/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。 框架的">
+<meta property="og:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-21T02:42:43.331Z">
+<meta property="og:updated_time" content="2019-09-21T02:47:04.186Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Dubbo源码解析——阅读源码的方法">
-<meta name="twitter:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。 框架的">
+<meta name="twitter:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  327
+                  338
                 </span>
               
 
@@ -386,7 +386,7 @@
       
 
       
-        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来。</p>
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。</p>
 <h2 id="2-fork"><a href="#2-fork" class="headerlink" title="2. fork"></a>2. fork</h2><p>我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。</p>
 <h2 id="3-理清架构"><a href="#3-理清架构" class="headerlink" title="3. 理清架构"></a>3. 理清架构</h2><p>我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。</p>
 <p>框架的架构可以查看官方文档，在大致梳理清楚之后，可以自己手绘一个简单的架构图，绘图工具推荐在线的 processon 。</p>
