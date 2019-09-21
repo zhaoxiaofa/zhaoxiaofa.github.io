@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0;  可以发现，均使用了 transient 关键字来修饰 modCount。那">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-20T13:29:28.012Z">
+<meta property="og:updated_time" content="2019-09-21T07:57:55.461Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="集合中的modCount">
 <meta name="twitter:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0;  可以发现，均使用了 transient 关键字来修饰 modCount。那">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  744
+                  859
                 </span>
               
 
@@ -408,7 +408,7 @@
 </blockquote>
 <p>如执行结果所示，抛出的异常正是 forEach(Consumer&lt;? super E&gt; action)  源码中当 modCount != expectedModCount 时抛出的。这是线程不安全集合的 fail-fast 机制。</p>
 <p><strong>线程不安全的集合类中都有 modCount ，比如 ArrayList、HashMap，而线程安全的集合类中没有 modCount，比如 CopyOnWriteArrayList、ConcurrentHashMap。</strong></p>
-<h2 id="3-why-transient"><a href="#3-why-transient" class="headerlink" title="3. why transient ?"></a>3. why transient ?</h2><p>现在我们已经知道，modCount 在多线程操作集合</p>
+<h2 id="3-why-transient"><a href="#3-why-transient" class="headerlink" title="3. why transient ?"></a>3. why transient ?</h2><p>现在我们已经知道，modCount 是在同一个 JVM 进程内用来判断是否有多线程操作集合数据。而序列化的过程往往不是同一个进程内的事情，比如 rpc 远程调用，是两个进程之间的访问，又或者是数据写入磁盘后由其他进程从磁盘中读取数据。modCount 不在乎初始值是多少，只在乎多线程访问时能否记录下来。所有是不需要进行序列化的。</p>
 
       
     </div>
@@ -428,7 +428,7 @@
   <p><span>本文标题:</span><a href="/2019/09/19/集合中的modCount/">集合中的modCount</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
   <p><span>发布时间:</span>2019年09月19日 - 21:09</p>
-  <p><span>最后更新:</span>2019年09月20日 - 21:09</p>
+  <p><span>最后更新:</span>2019年09月21日 - 15:09</p>
   <p><span>原始链接:</span><a href="/2019/09/19/集合中的modCount/" title="集合中的modCount">https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/" aria-label="复制成功！"></i></span>
   </p>
@@ -723,7 +723,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共9.8k字</span>
+  <span class="post-count">博客全站共9.9k字</span>
 </div>
         
 
