@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="在看集合框架源码的过程中，发现很频繁的用到了 transient 关键字。趁此机会，顺便再复习下。 1. transient 的作用如果我们想把一个对象序列化，在 Java 中，只需要实现 Serializable 接口即可。但是如果不想把对象中的某个属性序列化，就可以使用 transient 修饰该属性。 目前我在实际开发过程中还没遇到过这种情况，网上有博客说当涉及敏感信息（比如密码、银行卡号等">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-20T04:42:07.370Z">
+<meta property="og:updated_time" content="2019-09-21T08:12:26.428Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="transient关键字">
 <meta name="twitter:description" content="在看集合框架源码的过程中，发现很频繁的用到了 transient 关键字。趁此机会，顺便再复习下。 1. transient 的作用如果我们想把一个对象序列化，在 Java 中，只需要实现 Serializable 接口即可。但是如果不想把对象中的某个属性序列化，就可以使用 transient 修饰该属性。 目前我在实际开发过程中还没遇到过这种情况，网上有博客说当涉及敏感信息（比如密码、银行卡号等">
@@ -365,7 +365,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  5
                 </span>
               
             </div>
@@ -435,7 +435,7 @@
 <h2 id="4-集合框架源码中的使用"><a href="#4-集合框架源码中的使用" class="headerlink" title="4. 集合框架源码中的使用"></a>4. 集合框架源码中的使用</h2><p>以 ArrayList 为例，elementData 和 modCount 都被 transient 修饰。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> Object[] elementData;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">transient</span> <span class="keyword">int</span> modCount = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
 
-<p>modCount 不序列化比较好理解，</p>
+<p>modCount 不序列化可以参考 <a href="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/">集合中的modCount</a> ，那为什么 elementData 不序列化呢？</p>
 <p>本文所讲的序列化基于 Serializable，如果是 Externalizable 呢？留到下一篇文章再讲。</p>
 
       
@@ -456,7 +456,7 @@
   <p><span>本文标题:</span><a href="/2019/09/19/transient关键字/">transient关键字</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
   <p><span>发布时间:</span>2019年09月19日 - 21:09</p>
-  <p><span>最后更新:</span>2019年09月20日 - 12:09</p>
+  <p><span>最后更新:</span>2019年09月21日 - 16:09</p>
   <p><span>原始链接:</span><a href="/2019/09/19/transient关键字/" title="transient关键字">https://zhaoxiaofa.github.io/2019/09/19/transient关键字/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/" aria-label="复制成功！"></i></span>
   </p>
