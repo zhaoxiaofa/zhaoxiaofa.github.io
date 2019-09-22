@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。我们先看看 Externalizable 接口的源码。 123456789101112131415161718192021222324252627282930/** * The object implements the writeExternal">
+<meta name="description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 <meta name="keywords" content="Java基础">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java序列化——Externalizable">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。我们先看看 Externalizable 接口的源码。 123456789101112131415161718192021222324252627282930/** * The object implements the writeExternal">
+<meta property="og:description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-22T08:14:27.053Z">
+<meta property="og:updated_time" content="2019-09-22T13:31:51.263Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java序列化——Externalizable">
-<meta name="twitter:description" content="之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。我们先看看 Externalizable 接口的源码。 123456789101112131415161718192021222324252627282930/** * The object implements the writeExternal">
+<meta name="twitter:description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  483
+                  1k
                 </span>
               
 
@@ -365,7 +365,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  4
                 </span>
               
             </div>
@@ -386,7 +386,7 @@
       
 
       
-        <p>之前有一篇文章 <a href="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/">transient关键字</a> ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。我们先看看 Externalizable 接口的源码。</p>
+        <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>之前有一篇文章 <a href="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/">transient关键字</a> ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExternal 两个方法即可。看看 Externalizable 接口的源码。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The object implements the writeExternal method to save its contents</span></span><br><span class="line"><span class="comment"> * by calling the methods of DataOutput for its primitive values or</span></span><br><span class="line"><span class="comment"> * calling the writeObject method of ObjectOutput for objects, strings,</span></span><br><span class="line"><span class="comment"> * and arrays.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@serialData</span> Overriding methods should use this tag to describe</span></span><br><span class="line"><span class="comment"> *             the data layout of this Externalizable object.</span></span><br><span class="line"><span class="comment"> *             List the sequence of element types and, if possible,</span></span><br><span class="line"><span class="comment"> *             relate the element to a public/protected field and/or</span></span><br><span class="line"><span class="comment"> *             method of this Externalizable class.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> out the stream to write the object to</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@exception</span> IOException Includes any I/O exceptions that may occur</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">writeExternal</span><span class="params">(ObjectOutput out)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The object implements the readExternal method to restore its</span></span><br><span class="line"><span class="comment"> * contents by calling the methods of DataInput for primitive</span></span><br><span class="line"><span class="comment"> * types and readObject for objects, strings and arrays.  The</span></span><br><span class="line"><span class="comment"> * readExternal method must read the values in the same sequence</span></span><br><span class="line"><span class="comment"> * and with the same types as were written by writeExternal.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> in the stream to read data from in order to restore the object</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@exception</span> IOException if I/O errors occur</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@exception</span> ClassNotFoundException If the class for an object being</span></span><br><span class="line"><span class="comment"> *              restored cannot be found.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">readExternal</span><span class="params">(ObjectInput in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException</span>;</span><br></pre></td></tr></table></figure>
 
 <p> 接口有两个方法，writeExternal 序列化，readExternal 反序列化。</p>
@@ -394,8 +394,26 @@
 <p>一个类通过实现 writeExternal 方法来保存它的内容（即序列化）。如果是基本数据类型，调用 DataOutput 的方法（有兴趣的同学可以看一下 DataOutput 接口中定义了各种基本类型的 write 方法）；如果是 对象、字符串、数组，则调用 ObjectOutput 的 writeObject 方法。</p>
 <p>翻译一下 readExternal 的注释：</p>
 <p> 一个类通过实现 readExternal 方法来恢复它的内容（即反序列化）。如果是基本数据类型，调用 DataInput 的方法；如果是 对象、字符串、数组，则调用 readObject 方法。<strong>这里的注释没有写清楚 readObject 是哪个类的方法，是 ObjectInput 的 readObject 方法</strong>。readExternal 方法读取数据时，<strong>顺序</strong>和<strong>类型</strong>必须与 writeExternal 方法保持一致。</p>
-<p>writeExternal 和 readExternal 方法底层是调用了什么方法去进行序列化以及反序列化并不是这篇文章所关心的。</p>
+<h2 id="2-入门测试"><a href="#2-入门测试" class="headerlink" title="2. 入门测试"></a>2. 入门测试</h2><p>writeExternal 和 readExternal 方法底层是调用了什么方法去进行序列化以及反序列化并不是这篇文章所关心的。我们只需要知道这两个方法能帮我们实现序列化就行。下面写个类测试下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.hema.carloan;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@desc</span>:</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: zhaoxiaofa</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>: 2019-09-19 19:43</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExternalizableUser</span> <span class="keyword">implements</span> <span class="title">Externalizable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">99357512800431678L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String mobile;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> String password;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMobile</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mobile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMobile</span><span class="params">(String mobile)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mobile = mobile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPassword</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPassword</span><span class="params">(String password)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.password = password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"User&#123;"</span> +</span><br><span class="line">                <span class="string">"name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", password='"</span> + password + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", mobile='"</span> + mobile + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">writeExternal</span><span class="params">(ObjectOutput out)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        out.writeObject(name);</span><br><span class="line">        out.writeObject(mobile);</span><br><span class="line">        out.writeObject(password);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readExternal</span><span class="params">(ObjectInput in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line">        name = in.readObject().toString();</span><br><span class="line">        mobile = in.readObject().toString();</span><br><span class="line"><span class="comment">//        password = in.readObject().toString();</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>如上述代码所示，反序列化的时候，将 password 的序列化注释掉。下面写个单元测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">userWriteTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    ExternalizableUser user = <span class="keyword">new</span> ExternalizableUser();</span><br><span class="line">    user.setName(<span class="string">"zhaoxiaofa"</span>);</span><br><span class="line">    user.setMobile(<span class="string">"13812345678"</span>);</span><br><span class="line">    user.setPassword(<span class="string">"123456"</span>);</span><br><span class="line">    ObjectOutputStream o = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"/user.txt"</span>));</span><br><span class="line">    o.writeObject(user);</span><br><span class="line">    o.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">userReadTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    ObjectInputStream in = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"/user.txt"</span>));</span><br><span class="line">    ExternalizableUser object = (ExternalizableUser) in.readObject();</span><br><span class="line">    System.out.println(<span class="string">"读取磁盘的对象:"</span> + object.toString());</span><br><span class="line">    in.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果如下：</p>
+<blockquote>
+<p>读取磁盘的对象:User{name=’zhaoxiaofa’, password=’null’, mobile=’13812345678’}</p>
+</blockquote>
+<p>结果很容易想出来，因为在 readExternal 方法中手动序列化时并没有加上 password 。</p>
+<p>readExternal 方法的注释上有一句，readExternal 读取数据时，<strong>顺序</strong>和<strong>类型</strong>必须与 writeExternal 方法保持一致。为什么要强调顺序？如果顺序不一致会怎样？下面来测试一下，修改 readExternal 的方法，只反序列化 mobile 。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">readExternal</span><span class="params">(ObjectInput in)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException </span>&#123;</span><br><span class="line"><span class="comment">//        name = in.readObject().toString();</span></span><br><span class="line">        mobile = in.readObject().toString();</span><br><span class="line"><span class="comment">//        password = in.readObject().toString();</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行结果：</p>
+<blockquote>
+<p>读取磁盘的对象:User{name=’null’, password=’null’, mobile=’zhaoxiaofa’}</p>
+</blockquote>
+<p>从结果中我们看到，在反序列化时将 name 的值赋值给了 mobile 。这就是 readExternal 强调的，顺序要保持一致。</p>
+<h2 id="3-注意事项"><a href="#3-注意事项" class="headerlink" title="3. 注意事项"></a>3. 注意事项</h2>
       
     </div>
     
@@ -414,7 +432,7 @@
   <p><span>本文标题:</span><a href="/2019/09/21/Java序列化——Externalizable/">Java序列化——Externalizable</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
   <p><span>发布时间:</span>2019年09月21日 - 23:09</p>
-  <p><span>最后更新:</span>2019年09月22日 - 16:09</p>
+  <p><span>最后更新:</span>2019年09月22日 - 21:09</p>
   <p><span>原始链接:</span><a href="/2019/09/21/Java序列化——Externalizable/" title="Java序列化——Externalizable">https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/" aria-label="复制成功！"></i></span>
   </p>
@@ -460,8 +478,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/19/集合中的modCount/" rel="next" title="集合中的modCount">
-                <i class="fa fa-chevron-left"></i> 集合中的modCount
+              <a href="/2019/09/19/transient关键字/" rel="next" title="transient关键字">
+                <i class="fa fa-chevron-left"></i> transient关键字
               </a>
             
           </div>
@@ -547,8 +565,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -629,6 +656,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-入门测试"><span class="nav-number">2.</span> <span class="nav-text">2. 入门测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-注意事项"><span class="nav-number">3.</span> <span class="nav-text">3. 注意事项</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -680,7 +723,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共10.8k字</span>
+  <span class="post-count">博客全站共11.3k字</span>
 </div>
         
 
