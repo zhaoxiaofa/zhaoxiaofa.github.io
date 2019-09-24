@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 序列化基本原理 序列化：对象—&amp;gt; IO 反序列化：IO —&amp;gt;对象 意义：序列化将 Java 对象转换位字节序列，这些字节序列可以保存在磁盘上，或通过网络传输（例如 rpc ）再反序列之后恢复成原来的对象。序列化机制使得对象可以脱离程序的运行而独立存在。 使用原理：序列化一个对象，先创建 OutputStream (如 FileOutputStream )，然后将 OutputSt">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-23T12:09:10.437Z">
+<meta property="og:updated_time" content="2019-09-24T13:20:03.415Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java序列化——Serializable">
 <meta name="twitter:description" content="1. 序列化基本原理 序列化：对象—&amp;gt; IO 反序列化：IO —&amp;gt;对象 意义：序列化将 Java 对象转换位字节序列，这些字节序列可以保存在磁盘上，或通过网络传输（例如 rpc ）再反序列之后恢复成原来的对象。序列化机制使得对象可以脱离程序的运行而独立存在。 使用原理：序列化一个对象，先创建 OutputStream (如 FileOutputStream )，然后将 OutputSt">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  801
+                  1.1k
                 </span>
               
 
@@ -365,7 +365,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  5
                 </span>
               
             </div>
@@ -390,9 +390,10 @@
 <li><strong>序列化：</strong>对象—&gt; IO</li>
 <li><strong>反序列化：</strong>IO —&gt;对象</li>
 <li><strong>意义：</strong>序列化将 Java 对象转换位字节序列，这些字节序列可以保存在磁盘上，或通过网络传输（例如 rpc ）再反序列之后恢复成原来的对象。序列化机制使得对象可以脱离程序的运行而独立存在。</li>
-<li><strong>使用原理：</strong>序列化一个对象，先创建 OutputStream (如 FileOutputStream )，然后将 OutputStream 封装在ObjectOutputStream 中。最后调用 writeObject 方法序列化；反序列需要将 InputStream (如FileInputstream )封装在 ObjectInputStream 内，最后调用 readObject 方法。</li>
+<li><strong>使用原理：</strong>序列化一个对象，先创建 OutputStream (如 FileOutputStream )，然后将 OutputStream 封装在ObjectOutputStream 中，最后调用 writeObject 方法序列化；反序列化需要将 InputStream (如FileInputstream )封装在 ObjectInputStream 内，最后调用 readObject 方法。</li>
 </ul>
-<h2 id="变量是其他引用类"><a href="#变量是其他引用类" class="headerlink" title="变量是其他引用类"></a>变量是其他引用类</h2><p>如果我们要序列化的类的某个变量是其他类，那么作为变量的那个类也必须序列化。</p>
+<p>如果想要一个类可序列化，只要实现 Serializable 接口即可。</p>
+<h2 id="2-变量是其他引用类"><a href="#2-变量是其他引用类" class="headerlink" title="2. 变量是其他引用类"></a>2. 变量是其他引用类</h2><p>如果我们要序列化的类的某个变量是其他类，那么作为变量的那个类也必须序列化。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">1115699428251281471L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String mobile;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String address;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AppUser appUser;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppUser</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getEmail</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> email;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setEmail</span><span class="params">(String email)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.email = email;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>代码中省略了get set 等其他方法。单元测试如下：</p>
@@ -403,7 +404,7 @@
 <p>java.io.NotSerializableException: </p>
 </blockquote>
 <p>因为 AppUser 不可序列化，导致 User 也无法序列化。</p>
-<h2 id="serialVersionUID"><a href="#serialVersionUID" class="headerlink" title="serialVersionUID"></a>serialVersionUID</h2><p>在实体类实现 Serializable 接口之后，一般我们会指定 serialVersionUID 。如果不指定会有问题吗？我们来试一下：</p>
+<h2 id="3-serialVersionUID"><a href="#3-serialVersionUID" class="headerlink" title="3. serialVersionUID"></a>3. serialVersionUID</h2><p>在实体类实现 Serializable 接口之后，一般我们会指定 serialVersionUID 。如果不指定会有问题吗？我们来试一下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String mobile;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getMobile</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mobile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMobile</span><span class="params">(String mobile)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mobile = mobile;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getPassword</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setPassword</span><span class="params">(String password)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.password = password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"User&#123;"</span> +</span><br><span class="line">                <span class="string">"name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", password='"</span> + password + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", mobile='"</span> + mobile + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>执行序列化测试：</p>
@@ -419,12 +420,23 @@
 <blockquote>
 <p>java.io.InvalidClassException: local class incompatible: stream classdesc serialVersionUID = 3391156310830289756, local class serialVersionUID = 8094924620444168806</p>
 </blockquote>
-<p>由报错信息可知，虽然我们没有设置 serialVersionUID 的值，但是序列化的时候默认生成了。具体的生成方法我没有研究过，但肯定和类的变量有关。那么，当类的变量发生变化时，序列化功能就会出现问题。我们需要保证它的<strong>兼容性</strong>。</p>
-<p>建议每个序列化的类都指定 serialVersionUID。</p>
+<p>由报错信息可知，虽然我们没有设置 serialVersionUID 的值，但是序列化的时候默认生成了。具体的生成方法我没有研究过，但肯定和类的变量有关。那么，当类的变量发生变化时，序列化功能就会出现问题。我们需要保证它的<strong>兼容性</strong>。建议每个序列化的类都指定 serialVersionUID。</p>
 <p>阿里巴巴 Java 开发手册有如下强制规定：</p>
 <blockquote>
 <p>10.【强制】序列化类新增属性时，请不要修改 serialVersionUID 字段，避免反序列失败;如 果完全不兼容升级，避免反序列化混乱，那么请修改 serialVersionUID 值。</p>
 </blockquote>
+<h2 id="4-同一个对象多次序列化"><a href="#4-同一个对象多次序列化" class="headerlink" title="4. 同一个对象多次序列化"></a>4. 同一个对象多次序列化</h2><p>同一个对象会被序列化多次吗？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppUser</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">1014920790204013525L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String email;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略 get set 方法</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">1115699428251281471L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String mobile;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String address;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> AppUser appUser;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 省略 get set 方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>单元测试如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">userWriteTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    AppUser appUser = <span class="keyword">new</span> AppUser();</span><br><span class="line">    appUser.setEmail(<span class="string">"123@qq.com"</span>);</span><br><span class="line">  </span><br><span class="line">    User user1 = <span class="keyword">new</span> User();</span><br><span class="line">    user1.setName(<span class="string">"zhaoxiaofa"</span>);</span><br><span class="line">    user1.setMobile(<span class="string">"13812345678"</span>);</span><br><span class="line">    user1.setPassword(<span class="string">"123456"</span>);</span><br><span class="line">    user1.setAppUser(appUser);</span><br><span class="line"></span><br><span class="line">    User user2 = <span class="keyword">new</span> User();</span><br><span class="line">    user2.setName(<span class="string">"zhangsan"</span>);</span><br><span class="line">    user2.setMobile(<span class="string">"13212345678"</span>);</span><br><span class="line">    user2.setPassword(<span class="string">"654321"</span>);</span><br><span class="line">    user2.setAppUser(appUser);</span><br><span class="line"></span><br><span class="line">    ObjectOutputStream o = <span class="keyword">new</span> ObjectOutputStream(<span class="keyword">new</span> FileOutputStream(<span class="string">"/user.txt"</span>));</span><br><span class="line">    o.writeObject(appUser);</span><br><span class="line">    o.writeObject(user1);</span><br><span class="line">    o.writeObject(user2);</span><br><span class="line">    o.writeObject(user1);</span><br><span class="line">    o.close();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">userReadTest</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">    ObjectInputStream in = <span class="keyword">new</span> ObjectInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"/user.txt"</span>));</span><br><span class="line">    AppUser appUser = (AppUser) in.readObject();</span><br><span class="line">    User user1 = (User) in.readObject();</span><br><span class="line">    User user2 = (User) in.readObject();</span><br><span class="line">    User user11 = (User) in.readObject();</span><br><span class="line">    System.out.println(user1 == user2);</span><br><span class="line">    System.out.println(user1.getAppUser() == appUser);</span><br><span class="line">    System.out.println(user2.getAppUser() == appUser);</span><br><span class="line">    System.out.println(user1.getAppUser() == user11.getAppUser());</span><br><span class="line">    in.close();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分别序列化 appUser、user1、user2，其中 user1 序列化了两次，然后按照顺序反序列化。执行结果如下：</p>
+<blockquote>
+<p>false<br>true<br>true<br>true</p>
+</blockquote>
+<p>说明，appUser 从始至终只被序列化了一次，user1 和 user2 中的 appUser 是同一个对象。user1 和 user11 也是反序列化的同一个对象。</p>
+<p><strong>结论：</strong>同一个对象只会被序列化一次。</p>
 
       
     </div>
@@ -443,8 +455,8 @@
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <p><span>本文标题:</span><a href="/2019/09/21/Java序列化——Serializable/">Java序列化——Serializable</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
-  <p><span>发布时间:</span>2019年09月21日 - 23:09</p>
-  <p><span>最后更新:</span>2019年09月23日 - 20:09</p>
+ <!-- <p><span>发布时间:</span>2019年09月21日 - 23:09</p> -->
+ <!-- <p><span>最后更新:</span>2019年09月24日 - 21:09</p> -->
   <p><span>原始链接:</span><a href="/2019/09/21/Java序列化——Serializable/" title="Java序列化——Serializable">https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Serializable/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Serializable/" aria-label="复制成功！"></i></span>
   </p>
@@ -490,8 +502,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/21/Java序列化——Externalizable/" rel="next" title="Java序列化——Externalizable">
-                <i class="fa fa-chevron-left"></i> Java序列化——Externalizable
+              <a href="/2019/09/19/集合中的modCount/" rel="next" title="集合中的modCount">
+                <i class="fa fa-chevron-left"></i> 集合中的modCount
               </a>
             
           </div>
@@ -499,6 +511,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/21/Java序列化——Externalizable/" rel="prev" title="Java序列化——Externalizable">
+                Java序列化——Externalizable <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -677,7 +693,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-序列化基本原理"><span class="nav-number">1.</span> <span class="nav-text">1. 序列化基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#变量是其他引用类"><span class="nav-number">2.</span> <span class="nav-text">变量是其他引用类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#serialVersionUID"><span class="nav-number">3.</span> <span class="nav-text">serialVersionUID</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-序列化基本原理"><span class="nav-number">1.</span> <span class="nav-text">1. 序列化基本原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-变量是其他引用类"><span class="nav-number">2.</span> <span class="nav-text">2. 变量是其他引用类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-serialVersionUID"><span class="nav-number">3.</span> <span class="nav-text">3. serialVersionUID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-同一个对象多次序列化"><span class="nav-number">4.</span> <span class="nav-text">4. 同一个对象多次序列化</span></a></li></ol></div>
             
 
           </div>
@@ -735,7 +751,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共12.2k字</span>
+  <span class="post-count">博客全站共12.7k字</span>
 </div>
         
 

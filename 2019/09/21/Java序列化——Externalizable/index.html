@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-22T14:54:34.581Z">
+<meta property="og:updated_time" content="2019-09-24T13:31:12.027Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java序列化——Externalizable">
 <meta name="twitter:description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.1k
+                  1.2k
                 </span>
               
 
@@ -413,7 +413,15 @@
 <p>读取磁盘的对象:User{name=’null’, password=’null’, mobile=’zhaoxiaofa’}</p>
 </blockquote>
 <p>从结果中我们看到，在反序列化时将 name 的值赋值给了 mobile 。name 是第一个被序列化的变量，mobile 是第一个也是唯一一个被反序列化的变量，所以把 name 的值赋值给了 mobile 。这就是 readExternal 强调的，顺序要保持一致。</p>
-<h2 id="3-注意事项"><a href="#3-注意事项" class="headerlink" title="3. 注意事项"></a>3. 注意事项</h2>
+<h2 id="3-一定要有默认的无参构造函数"><a href="#3-一定要有默认的无参构造函数" class="headerlink" title="3. 一定要有默认的无参构造函数"></a>3. 一定要有默认的无参构造函数</h2><p>在 ExternalizableUser 类中加入如下构造方法，再执行序列化和反序列化，最后执行单元测试会报错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ExternalizableUser</span><span class="params">(String name, String password)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.name = name;</span><br><span class="line">    <span class="keyword">this</span>.password = password;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>java.io.InvalidClassException:  no valid constructor</p>
+</blockquote>
+<p><strong>小结：</strong></p>
+<p>必须有权限为 public 的默认的构造器（如果有非默认的带参数的构造函数，那么必须显示的写出默认的构造函数），这样 Externalizable 才能正确执行序列化和反序列化。</p>
+
       
     </div>
     
@@ -431,8 +439,8 @@
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
   <p><span>本文标题:</span><a href="/2019/09/21/Java序列化——Externalizable/">Java序列化——Externalizable</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p>
-  <p><span>发布时间:</span>2019年09月21日 - 23:09</p>
-  <p><span>最后更新:</span>2019年09月22日 - 22:09</p>
+ <!-- <p><span>发布时间:</span>2019年09月21日 - 23:09</p> -->
+ <!-- <p><span>最后更新:</span>2019年09月24日 - 21:09</p> -->
   <p><span>原始链接:</span><a href="/2019/09/21/Java序列化——Externalizable/" title="Java序列化——Externalizable">https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/" aria-label="复制成功！"></i></span>
   </p>
@@ -478,8 +486,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/19/transient关键字/" rel="next" title="transient关键字">
-                <i class="fa fa-chevron-left"></i> transient关键字
+              <a href="/2019/09/21/Java序列化——Serializable/" rel="next" title="Java序列化——Serializable">
+                <i class="fa fa-chevron-left"></i> Java序列化——Serializable
               </a>
             
           </div>
@@ -487,10 +495,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/09/21/Java序列化——Serializable/" rel="prev" title="Java序列化——Serializable">
-                Java序列化——Serializable <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -669,7 +673,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-入门测试"><span class="nav-number">2.</span> <span class="nav-text">2. 入门测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-注意事项"><span class="nav-number">3.</span> <span class="nav-text">3. 注意事项</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-入门测试"><span class="nav-number">2.</span> <span class="nav-text">2. 入门测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-一定要有默认的无参构造函数"><span class="nav-number">3.</span> <span class="nav-text">3. 一定要有默认的无参构造函数</span></a></li></ol></div>
             
 
           </div>
@@ -727,7 +731,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共12.2k字</span>
+  <span class="post-count">博客全站共12.7k字</span>
 </div>
         
 
