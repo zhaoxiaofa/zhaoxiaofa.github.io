@@ -88,7 +88,7 @@
 <meta property="og:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/spi/java-spi.png">
-<meta property="og:updated_time" content="2019-09-25T02:24:43.192Z">
+<meta property="og:updated_time" content="2019-09-25T04:28:14.937Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java SPI">
 <meta name="twitter:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
@@ -441,7 +441,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 3</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> S <span class="title">nextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  		<span class="keyword">if</span> (!hasNextService())</span><br><span class="line">    		<span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">      String cn = nextName;</span><br><span class="line">      nextName = <span class="keyword">null</span>;</span><br><span class="line">      Class&lt;?&gt; c = <span class="keyword">null</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 看这里 看这里 看这里</span></span><br><span class="line">        c = Class.forName(cn, <span class="keyword">false</span>, loader);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (ClassNotFoundException x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" not found"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">if</span> (!service.isAssignableFrom(c)) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn  + <span class="string">" not a subtype"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        S p = service.cast(c.newInstance());</span><br><span class="line">        providers.put(cn, p);</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" could not be instantiated"</span>,</span><br><span class="line">             x);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">throw</span> <span class="keyword">new</span> Error();          <span class="comment">// This cannot happen</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>详细的执行顺序如上述代码中注释的 1、2、3 所示。最终我们发现，还是执行了 Class.forName 方法。通过 SPI 的方式把手动加载变成框架自动处理。</p>
-<h2 id="4-SPI和API"><a href="#4-SPI和API" class="headerlink" title="4. SPI和API"></a>4. SPI和API</h2><p><strong>彩蛋：</strong>后续应该还会写 Spring SPI、Dubbo SPI 相关的文章。 </p>
+<h2 id="4-SPI和API"><a href="#4-SPI和API" class="headerlink" title="4. SPI和API"></a>4. SPI和API</h2><p>待续。。。</p>
+<p><strong>彩蛋：</strong>后续应该还会写 Spring SPI、Dubbo SPI 相关的文章。 </p>
 <p>参考资料：</p>
 <p><a href="https://www.cnblogs.com/xrq730/p/11440174.html" target="_blank" rel="noopener">https://www.cnblogs.com/xrq730/p/11440174.html</a></p>
 
@@ -463,7 +464,7 @@
   <p><span>本文标题:</span><a href="/2019/09/04/Java-SPI/">Java SPI</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月04日 - 18:09</p> -->
- <p><span>最后更新:</span>2019年09月25日 - 10:09</p>
+ <p><span>最后更新:</span>2019年09月25日 - 12:09</p>
   <p><span>原始链接:</span><a href="/2019/09/04/Java-SPI/" title="Java SPI">https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/" aria-label="复制成功！"></i></span>
   </p>
@@ -519,8 +520,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/19/transient关键字/" rel="prev" title="transient关键字">
-                transient关键字 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/19/集合中的modCount/" rel="prev" title="集合中的modCount">
+                集合中的modCount <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

@@ -82,14 +82,14 @@
 <meta name="description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 <meta name="keywords" content="Java序列化">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Java序列化——Externalizable">
-<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/index.html">
+<meta property="og:title" content="Java序列化—Externalizable">
+<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/index.html">
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-24T16:44:45.065Z">
+<meta property="og:updated_time" content="2019-09-25T07:22:00.529Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Java序列化——Externalizable">
+<meta name="twitter:title" content="Java序列化—Externalizable">
 <meta name="twitter:description" content="1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需要实现 Externalizable 接口，重写其中的 writeExternal 、readExt">
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/">
+  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/">
 
 
 
 
 
-  <title>Java序列化——Externalizable | 赵小发</title>
+  <title>Java序列化—Externalizable | 赵小发</title>
   
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Java序列化——Externalizable</h1>
+          <h1 class="post-title" itemprop="name headline">Java序列化—Externalizable</h1>
         
 
         <div class="post-meta">
@@ -324,7 +324,7 @@
 
           
           
-             <span id="/2019/09/21/Java序列化——Externalizable/" class="leancloud_visitors" data-flag-title="Java序列化——Externalizable">
+             <span id="/2019/09/21/Java序列化—Externalizable/" class="leancloud_visitors" data-flag-title="Java序列化—Externalizable">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -437,12 +437,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/09/21/Java序列化——Externalizable/">Java序列化——Externalizable</a></p>
+  <p><span>本文标题:</span><a href="/2019/09/21/Java序列化—Externalizable/">Java序列化—Externalizable</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月21日 - 23:09</p> -->
- <p><span>最后更新:</span>2019年09月25日 - 00:09</p>
-  <p><span>原始链接:</span><a href="/2019/09/21/Java序列化——Externalizable/" title="Java序列化——Externalizable">https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/21/Java序列化——Externalizable/" aria-label="复制成功！"></i></span>
+ <p><span>最后更新:</span>2019年09月25日 - 15:09</p>
+  <p><span>原始链接:</span><a href="/2019/09/21/Java序列化—Externalizable/" title="Java序列化—Externalizable">https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -486,8 +486,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/19/集合中的modCount/" rel="next" title="集合中的modCount">
-                <i class="fa fa-chevron-left"></i> 集合中的modCount
+              <a href="/2019/09/19/transient关键字/" rel="next" title="transient关键字">
+                <i class="fa fa-chevron-left"></i> transient关键字
               </a>
             
           </div>
@@ -496,8 +496,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/21/Java序列化——Serializable/" rel="prev" title="Java序列化——Serializable">
-                Java序列化——Serializable <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/21/Java序列化—Serializable/" rel="prev" title="Java序列化—Serializable">
+                Java序列化—Serializable <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
