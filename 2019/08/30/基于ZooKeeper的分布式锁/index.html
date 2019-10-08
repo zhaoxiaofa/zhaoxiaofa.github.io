@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁2. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
+<meta name="description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁3. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
 <meta name="keywords" content="分布式锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于ZooKeeper的分布式锁">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁2. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
+<meta property="og:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁3. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-04T12:52:07.197Z">
+<meta property="og:updated_time" content="2019-10-08T12:35:28.967Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
-<meta name="twitter:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁2. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
+<meta name="twitter:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁3. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  113
+                  116
                 </span>
               
 
@@ -387,7 +387,7 @@
 
       
         <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>基于ZooKeeper的临时顺序节点。</p>
-<h2 id="2-加锁"><a href="#2-加锁" class="headerlink" title="2. 加锁"></a>2. 加锁</h2><h2 id="2-Curator实现"><a href="#2-Curator实现" class="headerlink" title="2. Curator实现"></a>2. Curator实现</h2><p>使用Curator客户端实现，不用自己手撸代码。</p>
+<h2 id="2-加锁"><a href="#2-加锁" class="headerlink" title="2. 加锁"></a>2. 加锁</h2><h2 id="3-Curator实现"><a href="#3-Curator实现" class="headerlink" title="3. Curator实现"></a>3. Curator实现</h2><p>使用Curator客户端实现，不用自己手撸代码。</p>
 <p>注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。</p>
 <blockquote>
 <p>org.apache.zookeeper.KeeperException$UnimplementedException:</p>
@@ -395,6 +395,7 @@
 <p>我的虚拟机上 ZooKeeper 版本是3.4.13 ，Curator 版本如下：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">   &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;2.13.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
 
+<p>TODO 待续</p>
 
       
     </div>
@@ -414,7 +415,7 @@
   <p><span>本文标题:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/">基于ZooKeeper的分布式锁</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 17:08</p> -->
- <p><span>最后更新:</span>2019年09月04日 - 20:09</p>
+ <p><span>最后更新:</span>2019年10月08日 - 20:10</p>
   <p><span>原始链接:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/" title="基于ZooKeeper的分布式锁">https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/" aria-label="复制成功！"></i></span>
   </p>
@@ -651,7 +652,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-加锁"><span class="nav-number">2.</span> <span class="nav-text">2. 加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Curator实现"><span class="nav-number">3.</span> <span class="nav-text">2. Curator实现</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-加锁"><span class="nav-number">2.</span> <span class="nav-text">2. 加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Curator实现"><span class="nav-number">3.</span> <span class="nav-text">3. Curator实现</span></a></li></ol></div>
             
 
           </div>
