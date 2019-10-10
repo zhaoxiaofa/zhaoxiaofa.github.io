@@ -911,7 +911,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  164
+                  189
                 </span>
               
 
@@ -951,15 +951,209 @@
         
           
           源码版本Spring 5.0.x 
-主要参考书籍《Spring实战》、《Spring源码深度解析》、《Spring技术内幕》。
+主要参考书籍《Spring实战》、《Spring源码深度解析（第2版）》、《Spring技术内幕》。
+这里一次性全部列出来，后面的文章就不单独列出了。
 建议阅读方式
 按照目录从头到尾大致扫一遍，先有个整体概念。
-再从头到尾认真看一遍，边看边画图，边 debug 源码。
-阅读完毕，自己写个系列源码分析的博客。如果只是看别人的
+再从头到尾认真看一遍，边看边画图，边 debug 源
           ...
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/10/01/Spring源码解析—前言/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/09/21/Java序列化—Externalizable/" itemprop="url">Java序列化—Externalizable</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-21T23:02:25+08:00">
+                2019-09-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java基础/" itemprop="url" rel="index">
+                    <span itemprop="name">Java基础</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/09/21/Java序列化—Externalizable/" class="leancloud_visitors" data-flag-title="Java序列化—Externalizable">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.2k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  5
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+          1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需
+          ...
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/09/21/Java序列化—Externalizable/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1212,7 +1406,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/21/Java序列化—Externalizable/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -1231,7 +1425,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/09/21/Java序列化—Externalizable/" itemprop="url">Java序列化—Externalizable</a></h1>
+                <a class="post-title-link" href="/2019/09/19/集合中的modCount/" itemprop="url">集合中的modCount</a></h1>
         
 
         <div class="post-meta">
@@ -1243,8 +1437,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-21T23:02:25+08:00">
-                2019-09-21
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-19T21:09:56+08:00">
+                2019-09-19
               </time>
             
 
@@ -1266,8 +1460,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java基础/" itemprop="url" rel="index">
-                    <span itemprop="name">Java基础</span>
+                  <a href="/categories/Java集合/" itemprop="url" rel="index">
+                    <span itemprop="name">Java集合</span>
                   </a>
                 </span>
 
@@ -1283,7 +1477,7 @@
 
           
           
-             <span id="/2019/09/21/Java序列化—Externalizable/" class="leancloud_visitors" data-flag-title="Java序列化—Externalizable">
+             <span id="/2019/09/19/集合中的modCount/" class="leancloud_visitors" data-flag-title="集合中的modCount">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -1308,7 +1502,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.2k
+                  859
                 </span>
               
 
@@ -1324,7 +1518,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  3
                 </span>
               
             </div>
@@ -1347,11 +1541,11 @@
       
         
           
-          1. 原理之前有一篇文章 transient关键字 ，是讲基于 Serializable 的序列化，这篇文章主要讲基于 Externalizable 的序列化。如果类实现 Serializable ，会自动序列化，但是如果实现 Externalizable ，需要我们自己手动序列化。使用很简单，只需
+          1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int mo
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2019/09/21/Java序列化—Externalizable/#more" rel="contents">
+            <a class="btn" href="/2019/09/19/集合中的modCount/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1547,200 +1741,6 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/09/19/transient关键字/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    <div>
-      
-    </div>
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="zhaoxiaofa">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/headpic.jpeg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="赵小发">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/19/集合中的modCount/" itemprop="url">集合中的modCount</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-19T21:09:56+08:00">
-                2019-09-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java集合/" itemprop="url" rel="index">
-                    <span itemprop="name">Java集合</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-             <span id="/2019/09/19/集合中的modCount/" class="leancloud_visitors" data-flag-title="集合中的modCount">
-               <span class="post-meta-divider">|</span>
-               <span class="post-meta-item-icon">
-                 <i class="fa fa-eye"></i>
-               </span>
-               
-                 <span class="post-meta-item-text">阅读次数&#58;</span>
-               
-                 <span class="leancloud-visitors-count"></span>
-             </span>
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  859
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int mo
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/19/集合中的modCount/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2044,8 +2044,8 @@ SPI （Service Provider Interface）其实是一种思想，但凡涉及到思�
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/算法/" itemprop="url" rel="index">
-                    <span itemprop="name">算法</span>
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
                   </a>
                 </span>
 
@@ -2086,7 +2086,7 @@ SPI （Service Provider Interface）其实是一种思想，但凡涉及到思�
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  988
+                  2k
                 </span>
               
 
@@ -2102,7 +2102,7 @@ SPI （Service Provider Interface）其实是一种思想，但凡涉及到思�
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  8
                 </span>
               
             </div>
@@ -2342,7 +2342,7 @@ SPI （Service Provider Interface）其实是一种思想，但凡涉及到思�
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共19k字</span>
+  <span class="post-count">博客全站共20k字</span>
 </div>
         
 

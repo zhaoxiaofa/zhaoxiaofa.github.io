@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="源码版本Spring 5.0.x  主要参考书籍《Spring实战》、《Spring源码深度解析》、《Spring技术内幕》。 建议阅读方式 按照目录从头到尾大致扫一遍，先有个整体概念。 再从头到尾认真看一遍，边看边画图，边 debug 源码。 阅读完毕，自己写个系列源码分析的博客。如果只是看别人的文章，收获最多百分之五十。自己写出来，收获起码翻倍。  备注：如果认真看了我写的几篇文章仍然没有任何">
+<meta name="description" content="源码版本Spring 5.0.x  主要参考书籍《Spring实战》、《Spring源码深度解析（第2版）》、《Spring技术内幕》。 这里一次性全部列出来，后面的文章就不单独列出了。 建议阅读方式 按照目录从头到尾大致扫一遍，先有个整体概念。 再从头到尾认真看一遍，边看边画图，边 debug 源码。 阅读完毕，自己写个系列源码分析的博客。如果只是看别人的文章，收获最多百分之五十。自己写出来，收">
 <meta name="keywords" content="Spring">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring源码解析—前言">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/10/01/Spring源码解析—前言/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="源码版本Spring 5.0.x  主要参考书籍《Spring实战》、《Spring源码深度解析》、《Spring技术内幕》。 建议阅读方式 按照目录从头到尾大致扫一遍，先有个整体概念。 再从头到尾认真看一遍，边看边画图，边 debug 源码。 阅读完毕，自己写个系列源码分析的博客。如果只是看别人的文章，收获最多百分之五十。自己写出来，收获起码翻倍。  备注：如果认真看了我写的几篇文章仍然没有任何">
+<meta property="og:description" content="源码版本Spring 5.0.x  主要参考书籍《Spring实战》、《Spring源码深度解析（第2版）》、《Spring技术内幕》。 这里一次性全部列出来，后面的文章就不单独列出了。 建议阅读方式 按照目录从头到尾大致扫一遍，先有个整体概念。 再从头到尾认真看一遍，边看边画图，边 debug 源码。 阅读完毕，自己写个系列源码分析的博客。如果只是看别人的文章，收获最多百分之五十。自己写出来，收">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-07T15:38:52.739Z">
+<meta property="og:updated_time" content="2019-10-10T15:03:53.286Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Spring源码解析—前言">
-<meta name="twitter:description" content="源码版本Spring 5.0.x  主要参考书籍《Spring实战》、《Spring源码深度解析》、《Spring技术内幕》。 建议阅读方式 按照目录从头到尾大致扫一遍，先有个整体概念。 再从头到尾认真看一遍，边看边画图，边 debug 源码。 阅读完毕，自己写个系列源码分析的博客。如果只是看别人的文章，收获最多百分之五十。自己写出来，收获起码翻倍。  备注：如果认真看了我写的几篇文章仍然没有任何">
+<meta name="twitter:description" content="源码版本Spring 5.0.x  主要参考书籍《Spring实战》、《Spring源码深度解析（第2版）》、《Spring技术内幕》。 这里一次性全部列出来，后面的文章就不单独列出了。 建议阅读方式 按照目录从头到尾大致扫一遍，先有个整体概念。 再从头到尾认真看一遍，边看边画图，边 debug 源码。 阅读完毕，自己写个系列源码分析的博客。如果只是看别人的文章，收获最多百分之五十。自己写出来，收">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  164
+                  189
                 </span>
               
 
@@ -387,7 +387,8 @@
 
       
         <h4 id="源码版本"><a href="#源码版本" class="headerlink" title="源码版本"></a>源码版本</h4><p>Spring 5.0.x </p>
-<h4 id="主要参考书籍"><a href="#主要参考书籍" class="headerlink" title="主要参考书籍"></a>主要参考书籍</h4><p>《Spring实战》、《Spring源码深度解析》、《Spring技术内幕》。</p>
+<h4 id="主要参考书籍"><a href="#主要参考书籍" class="headerlink" title="主要参考书籍"></a>主要参考书籍</h4><p>《Spring实战》、《Spring源码深度解析（第2版）》、《Spring技术内幕》。</p>
+<p>这里一次性全部列出来，后面的文章就不单独列出了。</p>
 <h4 id="建议阅读方式"><a href="#建议阅读方式" class="headerlink" title="建议阅读方式"></a>建议阅读方式</h4><ol>
 <li>按照目录从头到尾大致扫一遍，先有个整体概念。</li>
 <li>再从头到尾认真看一遍，边看边画图，边 debug 源码。</li>
@@ -413,7 +414,7 @@
   <p><span>本文标题:</span><a href="/2019/10/01/Spring源码解析—前言/">Spring源码解析—前言</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年10月01日 - 02:10</p> -->
- <p><span>最后更新:</span>2019年10月07日 - 23:10</p>
+ <p><span>最后更新:</span>2019年10月10日 - 23:10</p>
   <p><span>原始链接:</span><a href="/2019/10/01/Spring源码解析—前言/" title="Spring源码解析—前言">https://zhaoxiaofa.github.io/2019/10/01/Spring源码解析—前言/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/10/01/Spring源码解析—前言/" aria-label="复制成功！"></i></span>
   </p>
@@ -459,8 +460,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/21/Java序列化—Externalizable/" rel="next" title="Java序列化—Externalizable">
-                <i class="fa fa-chevron-left"></i> Java序列化—Externalizable
+              <a href="/2019/09/21/Java序列化—Serializable/" rel="next" title="Java序列化—Serializable">
+                <i class="fa fa-chevron-left"></i> Java序列化—Serializable
               </a>
             
           </div>
@@ -708,7 +709,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共19k字</span>
+  <span class="post-count">博客全站共20k字</span>
 </div>
         
 
