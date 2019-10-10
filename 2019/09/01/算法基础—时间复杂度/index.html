@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-10T09:08:24.092Z">
+<meta property="og:updated_time" content="2019-10-10T09:53:18.405Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法基础—时间复杂度">
 <meta name="twitter:description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  958
+                  988
                 </span>
               
 
@@ -400,6 +400,7 @@
 <blockquote>
 <p>常量阶O(1) 、对数阶O(logn)、线性阶O(n)、线性对数阶O(nlogn)、次方阶O($n^2$)、O($n^3$)、O($n^k$)、指数阶O($2^n$)、阶乘阶O(n!)</p>
 </blockquote>
+<p>我们可以粗略的认为，越高阶复杂度的算法，执行效率越低。</p>
 <h3 id="2-1-常量阶O-1"><a href="#2-1-常量阶O-1" class="headerlink" title="2.1 常量阶O(1)"></a>2.1 常量阶O(1)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> m = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> n = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> sum = m + n;</span><br></pre></td></tr></table></figure>
 <p>虽然有3行代码，但是时间复杂度是 O(1) 不是 O(3) 。即使再加 1000行代码，依旧是 O(1) 。</p>
 <p><strong>小结：</strong>只要代码中不存在循环、递归，无论是1行、10行还是1万行，时间复杂度都是 O(1) 。</p>
@@ -408,12 +409,12 @@
 <p>在代码的执行过程中，i 的取值如下：</p>
 <script type="math/tex; mode=display">1、2、4、8、16……m……n</script><p>我们换算一下就变成了：</p>
 <script type="math/tex; mode=display">2^0、2^1、2^2、2^3、2^4……2^k……n</script><p>当 $2^k$ 的值无限接近 n 时，即 $2^k=n$ 。此时，k 为执行次数， $k=log_2n$。时间复杂度为：O($log_2n$)。</p>
-<p>如果将 i = i <em> 2 改成 i = i </em> 5 ，时间复杂度变为了 O($log_5n$)。而中学数学告诉我们：<script type="math/tex">log_5n = log_52 * log_2n</script></p>
+<p>如果将乘数从 2 改成 5 ，时间复杂度变为了 O($log_5n$)。而中学数学告诉我们：<script type="math/tex">log_5n = log_52 * log_2n</script>。</p>
 <p>而系数是可以忽略的，所以我们在对数阶时间复杂度的表示方法里，忽略对数的“底”，统一表示为 O($logn$)。</p>
-<h2 id="3-注意事项"><a href="#3-注意事项" class="headerlink" title="3. 注意事项"></a>3. 注意事项</h2><p>思考一个问题: O(1) 在实际工程应用中一定比 O(n) 慢吗？</p>
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>思考一个问题: O(1) 在实际工程应用中一定比 O(n) 快吗？</p>
 <p>答案是不一定，比如在 O(1)  的算法中有 100 行代码，而在 O(n) 的算法中，传入的 n 值 为一个很小的数，比如 2 。那么很明显，此时 O(1) 的算法反而执行更慢。</p>
 <p><strong>小结：</strong>算法是死的，实际业务是活的。在实际使用过程中，需要结合具体的场景来选择适合的算法。</p>
-
+<h2 id="3-四种时间复杂度"><a href="#3-四种时间复杂度" class="headerlink" title="3. 四种时间复杂度"></a>3. 四种时间复杂度</h2>
       
     </div>
     
@@ -669,7 +670,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-时间复杂度分析原则"><span class="nav-number">1.</span> <span class="nav-text">1. 时间复杂度分析原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-只关注循环执行最多的代码"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 只关注循环执行最多的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-加法法则"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 加法法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-乘法法则"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 乘法法则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-常用复杂度量级及示例"><span class="nav-number">2.</span> <span class="nav-text">2. 常用复杂度量级及示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-常量阶O-1"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 常量阶O(1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-对数阶O-logn"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 对数阶O($logn$)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-注意事项"><span class="nav-number">3.</span> <span class="nav-text">3. 注意事项</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-时间复杂度分析原则"><span class="nav-number">1.</span> <span class="nav-text">1. 时间复杂度分析原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-只关注循环执行最多的代码"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 只关注循环执行最多的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-加法法则"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 加法法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-乘法法则"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 乘法法则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-常用复杂度量级及示例"><span class="nav-number">2.</span> <span class="nav-text">2. 常用复杂度量级及示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-常量阶O-1"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 常量阶O(1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-对数阶O-logn"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 对数阶O($logn$)</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#注意事项"><span class="nav-number">2.2.1.</span> <span class="nav-text">注意事项</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-四种时间复杂度"><span class="nav-number">3.</span> <span class="nav-text">3. 四种时间复杂度</span></a></li></ol></div>
             
 
           </div>
@@ -727,7 +728,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共18.9k字</span>
+  <span class="post-count">博客全站共19k字</span>
 </div>
         
 
