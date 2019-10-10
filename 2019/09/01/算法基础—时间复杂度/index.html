@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="分布式理论,">
+  <meta name="keywords" content="算法基础,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1. BASE基本理论BASE 理论是对 CAP 理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP 的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。BASE 是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency">
-<meta name="keywords" content="分布式理论">
+<meta name="description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
+<meta name="keywords" content="算法基础">
 <meta property="og:type" content="article">
-<meta property="og:title" content="BASE定理">
-<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/10/02/BASE定理/index.html">
+<meta property="og:title" content="算法基础—时间复杂度">
+<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/01/算法基础—时间复杂度/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. BASE基本理论BASE 理论是对 CAP 理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP 的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。BASE 是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency">
+<meta property="og:description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-02T15:29:22.954Z">
+<meta property="og:updated_time" content="2019-10-10T08:56:36.525Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="BASE定理">
-<meta name="twitter:description" content="1. BASE基本理论BASE 理论是对 CAP 理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP 的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。BASE 是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency">
+<meta name="twitter:title" content="算法基础—时间复杂度">
+<meta name="twitter:description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/10/02/BASE定理/">
+  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/09/01/算法基础—时间复杂度/">
 
 
 
 
 
-  <title>BASE定理 | 赵小发</title>
+  <title>算法基础—时间复杂度 | 赵小发</title>
   
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/10/02/BASE定理/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/01/算法基础—时间复杂度/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">BASE定理</h1>
+          <h1 class="post-title" itemprop="name headline">算法基础—时间复杂度</h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-10-02T23:26:03+08:00">
-                2019-10-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-01T22:09:56+08:00">
+                2019-09-01
               </time>
             
 
@@ -307,8 +307,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式-微服务/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式&微服务</span>
+                  <a href="/categories/算法/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
                   </a>
                 </span>
 
@@ -324,7 +324,7 @@
 
           
           
-             <span id="/2019/10/02/BASE定理/" class="leancloud_visitors" data-flag-title="BASE定理">
+             <span id="/2019/09/01/算法基础—时间复杂度/" class="leancloud_visitors" data-flag-title="算法基础—时间复杂度">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.3k
+                  958
                 </span>
               
 
@@ -365,7 +365,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  7
+                  4
                 </span>
               
             </div>
@@ -386,28 +386,40 @@
       
 
       
-        <h2 id="1-BASE基本理论"><a href="#1-BASE基本理论" class="headerlink" title="1. BASE基本理论"></a>1. BASE基本理论</h2><p>BASE 理论是对 CAP 理论的延伸，核心思想是即使无法做到强一致性（Strong Consistency，CAP 的一致性就是强一致性），但应用可以采用适合的方式达到最终一致性（Eventual Consitency）。<br>BASE 是指基本可用（Basically Available）、软状态（ Soft State）、最终一致性（ Eventual Consistency）。</p>
-<h3 id="1-1-基本可用（Basically-Available）"><a href="#1-1-基本可用（Basically-Available）" class="headerlink" title="1.1 基本可用（Basically Available）"></a>1.1 基本可用（Basically Available）</h3><p>基本可用是指分布式系统在出现故障的时候，允许损失部分可用性，即保证核心可用。<br>电商大促时，为了应对访问量激增，部分用户可能会被引导到降级页面，服务层也可能只提供降级服务。这就是损失部分可用性的体现。</p>
-<h3 id="1-2-软状态（-Soft-State）"><a href="#1-2-软状态（-Soft-State）" class="headerlink" title="1.2 软状态（ Soft State）"></a>1.2 软状态（ Soft State）</h3><p>软状态是指允许系统存在中间状态，其实提到中间状态我们就会想到异步。该中间状态不会影响系统整体可用性。分布式存储中一般一份数据至少会有三个副本，允许不同节点间副本同步的延时就是软状态的体现。mysql replication的异步复制也是一种体现。</p>
-<h3 id="1-3-最终一致性（-Eventual-Consistency）"><a href="#1-3-最终一致性（-Eventual-Consistency）" class="headerlink" title="1.3 最终一致性（ Eventual Consistency）"></a>1.3 最终一致性（ Eventual Consistency）</h3><p>最终一致性是指系统中的所有数据副本经过一定时间后，最终能够达到一致的状态。弱一致性和强一致性相反，最终一致性是弱一致性的一种特殊情况。实际业务开发过程中，很多时候回考虑性能等保证数据的最终一致性即可。</p>
-<h2 id="2-ACID和BASE的区别与联系"><a href="#2-ACID和BASE的区别与联系" class="headerlink" title="2. ACID和BASE的区别与联系"></a>2. ACID和BASE的区别与联系</h2><p>ACID 是传统数据库常用的设计理念，追求强一致性模型。BASE 支持的是大型分布式系统，提出通过牺牲强一致性获得高可用性。<br>ACID 和BASE 代表了两种截然相反的设计哲学，在分布式系统设计的场景中，系统组件对一致性要求是不同的，因此 ACID 和 BASE 又会结合使用。</p>
-<h2 id="3-结合实际业务场景来谈一致性"><a href="#3-结合实际业务场景来谈一致性" class="headerlink" title="3. 结合实际业务场景来谈一致性"></a>3. 结合实际业务场景来谈一致性</h2><h3 id="3-1-火车站售票"><a href="#3-1-火车站售票" class="headerlink" title="3.1 火车站售票"></a>3.1 火车站售票</h3><p>假如说我们的终端用户是一位经常坐火车的旅行家，通常他是去车站的售票处购买车票，然后拿着车票去检票口，再坐上火车，开始一段美好的旅行，一切似乎都是那么和谐。想象一下，如果他选择的目的地是杭州，而某一趟开往杭州的火车只剩下最后一张车票，可能在同一时刻，不同售票窗口的另一位乘客也购买了同一张车票。假如说售票系统没有进行一致性的保障，两人都购票成功了。而在检票口检票的时候，其中一位乘客会被告知他的车票无效—-当然，现代的中国铁路售票系统已经很少出现这样的问题了。但在这个例子中我们可以看出，终端用户对于系统的需求非常简单：</p>
-<p>“请售票给我，如果没有余票了，请在售票的时候就告诉我票是无效的”</p>
-<p>这就对购票系统提出了严格的一致性要求—-系统的数据（本例中指的就是那趟开往杭州的火车的余票数）无论在哪个售票窗口，每时每刻都必须是准确无误的！</p>
-<h3 id="3-2-银行转账"><a href="#3-2-银行转账" class="headerlink" title="3.2 银行转账"></a>3.2 银行转账</h3><p>假如我们的终端用户是一位刚毕业的大学生，通常在拿到第一个月工资的时候，都会选择向家里汇款。当他来到银行柜台，完成转账操作后，银行的柜台服务员会友善地提醒他：”您的转账将在N个工作日后到账！”。此时这名毕业生有一定的沮丧，会对那名柜台服务员叮嘱：”好吧，多久没关系，钱不要少就好了！”—-这也成为了几乎所有用户对于现代银行系统最基本的需求</p>
-<h3 id="3-3-网上购物"><a href="#3-3-网上购物" class="headerlink" title="3.3 网上购物"></a>3.3 网上购物</h3><p>假如说我们的终端用户是一位网购达人，当他看见一件库存量为 5 的心仪商品，会迅速地确认购买，写下收货地址，然后下单。然而，在下单的那个瞬间，系统可能会告知该用户：”库存量不足！”。此时绝大部分消费者都会抱怨自己动作太慢，使得心爱的商品被其他人抢走了。<br>但其实有过网购系统开发经验的工程师一定明白，在商品详情页上显示的那个库存量，通常不是该商品的真实库存量，只有在真正下单购买的时候，系统才会检查该商品的真实库存量。但是，谁在意呢？</p>
-<p><strong>示例总结：</strong>  </p>
-<p>对于上面三个例子，相信大家一定看出来了，我们的终端用户在使用不同的计算机产品时对于数据一致性的需求是不一样的：</p>
-<p>1、有些系统，既要快速地响应用户，同时还要保证系统的数据对于任意客户端都是真实可靠的，就像火车站售票系统</p>
-<p>2、有些系统，需要为用户保证绝对可靠的数据安全，虽然在数据一致性上存在延时，但最终务必保证严格的一致性，就像银行的转账系统</p>
-<p>3、有些系统，虽然向用户展示了一些可以说是”错误”的数据，但是在整个系统使用过程中，一定会在某一个流程上对系统数据进行准确无误的检查，从而避免用户发生不必要的损失，就像网购系统。</p>
-<h2 id="4-分布式环境的各种问题"><a href="#4-分布式环境的各种问题" class="headerlink" title="4. 分布式环境的各种问题"></a>4. 分布式环境的各种问题</h2><h3 id="4-1-通信异常"><a href="#4-1-通信异常" class="headerlink" title="4.1 通信异常"></a>4.1 通信异常</h3><p>从集中式向分布式演变的过程中，必然引入网络因素，由于网络本身的不可靠性，因此也引入了额外的问题。分布式系统需要在各个节点之间进行网络通信，因此每次网络通信都会伴随着网络不可用的风险，网络光纤、路由器或是DNS等硬件设备或是系统不可用都会导致最终分布式系统无法顺利完成一次网络通信。另外，即使分布式系统各个节点之间的网络通信能够正常进行，其延时也会大于单机操作。通常我们认为现代计算机体系结构中，单机内存访问的延时在纳秒数量级（通常是10ns），而正常的一次网络通信的延迟在0.1~1ms左右（相当于内存访问延时的105倍），如此巨大的延时差别，也会影响到消息的收发过程，因此消息丢失和消息延迟变得非常普遍</p>
-<h3 id="4-2-网络分区"><a href="#4-2-网络分区" class="headerlink" title="4.2 网络分区"></a>4.2 网络分区</h3><p>当网络由于发生异常情况，导致分布式系统中部分节点之间的网络延时不断增大，最终导致组成分布式系统的所有节点中，只有部分节点之间能够正常通信，而另一些节点则不能—-我们将这个现象称为网络分区。当网络分区出现时，分布式系统会出现局部小集群，在极端情况下，这些局部小集群会独立完成原本需要整个分布式系统才能完成的功能，包括对数据的事物处理，这就对分布式一致性提出了非常大的挑战</p>
-<h3 id="4-3-三态"><a href="#4-3-三态" class="headerlink" title="4.3 三态"></a>4.3 三态</h3><p>上面两点，我们已经了解到在分布式环境下，网络可能会出现各式各样的问题，因此分布式系统的每一次请求与响应，存在特有的三态概念，即成功、失败、超时。在传统的单机系统中，应用程序在调用一个函数之后，能够得到一个非常明确的响应：成功或失败。而在分布式系统中，由于网络是不可靠的，虽然在绝大部分情况下，网络通信也能够接受到成功或失败的响应，当时当网络出现异常的情况下，就可能会出现超时现象，通常有以下两种情况：</p>
-<p>（1）由于网络原因，该请求并没有被成功地发送到接收方，而是在发送过程中就发生了消息丢失现象</p>
-<p>（2）该请求成功地被接收方接收后，进行了处理，但是在将响应反馈给发送方的过程中，发生了消息丢失现象</p>
-<p>当出现这样的超时现象时，网络通信的发起方是无法确定当前请求是否被成功处理的</p>
-<h3 id="4-4-节点故障"><a href="#4-4-节点故障" class="headerlink" title="4.4 节点故障"></a>4.4 节点故障</h3><p>节点故障则是分布式环境下另一个比较常见的问题，指的是组成分布式系统的服务器节点出现的宕机或”僵死”现象，通常根据经验来说，每个节点都有可能出现故障，并且每天都在发生。</p>
+        <p>大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$</p>
+<h2 id="1-时间复杂度分析原则"><a href="#1-时间复杂度分析原则" class="headerlink" title="1. 时间复杂度分析原则"></a>1. 时间复杂度分析原则</h2><h3 id="1-1-只关注循环执行最多的代码"><a href="#1-1-只关注循环执行最多的代码" class="headerlink" title="1.1 只关注循环执行最多的代码"></a>1.1 只关注循环执行最多的代码</h3><p>我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculate</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (; i &lt; n ; i ++ ) &#123;</span><br><span class="line">        sum += i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、3行代码执行都是常量级，4、5行代码执行 n 次，所以总复杂度 O(n) 。</p>
+<h3 id="1-2-加法法则"><a href="#1-2-加法法则" class="headerlink" title="1.2 加法法则"></a>1.2 加法法则</h3><p>加法法则其实和 1.1 比较相似，1.1 是关注的某一小块代码，加法法则关心的是一大段代码，其中包含了多个小块代码。举例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculate</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">        sum += i;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (; j &lt; n; j++) &#123;</span><br><span class="line">        sum += j;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> x = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> y = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (; x &lt; n; x++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (; y &lt; n; y++) &#123;</span><br><span class="line">            sum += x * y;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第一小块代码时间复杂度为 O(1) ，第二小块为 O(n) ，第三小块为 O($n^2$) 。我们取最大量级，最终时间复杂度为 O($n^2$) 。总的时间复杂度就等于量级最大的那段代码的时间复杂度。</p>
+<h3 id="1-3-乘法法则"><a href="#1-3-乘法法则" class="headerlink" title="1.3 乘法法则"></a>1.3 乘法法则</h3><p>乘法法则适用于代码中出现嵌套循环，总的时间复杂度等于嵌套内外代码时间复杂度的乘积。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">calculate</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (; j &lt; n; j++) &#123;</span><br><span class="line">        sum += cal(j);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">cal</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">int</span> j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (; j &lt; n; j++) &#123;</span><br><span class="line">        sum += j;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>calculate()方法时间复杂度 O(n) ，cal()方法时间复杂度同样为 O(n) ，总的时间复杂度为 O($n^2$) 。</p>
+<h2 id="2-常用复杂度量级及示例"><a href="#2-常用复杂度量级及示例" class="headerlink" title="2. 常用复杂度量级及示例"></a>2. 常用复杂度量级及示例</h2><p>按照时间复杂度依次递增，列出了常用时间复杂度量级：</p>
+<blockquote>
+<p>常量阶O(1) 、对数阶O(logn)、线性阶O(n)、线性对数阶O(nlogn)、次方阶O($n^2$)、O($n^3$)、O($n^k$)、指数阶O($2^n$)、阶乘阶O(n!)</p>
+</blockquote>
+<h3 id="2-1-常量阶O-1"><a href="#2-1-常量阶O-1" class="headerlink" title="2.1 常量阶O(1)"></a>2.1 常量阶O(1)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> m = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> n = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> sum = m + n;</span><br></pre></td></tr></table></figure>
+
+<p>虽然有3行代码，但是时间复杂度是 O(1) 不是 O(3) 。即使再加 1000行代码，依旧是 O(1) 。</p>
+<p><strong>小结：</strong>只要代码中不存在循环、递归，无论是1行、10行还是1万行，时间复杂度都是 O(1) 。</p>
+<h3 id="2-2-对数阶O-logn"><a href="#2-2-对数阶O-logn" class="headerlink" title="2.2 对数阶O($logn$)"></a>2.2 对数阶O($logn$)</h3><p>对数阶其实不难，本质其实是中学数学。先看一段代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">logn</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (; i &lt; n ; i ++) &#123;</span><br><span class="line">        i = i * <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在代码的执行过程中，i 的取值如下：</p>
+<p>$$1、2、4、8、16……m……n$$</p>
+<p>我们换算一下就变成了：</p>
+<p>$$2^0、2^1、2^2、2^3、2^4……2^k……n$$</p>
+<p>当 $2^k$ 的值无限接近 n 时，即 $2^k=n$ 。此时，k 为执行次数， $k=log_2n$。时间复杂度为：O($log_2n$)。</p>
+<p>如果将 i = i * 2 改成 i = i * 5 ，时间复杂度变为了 O($log_5n$)。而中学数学告诉我们：$$log_5n = log_52 * log_2n$$</p>
+<p>而系数是可以忽略的，所以我们在对数阶时间复杂度的表示方法里，忽略对数的“底”，统一表示为 O($logn$)。</p>
+<h2 id="3-注意事项"><a href="#3-注意事项" class="headerlink" title="3. 注意事项"></a>3. 注意事项</h2><p>思考一个问题: O(1) 在实际工程应用中一定比 O(n) 慢吗？</p>
+<p>答案是不一定，比如在 O(1)  的算法中有 100 行代码，而在 O(n) 的算法中，传入的 n 值 为一个很小的数，比如 2 。那么很明显，此时 O(1) 的算法反而执行更慢。</p>
+<p><strong>小结：</strong>算法是死的，实际业务是活的。在实际使用过程中，需要结合具体的场景来选择适合的算法。</p>
 
       
     </div>
@@ -424,12 +436,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/10/02/BASE定理/">BASE定理</a></p>
+  <p><span>本文标题:</span><a href="/2019/09/01/算法基础—时间复杂度/">算法基础—时间复杂度</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
- <!-- <p><span>发布时间:</span>2019年10月02日 - 23:10</p> -->
- <p><span>最后更新:</span>2019年10月02日 - 23:10</p>
-  <p><span>原始链接:</span><a href="/2019/10/02/BASE定理/" title="BASE定理">https://zhaoxiaofa.github.io/2019/10/02/BASE定理/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/10/02/BASE定理/" aria-label="复制成功！"></i></span>
+ <!-- <p><span>发布时间:</span>2019年09月01日 - 22:09</p> -->
+ <p><span>最后更新:</span>2019年10月10日 - 16:10</p>
+  <p><span>原始链接:</span><a href="/2019/09/01/算法基础—时间复杂度/" title="算法基础—时间复杂度">https://zhaoxiaofa.github.io/2019/09/01/算法基础—时间复杂度/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/01/算法基础—时间复杂度/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -460,7 +472,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/分布式理论/" rel="tag"># 分布式理论</a>
+            <a href="/tags/算法基础/" rel="tag"># 算法基础</a>
           
         </div>
       
@@ -473,8 +485,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/10/02/CAP定理/" rel="next" title="CAP定理">
-                <i class="fa fa-chevron-left"></i> CAP定理
+              <a href="/2019/08/30/初识并发编程/" rel="next" title="初识并发编程">
+                <i class="fa fa-chevron-left"></i> 初识并发编程
               </a>
             
           </div>
@@ -482,6 +494,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/09/04/Java-SPI/" rel="prev" title="Java SPI">
+                Java SPI <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -660,7 +676,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-BASE基本理论"><span class="nav-number">1.</span> <span class="nav-text">1. BASE基本理论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-基本可用（Basically-Available）"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 基本可用（Basically Available）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-软状态（-Soft-State）"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 软状态（ Soft State）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-最终一致性（-Eventual-Consistency）"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 最终一致性（ Eventual Consistency）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-ACID和BASE的区别与联系"><span class="nav-number">2.</span> <span class="nav-text">2. ACID和BASE的区别与联系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-结合实际业务场景来谈一致性"><span class="nav-number">3.</span> <span class="nav-text">3. 结合实际业务场景来谈一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-火车站售票"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 火车站售票</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-银行转账"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 银行转账</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-网上购物"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 网上购物</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-分布式环境的各种问题"><span class="nav-number">4.</span> <span class="nav-text">4. 分布式环境的各种问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-通信异常"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 通信异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-网络分区"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 网络分区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-三态"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 三态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-节点故障"><span class="nav-number">4.4.</span> <span class="nav-text">4.4 节点故障</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-时间复杂度分析原则"><span class="nav-number">1.</span> <span class="nav-text">1. 时间复杂度分析原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-只关注循环执行最多的代码"><span class="nav-number">1.1.</span> <span class="nav-text">1.1 只关注循环执行最多的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-加法法则"><span class="nav-number">1.2.</span> <span class="nav-text">1.2 加法法则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-3-乘法法则"><span class="nav-number">1.3.</span> <span class="nav-text">1.3 乘法法则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-常用复杂度量级及示例"><span class="nav-number">2.</span> <span class="nav-text">2. 常用复杂度量级及示例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-常量阶O-1"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 常量阶O(1)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-对数阶O-logn"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 对数阶O($logn$)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-注意事项"><span class="nav-number">3.</span> <span class="nav-text">3. 注意事项</span></a></li></ol></div>
             
 
           </div>
