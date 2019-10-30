@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/spi/java-spi.png">
-<meta property="og:updated_time" content="2019-09-25T04:28:14.937Z">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/spi/java-spi.png">
+<meta property="og:updated_time" content="2019-10-30T09:34:57.722Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java SPI">
 <meta name="twitter:description" content="1. SPI是什么？最近在看 Spring 和 Dubbo 的源码，发现这两个框架都有自己的 SPI 机制，决定了解下 SPI 。 SPI （Service Provider Interface）其实是一种思想，但凡涉及到思想的东西，都是看一眼感觉自己会，看代码也看得懂，然后自己就是不会用，或者用的不是那么顺手（参考设计模式）。 2. 写个HelloWorld首先定义一个接口，两个实现类。 代码如">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/spi/java-spi.png">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/spi/java-spi.png">
 
 
 
@@ -396,7 +396,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xiaofa.common.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpiServiceOne</span> <span class="keyword">implements</span> <span class="title">SpiService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am service one"</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.xiaofa.common.spi;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SpiServiceTwo</span> <span class="keyword">implements</span> <span class="title">SpiService</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"I am service two"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在 resources 目录下新建 META-INF/services ，里面新建一个文件，com.xiaofa.common.spi.SpiService （接口的全路径）。截图如下：</p>
-<p><img src="https://raw.githubusercontent.com/zhaoxiaofa/xiaofa-java-learn/master/pictures/spi/java-spi.png" alt></p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/spi/java-spi.png" alt></p>
 <p>文件的内容如下：</p>
 <blockquote>
 <p>com.xiaofa.common.spi.SpiServiceOne</p>
@@ -452,7 +452,7 @@
   <p><span>本文标题:</span><a href="/2019/09/04/Java-SPI/">Java SPI</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月04日 - 18:09</p> -->
- <p><span>最后更新:</span>2019年09月25日 - 12:09</p>
+ <p><span>最后更新:</span>2019年10月30日 - 17:10</p>
   <p><span>原始链接:</span><a href="/2019/09/04/Java-SPI/" title="Java SPI">https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/04/Java-SPI/" aria-label="复制成功！"></i></span>
   </p>
@@ -508,8 +508,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/19/集合中的modCount/" rel="prev" title="集合中的modCount">
-                集合中的modCount <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/19/transient关键字/" rel="prev" title="transient关键字">
+                transient关键字 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
