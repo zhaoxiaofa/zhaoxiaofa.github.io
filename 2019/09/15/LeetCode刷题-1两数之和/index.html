@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Dubbo,">
+  <meta name="keywords" content="LeetCode,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之">
-<meta name="keywords" content="Dubbo">
+<meta name="description" content="1. 题目1234567891011121314151617181920//给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。 //// 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。 //// 示例: //// 给定 nums = [2, 7, 11, 15], target = 9////">
+<meta name="keywords" content="LeetCode">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Dubbo源码解析—阅读源码的方法">
-<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/08/30/Dubbo源码解析—阅读源码的方法/index.html">
+<meta property="og:title" content="LeetCode刷题-1两数之和">
+<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/15/LeetCode刷题-1两数之和/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之">
+<meta property="og:description" content="1. 题目1234567891011121314151617181920//给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。 //// 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。 //// 示例: //// 给定 nums = [2, 7, 11, 15], target = 9////">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-25T07:22:31.837Z">
+<meta property="og:updated_time" content="2019-11-17T16:29:43.315Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dubbo源码解析—阅读源码的方法">
-<meta name="twitter:description" content="1. 前言阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。 2. fork我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。 3. 理清架构我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之">
+<meta name="twitter:title" content="LeetCode刷题-1两数之和">
+<meta name="twitter:description" content="1. 题目1234567891011121314151617181920//给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。 //// 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。 //// 示例: //// 给定 nums = [2, 7, 11, 15], target = 9////">
 
 
 
@@ -120,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/08/30/Dubbo源码解析—阅读源码的方法/">
+  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/09/15/LeetCode刷题-1两数之和/">
 
 
 
 
 
-  <title>Dubbo源码解析—阅读源码的方法 | 赵小发</title>
+  <title>LeetCode刷题-1两数之和 | 赵小发</title>
   
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/08/30/Dubbo源码解析—阅读源码的方法/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/15/LeetCode刷题-1两数之和/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -272,7 +272,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Dubbo源码解析—阅读源码的方法</h1>
+          <h1 class="post-title" itemprop="name headline">LeetCode刷题-1两数之和</h1>
         
 
         <div class="post-meta">
@@ -284,8 +284,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-30T17:50:12+08:00">
-                2019-08-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-15T23:09:56+08:00">
+                2019-09-15
               </time>
             
 
@@ -307,8 +307,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式-微服务/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式&微服务</span>
+                  <a href="/categories/数据结构与算法/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
                   </a>
                 </span>
 
@@ -324,7 +324,7 @@
 
           
           
-             <span id="/2019/08/30/Dubbo源码解析—阅读源码的方法/" class="leancloud_visitors" data-flag-title="Dubbo源码解析—阅读源码的方法">
+             <span id="/2019/09/15/LeetCode刷题-1两数之和/" class="leancloud_visitors" data-flag-title="LeetCode刷题-1两数之和">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  338
+                  929
                 </span>
               
 
@@ -365,7 +365,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  3
                 </span>
               
             </div>
@@ -386,13 +386,21 @@
       
 
       
-        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>阅读源码的前提是你之前使用该技术做过一段时间的开发，如果你连使用都不熟练，不建议直接看源码，一步一步来 。不要指望一口吃个大胖子。</p>
-<h2 id="2-fork"><a href="#2-fork" class="headerlink" title="2. fork"></a>2. fork</h2><p>我自己在读源码的时候会在 GitHub 上 fork 下源码，然后 clone 到本地，使用 idea 阅读，中途自己会写注释，提交到自己的远程仓库上。</p>
-<h2 id="3-理清架构"><a href="#3-理清架构" class="headerlink" title="3. 理清架构"></a>3. 理清架构</h2><p>我自己不会拿着源码就去看，首先要理清出整个框架的架构，大致知道有哪些模块，之间有什么样的关联。</p>
-<p>框架的架构可以查看官方文档，在大致梳理清楚之后，可以自己手绘一个简单的架构图，绘图工具推荐在线的 processon 。</p>
-<h2 id="4-设计模式"><a href="#4-设计模式" class="headerlink" title="4. 设计模式"></a>4. 设计模式</h2><p>源码大多使用了很多设计模式，所以在看源码之前，建议对基本的设计模式有一定的了解。如果不了解，建议先简单看下常用设计模式。</p>
-<h2 id="5-从-Demo-或-Test-入手"><a href="#5-从-Demo-或-Test-入手" class="headerlink" title="5 从 Demo 或 Test 入手"></a>5 从 Demo 或 Test 入手</h2><p>每看一个模块之前，先从 demo 或者 test 入手，跟着一步步 debug ，比单纯看代码效果要好很多。</p>
-<h2 id="6-站在巨人的肩膀上"><a href="#6-站在巨人的肩膀上" class="headerlink" title="6 站在巨人的肩膀上"></a>6 站在巨人的肩膀上</h2><p>建议读源码时参考相关的书籍，或者是高质量的博客。</p>
+        <h2 id="1-题目"><a href="#1-题目" class="headerlink" title="1. 题目"></a>1. 题目</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。 </span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。 </span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 示例: </span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 给定 nums = [2, 7, 11, 15], target = 9</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//因为 nums[0] + nums[1] = 2 + 7 = 9</span></span><br><span class="line"><span class="comment">//所以返回 [0, 1]</span></span><br><span class="line"><span class="comment">// </span></span><br><span class="line"><span class="comment">// Related Topics 数组 哈希表</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//leetcode submit region begin(Prohibit modification and deletion)</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> target) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//leetcode submit region end(Prohibit modification and deletion)</span></span><br></pre></td></tr></table></figure>
+<h2 id="2-思路"><a href="#2-思路" class="headerlink" title="2. 思路"></a>2. 思路</h2><p>看到这个题，首先想到最搓的方式就是嵌套 for 循环，当然如果使用最搓的方法那就没什么意义了。在写业务代码的时候，我们都要切记尽量避免嵌套循环，更何况是做算法题。</p>
+<p>那既然时间复杂度过高，我们是不是可以想办法用空间换时间呢？</p>
+<p>我们想，如果在遍历数组的时候，用 target 减去这个元素的值，即 rightNum =  target - num[i]，其中 rightNum 为答案中的一个元素，num[i] 为另一个。如果我能直接通过 rightNum 的值找到 rightNum 所对应的位置，并且时间复杂度为 O(1) 的话，那么总的时间复杂度不就是 O(1) 了嘛，问题不就解决了吗？</p>
+<p>这不就是典型的 key-value 的形式吗？作为一个 Java 程序员，首先脑海里想到的不就是 HashMap 吗？HashMap 底层是数组，支持随机访问，通过 key 去查找 value 的时间复杂度就是  O(1) 。</p>
+<p>想到 HashMap 之后，解答就很简单了，遍历数组，以 num[i] 为 key , i 为 value ，存入 HashMap 中，如果 rightNum 命中了 HashMap 中的某个 key 。则找到了答案，直接返回。</p>
+<p>来，上代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span>[] twoSum(<span class="keyword">int</span>[] nums, <span class="keyword">int</span> target) &#123;</span><br><span class="line">        Map&lt;Integer, Integer&gt; numMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> rightNum = target - nums[i];</span><br><span class="line">            <span class="keyword">if</span> (numMap.containsKey(rightNum)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="keyword">int</span>[]&#123;numMap.get(rightNum), i&#125;;</span><br><span class="line">            &#125;</span><br><span class="line">            numMap.put(nums[i], i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-结合实际项目"><a href="#3-结合实际项目" class="headerlink" title="3. 结合实际项目"></a>3. 结合实际项目</h2><p>在我们做分布式系统的项目时，假设有下面一种场景出现。运营提需求说，我们现在后台要拉一份的订单记录，记录里面要包含下单用户的信息，比如手机号，住址等等，要给下单量大的用户发礼物。这个时候我们要怎么做呢？订单表 join 用户表？肯定不是的，分布式系统中可能库都是分开的，没法 join 。</p>
+<p>一般我们订单表中，肯定会维护 userId ，记录是谁下的单，那么我们在查出的订单记录中取出所有的 userId ，得到一个 List 集合。然后用户系统会提供一个服务，传参是 userId 的 List 集合，返回的数据是用户信息对象集合，信息包含上面的手机号、地址等等。</p>
+<p>这时候我们就得到了两个集合，一个订单的 List ，一个用户的 List ，难道我们要嵌套循环，最终组装成一个 List 返回给客户端吗？</p>
+<p>当然不是，我们会构造一个 HashMap , key 是 userId , value 是用户信息对象。</p>
+<p>然后遍历用户的 List ，依次塞到 HashMap 中。</p>
+<p>最后遍历订单的 List ，从 HashMap 中取出订单所属 userId 对应的用户信息对象。 </p>
+<p><strong>小结：</strong>无论是这道算法题，还是实际业务使用，其本质都是利用 HashMap 获取某个 key 对应 value 值得时间复杂度为 O(1) 。而 HashMap 的本质是数组这种数据结构支持随机访问。</p>
 
       
     </div>
@@ -409,12 +417,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/08/30/Dubbo源码解析—阅读源码的方法/">Dubbo源码解析—阅读源码的方法</a></p>
+  <p><span>本文标题:</span><a href="/2019/09/15/LeetCode刷题-1两数之和/">LeetCode刷题-1两数之和</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
- <!-- <p><span>发布时间:</span>2019年08月30日 - 17:08</p> -->
- <!-- <p><span>最后更新:</span>2019年09月25日 - 15:09</p> -->
-  <p><span>原始链接:</span><a href="/2019/08/30/Dubbo源码解析—阅读源码的方法/" title="Dubbo源码解析—阅读源码的方法">https://zhaoxiaofa.github.io/2019/08/30/Dubbo源码解析—阅读源码的方法/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/08/30/Dubbo源码解析—阅读源码的方法/" aria-label="复制成功！"></i></span>
+ <!-- <p><span>发布时间:</span>2019年09月15日 - 23:09</p> -->
+ <!-- <p><span>最后更新:</span>2019年11月18日 - 00:11</p> -->
+  <p><span>原始链接:</span><a href="/2019/09/15/LeetCode刷题-1两数之和/" title="LeetCode刷题-1两数之和">https://zhaoxiaofa.github.io/2019/09/15/LeetCode刷题-1两数之和/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/15/LeetCode刷题-1两数之和/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -445,7 +453,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Dubbo/" rel="tag"># Dubbo</a>
+            <a href="/tags/LeetCode/" rel="tag"># LeetCode</a>
           
         </div>
       
@@ -458,8 +466,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/30/基于ZooKeeper的分布式锁/" rel="next" title="基于ZooKeeper的分布式锁">
-                <i class="fa fa-chevron-left"></i> 基于ZooKeeper的分布式锁
+              <a href="/2019/09/04/Java-SPI/" rel="next" title="Java SPI">
+                <i class="fa fa-chevron-left"></i> Java SPI
               </a>
             
           </div>
@@ -468,8 +476,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/08/30/博客说明/" rel="prev" title="博客说明">
-                博客说明 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/19/transient关键字/" rel="prev" title="transient关键字">
+                transient关键字 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -631,7 +639,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-fork"><span class="nav-number">2.</span> <span class="nav-text">2. fork</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-理清架构"><span class="nav-number">3.</span> <span class="nav-text">3. 理清架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-设计模式"><span class="nav-number">4.</span> <span class="nav-text">4. 设计模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-从-Demo-或-Test-入手"><span class="nav-number">5.</span> <span class="nav-text">5 从 Demo 或 Test 入手</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-站在巨人的肩膀上"><span class="nav-number">6.</span> <span class="nav-text">6 站在巨人的肩膀上</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-题目"><span class="nav-number">1.</span> <span class="nav-text">1. 题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-思路"><span class="nav-number">2.</span> <span class="nav-text">2. 思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-结合实际项目"><span class="nav-number">3.</span> <span class="nav-text">3. 结合实际项目</span></a></li></ol></div>
             
 
           </div>
