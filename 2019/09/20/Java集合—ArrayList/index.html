@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理我们先看看 ArrayList 的类继承体系。 123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable&amp;#123; 如图所示，ArrayList 实现了 Ra">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-05T08:11:19.627Z">
+<meta property="og:updated_time" content="2019-11-28T15:17:04.768Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—ArrayList">
 <meta name="twitter:description" content="1. 原理我们先看看 ArrayList 的类继承体系。 123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable&amp;#123; 如图所示，ArrayList 实现了 Ra">
@@ -400,10 +400,10 @@
 <li>数组的长度固定，当插入数据长度达到数组容量时，需要扩容，而扩容是新建一个数组，将值赋值到新数组中，性能差，所以使用 ArrayList 时不要频繁插入数据</li>
 <li>在数组中间插数据时，需要将后面的元素进行移位操作，性能同样差；</li>
 </ol>
-<p>额，这样看来，ArrayList 只适合查询，不要进行频繁得插入和删除。</p>
+<p>额，这样看来，ArrayList 只适合查询，不要进行频繁的插入和删除。</p>
 <p><strong>数组天然的优点：</strong></p>
 <ol>
-<li>支持随机访问，肯定跟进角标快速的取出数据，时间复杂度 O(1) </li>
+<li>支持随机访问，可以根据角标快速的取出数据，时间复杂度 O(1) </li>
 <li>顺序性</li>
 </ol>
 <h2 id="2-源码分析"><a href="#2-源码分析" class="headerlink" title="2. 源码分析"></a>2. 源码分析</h2><h3 id="2-1-构造函数"><a href="#2-1-构造函数" class="headerlink" title="2.1 构造函数"></a>2.1 构造函数</h3><p>构造函数有下面两个：</p>
@@ -431,7 +431,7 @@
 <p>Arrays.copyOf(elementData, newCapacity)</p>
 </blockquote>
 <p>这是调用底层数组复制的方法，就是它，那个影响性能的罪魁祸首。</p>
-<p><strong>注意：</strong> size 的大小和 elementData.length 的大小是不一样的，size 是实际有数据的个数，新 new 一个初始容量为 10 的数组，此时 size 也为 0，只要在执行 add 方法，往 ArrayList 里面塞数据之后，size 才会增加。</p>
+<p><strong>注意：</strong> size 的大小和 elementData.length 的大小是不一样的，size 是实际有数据的个数，新 new 一个初始容量为 10 的数组，此时 size 也为 0，只有在执行 add 方法，往 ArrayList 里面塞数据之后，size 才会增加。</p>
 <h3 id="2-3-add-index-e"><a href="#2-3-add-index-e" class="headerlink" title="2.3 add(index,e)"></a>2.3 add(index,e)</h3><p>这个方法是在数组中间添加数据，区别于 add 方法的是需要判断边界，是否发生数组越界。数组复制的逻辑稍有区别，其他的，和 add 方法差不多。具体看代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    rangeCheckForAdd(index);</span><br><span class="line"></span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!</span></span><br><span class="line">    System.arraycopy(elementData, index, elementData, index + <span class="number">1</span>,</span><br><span class="line">                     size - index);</span><br><span class="line">    elementData[index] = element;</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>第 2 行代码是校验传来的 index 是否在数组范围内，很简单。</p>
@@ -476,7 +476,7 @@
   <p><span>本文标题:</span><a href="/2019/09/20/Java集合—ArrayList/">Java集合—ArrayList</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月20日 - 22:09</p> -->
- <!-- <p><span>最后更新:</span>2019年11月05日 - 16:11</p> -->
+ <!-- <p><span>最后更新:</span>2019年11月28日 - 23:11</p> -->
   <p><span>原始链接:</span><a href="/2019/09/20/Java集合—ArrayList/" title="Java集合—ArrayList">https://zhaoxiaofa.github.io/2019/09/20/Java集合—ArrayList/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/20/Java集合—ArrayList/" aria-label="复制成功！"></i></span>
   </p>
@@ -524,8 +524,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/19/集合中的modCount/" rel="next" title="集合中的modCount">
-                <i class="fa fa-chevron-left"></i> 集合中的modCount
+              <a href="/2019/09/19/transient关键字/" rel="next" title="transient关键字">
+                <i class="fa fa-chevron-left"></i> transient关键字
               </a>
             
           </div>
