@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.">
+<meta name="description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 学习第一步，官网探个路。建议看这篇文章的时候打开 Curator 的官网。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$Unimpleme">
 <meta name="keywords" content="分布式锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于ZooKeeper的分布式锁">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.">
+<meta property="og:description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 学习第一步，官网探个路。建议看这篇文章的时候打开 Curator 的官网。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$Unimpleme">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-12-30T15:46:54.129Z">
+<meta property="og:updated_time" content="2019-12-30T15:52:25.198Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
-<meta name="twitter:description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.">
+<meta name="twitter:description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 学习第一步，官网探个路。建议看这篇文章的时候打开 Curator 的官网。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$Unimpleme">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  374
+                  400
                 </span>
               
 
@@ -388,6 +388,7 @@
       
         <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>基于 ZooKeeper 的临时顺序节点。</p>
 <h2 id="2-加锁"><a href="#2-加锁" class="headerlink" title="2. 加锁"></a>2. 加锁</h2><h2 id="3-Curator实现"><a href="#3-Curator实现" class="headerlink" title="3. Curator实现"></a>3. Curator实现</h2><p>使用 Curator 客户端实现，不用自己手撸代码。</p>
+<p><strong>学习第一步，官网探个路。</strong>建议看这篇文章的时候打开 Curator 的官网。</p>
 <p>注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。</p>
 <blockquote>
 <p>org.apache.zookeeper.KeeperException$UnimplementedException:</p>
@@ -403,7 +404,7 @@
 <p>You must add a dependency on ZooKeeper 3.4.x also.</p>
 </blockquote>
 <p>提示我们需要手动添加  ZooKeeper 3.4.x 的依赖，我这里选择的是 3.4.14 。最终依赖如下所示：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">			&lt;version&gt;4.2.0&lt;/version&gt;</span><br><span class="line">			&lt;exclusions&gt;</span><br><span class="line">				&lt;exclusion&gt;</span><br><span class="line">					&lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">					&lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">				&lt;/exclusion&gt;</span><br><span class="line">			&lt;/exclusions&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br><span class="line">		&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">			&lt;version&gt;3.4.14&lt;/version&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">   &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;4.2.0&lt;/version&gt;</span><br><span class="line">   &lt;exclusions&gt;</span><br><span class="line">      &lt;exclusion&gt;</span><br><span class="line">         &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">         &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">      &lt;/exclusion&gt;</span><br><span class="line">   &lt;/exclusions&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">   &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;3.4.14&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
 <p>TODO 待续</p>
 
       
@@ -701,7 +702,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共21.4k字</span>
+  <span class="post-count">博客全站共21.5k字</span>
 </div>
         
 
