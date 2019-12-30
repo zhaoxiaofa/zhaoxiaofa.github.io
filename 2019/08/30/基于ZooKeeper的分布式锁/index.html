@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁3. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
+<meta name="description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.">
 <meta name="keywords" content="分布式锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于ZooKeeper的分布式锁">
 <meta property="og:url" content="https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁3. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
+<meta property="og:description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-10-08T12:35:28.967Z">
+<meta property="og:updated_time" content="2019-12-30T15:44:38.618Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
-<meta name="twitter:description" content="1. 原理基于ZooKeeper的临时顺序节点。 2. 加锁3. Curator实现使用Curator客户端实现，不用自己手撸代码。 注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.4.13 ，Cu">
+<meta name="twitter:description" content="1. 原理基于 ZooKeeper 的临时顺序节点。 2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。 注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。  org.apache.zookeeper.KeeperException$UnimplementedException:  我的虚拟机上 ZooKeeper 版本是3.">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  116
+                  374
                 </span>
               
 
@@ -386,14 +386,24 @@
       
 
       
-        <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>基于ZooKeeper的临时顺序节点。</p>
-<h2 id="2-加锁"><a href="#2-加锁" class="headerlink" title="2. 加锁"></a>2. 加锁</h2><h2 id="3-Curator实现"><a href="#3-Curator实现" class="headerlink" title="3. Curator实现"></a>3. Curator实现</h2><p>使用Curator客户端实现，不用自己手撸代码。</p>
-<p>注意Curator版本和ZooKeeper服务器版本的对应关系，否则会报异常。</p>
+        <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>基于 ZooKeeper 的临时顺序节点。</p>
+<h2 id="2-加锁"><a href="#2-加锁" class="headerlink" title="2. 加锁"></a>2. 加锁</h2><h2 id="3-Curator实现"><a href="#3-Curator实现" class="headerlink" title="3. Curator实现"></a>3. Curator实现</h2><p>使用 Curator 客户端实现，不用自己手撸代码。</p>
+<p>注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。</p>
 <blockquote>
 <p>org.apache.zookeeper.KeeperException$UnimplementedException:</p>
 </blockquote>
-<p>我的虚拟机上 ZooKeeper 版本是3.4.13 ，Curator 版本如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">   &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;2.13.0&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>我的虚拟机上 ZooKeeper 版本是3.4.14 ，按照<a href="https://curator.apache.org/zk-compatibility.html#" target="_blank" rel="noopener">Curator 官网</a>上的指导选择合适的 Curator 版本。</p>
+<blockquote>
+<p>Curator 4.0 supports ZooKeeper 3.4.x ensembles in a soft-compatibility mode. To use this mode you must exclude ZooKeeper when adding Curator to your dependency management tool.</p>
+</blockquote>
+<p>在这句的意思大致上，如果使用 Curator 4.0 ，需要在 maven 依赖中移除掉 ZooKeeper 。官方给的示例如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;$&#123;curator-version&#125;&lt;/version&gt;</span><br><span class="line">    &lt;exclusions&gt;</span><br><span class="line">        &lt;exclusion&gt;</span><br><span class="line">            &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">        &lt;/exclusion&gt;</span><br><span class="line">    &lt;/exclusions&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+<p>紧接着，下面又有这么一句话。</p>
+<blockquote>
+<p>You must add a dependency on ZooKeeper 3.4.x also.</p>
+</blockquote>
+<p>提示我们需要手动添加  ZooKeeper 3.4.x 的依赖，我这里选择的是 3.4.14 。最终依赖如下所示：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">			&lt;version&gt;4.2.0&lt;/version&gt;</span><br><span class="line">			&lt;exclusions&gt;</span><br><span class="line">				&lt;exclusion&gt;</span><br><span class="line">					&lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">					&lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">				&lt;/exclusion&gt;</span><br><span class="line">			&lt;/exclusions&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br><span class="line">		&lt;dependency&gt;</span><br><span class="line">			&lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">			&lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">			&lt;version&gt;3.4.14&lt;/version&gt;</span><br><span class="line">		&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
 <p>TODO 待续</p>
 
       
@@ -414,7 +424,7 @@
   <p><span>本文标题:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/">基于ZooKeeper的分布式锁</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 17:08</p> -->
- <!-- <p><span>最后更新:</span>2019年10月08日 - 20:10</p> -->
+ <!-- <p><span>最后更新:</span>2019年12月30日 - 23:12</p> -->
   <p><span>原始链接:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/" title="基于ZooKeeper的分布式锁">https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/08/30/基于ZooKeeper的分布式锁/" aria-label="复制成功！"></i></span>
   </p>
@@ -691,7 +701,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共21.2k字</span>
+  <span class="post-count">博客全站共21.4k字</span>
 </div>
         
 
