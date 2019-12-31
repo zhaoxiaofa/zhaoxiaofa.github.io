@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理我们先看看 ArrayList 的类继承体系。 123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable&amp;#123; 如图所示，ArrayList 实现了 Ra">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-11-28T15:17:04.768Z">
+<meta property="og:updated_time" content="2019-12-31T05:43:13.196Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—ArrayList">
 <meta name="twitter:description" content="1. 原理我们先看看 ArrayList 的类继承体系。 123public class ArrayList&amp;lt;E&amp;gt; extends AbstractList&amp;lt;E&amp;gt;        implements List&amp;lt;E&amp;gt;, RandomAccess, Cloneable, java.io.Serializable&amp;#123; 如图所示，ArrayList 实现了 Ra">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.7k
+                  1.9k
                 </span>
               
 
@@ -406,6 +406,7 @@
 <li>支持随机访问，可以根据角标快速的取出数据，时间复杂度 O(1) </li>
 <li>顺序性</li>
 </ol>
+<p><strong>备注：</strong>有很多文章说数组的查询时间复杂度是 O(1) ，我认为这种说法是不准确的。没有哪一种查找算法的时间复杂度能达到 O(1) 的。可能有人会说了，那 ArrayList 的 get 方法的时间复杂度确实是 O(1) 啊。是的，但是 get 方法的本质并不是查询，而是直接拿数据。就像是在你在人群中，我并不是去通过什么方法去找到你，而是我一眼就认出了你。 而这种实现的本质是数组支持随机访问。</p>
 <h2 id="2-源码分析"><a href="#2-源码分析" class="headerlink" title="2. 源码分析"></a>2. 源码分析</h2><h3 id="2-1-构造函数"><a href="#2-1-构造函数" class="headerlink" title="2.1 构造函数"></a>2.1 构造函数</h3><p>构造函数有下面两个：</p>
 <p>ArrayList() 、ArrayList(int initialCapacity)</p>
 <p>一个是没有指定初始化容量的，一个指定了初始容量，建议使用有初始容量的构造函数。</p>
@@ -420,7 +421,7 @@
 <p>如果之前数组为空数组，返回默认数组长度和新数组长度的最大值，这种情况只会在使用 ArrayList() 无初始容量构造函数，然后第一次执行 add 操作时发生。其他情况均返回 minCapacity 。</p>
 <p>然后我们看 ensureExplicitCapacity 方法。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureExplicitCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">    modCount++;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// overflow-conscious code</span></span><br><span class="line">    <span class="keyword">if</span> (minCapacity - elementData.length &gt; <span class="number">0</span>)</span><br><span class="line">        grow(minCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>关于 modCount ，之前篇文章已经讲过了，可以参考 <a href="https://zhaoxiaofa.com/2019/09/19/%E9%9B%86%E5%90%88%E4%B8%AD%E7%9A%84modCount/" target="_blank" rel="noopener">集合中的modCount</a>。如果当前容量大于了数组的长度，开始扩容。</p>
+<p>关于 modCount ，之前篇文章已经讲过了，可以参考 <a href="https://zhaoxiaofa.com/2019/09/19/%E9%9B%86%E5%90%88%E4%B8%AD%E7%9A%84modCount/" target="_blank" rel="noopener">集合中的modCount</a>。如果当前容量大于了数组的长度，开始扩容。下面是扩容的方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">grow</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// overflow-conscious code</span></span><br><span class="line">    <span class="keyword">int</span> oldCapacity = elementData.length;</span><br><span class="line">    <span class="keyword">int</span> newCapacity = oldCapacity + (oldCapacity &gt;&gt; <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">if</span> (newCapacity - minCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    <span class="keyword">if</span> (newCapacity - MAX_ARRAY_SIZE &gt; <span class="number">0</span>)</span><br><span class="line">        newCapacity = hugeCapacity(minCapacity);</span><br><span class="line">    <span class="comment">// minCapacity is usually close to size, so this is a win:</span></span><br><span class="line">    elementData = Arrays.copyOf(elementData, newCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>扩容方法很简单，其中判断了最小长度和最大长度，比较有意思的地方有两个。</p>
 <blockquote>
@@ -430,7 +431,7 @@
 <blockquote>
 <p>Arrays.copyOf(elementData, newCapacity)</p>
 </blockquote>
-<p>这是调用底层数组复制的方法，就是它，那个影响性能的罪魁祸首。</p>
+<p>这是调用底层数组复制的方法 System.arraycopy ，就是它，那个影响性能的罪魁祸首。该方法在 2.3 中会有详解。</p>
 <p><strong>注意：</strong> size 的大小和 elementData.length 的大小是不一样的，size 是实际有数据的个数，新 new 一个初始容量为 10 的数组，此时 size 也为 0，只有在执行 add 方法，往 ArrayList 里面塞数据之后，size 才会增加。</p>
 <h3 id="2-3-add-index-e"><a href="#2-3-add-index-e" class="headerlink" title="2.3 add(index,e)"></a>2.3 add(index,e)</h3><p>这个方法是在数组中间添加数据，区别于 add 方法的是需要判断边界，是否发生数组越界。数组复制的逻辑稍有区别，其他的，和 add 方法差不多。具体看代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    rangeCheckForAdd(index);</span><br><span class="line"></span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);  <span class="comment">// Increments modCount!!</span></span><br><span class="line">    System.arraycopy(elementData, index, elementData, index + <span class="number">1</span>,</span><br><span class="line">                     size - index);</span><br><span class="line">    elementData[index] = element;</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -440,7 +441,13 @@
 <p><strong>System.arraycopy详解</strong></p>
 <p>我们看一下 System.arraycopy 方法的 API 。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">arraycopy</span><span class="params">(Object src,  <span class="keyword">int</span>  srcPos,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    Object dest, <span class="keyword">int</span> destPos,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    <span class="keyword">int</span> length)</span></span>;</span><br></pre></td></tr></table></figure>
-<p>src : 原数组  srcPos : 原数组复制起始位置  dest : 目标数据 destPos : 目标数组起始位置 length : 复制的长度。 </p>
+<ul>
+<li>src : 原数组  </li>
+<li>srcPos : 原数组复制起始位置  </li>
+<li>dest : 目标数据 </li>
+<li>destPos : 目标数组起始位置 </li>
+<li>length : 复制的长度。 </li>
+</ul>
 <p>下面举个例子来说明：</p>
 <p>假设有个数组：[“a”,”b”,”c”,”d”] ，现在调用 add(2,”e”) ，我们看下，执行第 5 行代码时效果如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.arraycopy(elementData, index, elementData, index + <span class="number">1</span>,</span><br><span class="line">                 size - index);</span><br></pre></td></tr></table></figure>
@@ -450,10 +457,10 @@
 <h3 id="2-4-remove"><a href="#2-4-remove" class="headerlink" title="2.4 remove"></a>2.4 remove</h3><p>其实 remove 方法和 add(index ,e) 方法比较类似，本质都是改变了数组的结构，导致数组需要移位，移位就调用底层的复制方法 System.arraycopy 。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    rangeCheck(index);</span><br><span class="line"></span><br><span class="line">    modCount++;</span><br><span class="line">    E oldValue = elementData(index);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> numMoved = size - index - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (numMoved &gt; <span class="number">0</span>)</span><br><span class="line">        System.arraycopy(elementData, index+<span class="number">1</span>, elementData, index,</span><br><span class="line">                         numMoved);</span><br><span class="line">    elementData[--size] = <span class="keyword">null</span>; <span class="comment">// clear to let GC do its work</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> oldValue;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>第 2 行代码校验是否是否越界，第 7 8 9 10 行代码是数组复制操作，接着上面 add 的例子往下讲。</p>
-<p>elementData =  [“a”,”b”,“e”,”c”,”d”] ，假设现在 remove(3) ，numMoved = size - index - 1 = 5 - 3 - 1 = 1，</p>
-<p>index + 1 = 4，复制方法实际为 System.arraycopy(elementData, 4, elementData, 3,  1) 。解释一下就是，从 index 为 4 的位置开始复制（即从“d”开始），复制长度为1，目标数组同样是 elementData ，从 index 为 3 的位置（即从“c”开始）。复制后的结果变成了  [“a”,”b”,“e”,”d”,”d”] 。</p>
+<p>elementData =  [“a”,”b”,“e”,”c”,”d”] ，假设现在 remove(3) ，numMoved = size - index - 1 = 5 - 3 - 1 = 1，index + 1 = 4，复制方法实际为 System.arraycopy(elementData, 4, elementData, 3,  1) 。解释一下就是，从 index 为 4 的位置开始复制（即从“d”开始），复制长度为1，目标数组同样是 elementData ，从 index 为 3 的位置（即从“c”开始）。复制后的结果变成了  [“a”,”b”,“e”,”d”,”d”] 。</p>
 <p>然后执行第 11 行代码 ，将最后一个值赋值为 null ，便于gc 回收，数组变成了 [“a”,”b”,“e”,”d”]，size 减 1 之后变成了 4 。</p>
 <h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h2><p>其实 ArrayList 的底层就是在数组的基础上，加了部分特性（比如 modCount）。所以只要搞清楚数组这个基础的数据结构，ArrayList 理解起来很简单。</p>
+<p>至于源码中其他的方法，例如 get 、set 等，就比较简单，不一一赘述了。</p>
 <h2 id="4-相关链接"><a href="#4-相关链接" class="headerlink" title="4. 相关链接"></a>4. 相关链接</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> Object[] elementData;</span><br></pre></td></tr></table></figure>
 <p>如代码所示，ArrayList 中存储数据的数组 elementData 用 transient 关键字修饰，是不被序列化的。</p>
 <p>关于手动序列化可以参见 <a href="https://zhaoxiaofa.com/2019/09/19/transient%E5%85%B3%E9%94%AE%E5%AD%97/" target="_blank" rel="noopener">transient关键字</a> ，<a href="https://zhaoxiaofa.com/2019/09/21/Java%E5%BA%8F%E5%88%97%E5%8C%96%E2%80%94Externalizable/" target="_blank" rel="noopener">Java序列化—Externalizable</a> 。</p>
@@ -476,7 +483,7 @@
   <p><span>本文标题:</span><a href="/2019/09/20/Java集合—ArrayList/">Java集合—ArrayList</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月20日 - 22:09</p> -->
- <!-- <p><span>最后更新:</span>2019年11月28日 - 23:11</p> -->
+ <!-- <p><span>最后更新:</span>2019年12月31日 - 13:12</p> -->
   <p><span>原始链接:</span><a href="/2019/09/20/Java集合—ArrayList/" title="Java集合—ArrayList">https://zhaoxiaofa.github.io/2019/09/20/Java集合—ArrayList/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/20/Java集合—ArrayList/" aria-label="复制成功！"></i></span>
   </p>
@@ -524,8 +531,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/19/transient关键字/" rel="next" title="transient关键字">
-                <i class="fa fa-chevron-left"></i> transient关键字
+              <a href="/2019/09/19/集合中的modCount/" rel="next" title="集合中的modCount">
+                <i class="fa fa-chevron-left"></i> 集合中的modCount
               </a>
             
           </div>
@@ -534,8 +541,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/21/Java序列化—Externalizable/" rel="prev" title="Java序列化—Externalizable">
-                Java序列化—Externalizable <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/21/Java序列化—Serializable/" rel="prev" title="Java序列化—Serializable">
+                Java序列化—Serializable <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -755,7 +762,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共21.5k字</span>
+  <span class="post-count">博客全站共21.7k字</span>
 </div>
         
 
