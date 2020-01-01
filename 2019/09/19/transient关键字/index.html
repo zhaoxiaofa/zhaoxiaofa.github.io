@@ -83,7 +83,7 @@
 <meta name="keywords" content="Java关键字">
 <meta property="og:type" content="article">
 <meta property="og:title" content="transient关键字">
-<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/index.html">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/09/19/transient关键字/index.html">
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="在看集合框架源码的过程中，发现很频繁的用到了 transient 关键字。趁此机会，顺便再复习下。 1. transient 的作用如果我们想把一个对象序列化，在 Java 中，只需要实现 Serializable 接口即可。但是如果不想把对象中的某个属性序列化，就可以使用 transient 修饰该属性。 目前我在实际开发过程中还没遇到过这种情况，网上有博客说当涉及敏感信息（比如密码、银行卡号等">
 <meta property="og:locale" content="zh-Hans">
@@ -120,7 +120,7 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/">
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/09/19/transient关键字/">
 
 
 
@@ -255,7 +255,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/09/19/transient关键字/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -429,7 +429,7 @@
 </ul>
 <h2 id="4-集合框架源码中的使用"><a href="#4-集合框架源码中的使用" class="headerlink" title="4. 集合框架源码中的使用"></a>4. 集合框架源码中的使用</h2><p>以 ArrayList 为例，elementData 和 modCount 都被 transient 修饰。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">transient</span> Object[] elementData;</span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">transient</span> <span class="keyword">int</span> modCount = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>modCount 不序列化可以参考 <a href="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/"><strong>集合中的modCount</strong></a> ，那为什么 elementData 不序列化呢？如果 elementData 不序列化的话，集合中的数据不就丢了吗？那网络传输或者磁盘存储又有什么用呢？我们来看 ArrayList 的一段源码。</p>
+<p>modCount 不序列化可以参考 <a href="https://zhaoxiaofa.github.io/2019/09/19/集合中的modCount/" target="_blank" rel="noopener"><strong>集合中的modCount</strong></a> ，那为什么 elementData 不序列化呢？如果 elementData 不序列化的话，集合中的数据不就丢了吗？那网络传输或者磁盘存储又有什么用呢？我们来看 ArrayList 的一段源码。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Save the state of the &lt;tt&gt;ArrayList&lt;/tt&gt; instance to a stream (that</span></span><br><span class="line"><span class="comment"> * is, serialize it).</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@serialData</span> The length of the array backing the &lt;tt&gt;ArrayList&lt;/tt&gt;</span></span><br><span class="line"><span class="comment"> *             instance is emitted (int), followed by all of its elements</span></span><br><span class="line"><span class="comment"> *             (each an &lt;tt&gt;Object&lt;/tt&gt;) in the proper order.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">writeObject</span><span class="params">(java.io.ObjectOutputStream s)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> java.io.IOException</span>&#123;</span><br><span class="line">    <span class="comment">// Write out element count, and any hidden stuff</span></span><br><span class="line">    <span class="keyword">int</span> expectedModCount = modCount;</span><br><span class="line">    s.defaultWriteObject();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Write out size as capacity for behavioural compatibility with clone()</span></span><br><span class="line">    s.writeInt(size);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Write out all elements in the proper order.</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; i&lt;size; i++) &#123;</span><br><span class="line">        s.writeObject(elementData[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (modCount != expectedModCount) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>先看一下注释：以流的方式保存 ArrayList 实例，就是序列化。</p>
 <p>这个方法其实就是 ArrayList 手动序列化存储数据的。但是好好地实现 Serializable 接口就能自动序列化，为什么要多次一举自己实现呢？仔细看源码，发现手动存储数据时是从 0 到 size 进行遍历的，<strong>size 的值和 elementData 的 length 值是不一样的</strong>。举个例子：</p>
@@ -456,8 +456,8 @@
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月19日 - 21:09</p> -->
  <!-- <p><span>最后更新:</span>2019年09月22日 - 22:09</p> -->
-  <p><span>原始链接:</span><a href="/2019/09/19/transient关键字/" title="transient关键字">https://zhaoxiaofa.github.io/2019/09/19/transient关键字/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/09/19/transient关键字/" aria-label="复制成功！"></i></span>
+  <p><span>原始链接:</span><a href="/2019/09/19/transient关键字/" title="transient关键字">https://zhaoxiaofa.com/2019/09/19/transient关键字/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/09/19/transient关键字/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -501,8 +501,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/15/LeetCode刷题-1两数之和/" rel="next" title="LeetCode刷题-1两数之和">
-                <i class="fa fa-chevron-left"></i> LeetCode刷题-1两数之和
+              <a href="/2019/09/19/集合中的modCount/" rel="next" title="集合中的modCount">
+                <i class="fa fa-chevron-left"></i> 集合中的modCount
               </a>
             
           </div>
@@ -511,8 +511,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/09/19/集合中的modCount/" rel="prev" title="集合中的modCount">
-                集合中的modCount <i class="fa fa-chevron-right"></i>
+              <a href="/2019/09/20/Java集合—ArrayList/" rel="prev" title="Java集合—ArrayList">
+                Java集合—ArrayList <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -694,7 +694,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>

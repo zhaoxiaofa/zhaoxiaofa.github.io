@@ -83,7 +83,7 @@
 <meta name="keywords" content="分布式锁">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于Redis的分布式锁之ReentrantLock">
-<meta property="og:url" content="https://zhaoxiaofa.github.io/2019/08/30/基于Redis的分布式锁之ReentrantLock/index.html">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/index.html">
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
 <meta property="og:locale" content="zh-Hans">
@@ -122,7 +122,7 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.github.io/2019/08/30/基于Redis的分布式锁之ReentrantLock/">
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/">
 
 
 
@@ -257,7 +257,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.github.io/2019/08/30/基于Redis的分布式锁之ReentrantLock/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -545,8 +545,8 @@
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 16:08</p> -->
  <!-- <p><span>最后更新:</span>2019年10月30日 - 17:10</p> -->
-  <p><span>原始链接:</span><a href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/" title="基于Redis的分布式锁之ReentrantLock">https://zhaoxiaofa.github.io/2019/08/30/基于Redis的分布式锁之ReentrantLock/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.github.io/2019/08/30/基于Redis的分布式锁之ReentrantLock/" aria-label="复制成功！"></i></span>
+  <p><span>原始链接:</span><a href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/" title="基于Redis的分布式锁之ReentrantLock">https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -783,7 +783,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
