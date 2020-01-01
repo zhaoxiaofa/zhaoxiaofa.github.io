@@ -556,8 +556,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/21/Java序列化—Externalizable/" rel="next" title="Java序列化—Externalizable">
-                <i class="fa fa-chevron-left"></i> Java序列化—Externalizable
+              <a href="/2019/09/21/Java序列化—Serializable/" rel="next" title="Java序列化—Serializable">
+                <i class="fa fa-chevron-left"></i> Java序列化—Serializable
               </a>
             
           </div>
@@ -936,6 +936,23 @@
 
 
 
+
+  <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+  <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="/js/src/md5.min.js"></script>
+  <div id="gitalk-container"></div>
+  <script type="text/javascript">
+    var gitalk = new Gitalk({
+      clientID: '',
+      clientSecret: '',
+      repo: 'zhaoxiaofa.github.io',
+      owner: 'zhaoxiaofa',
+      admin: ['zhaoxiaofa'],
+      id: md5(location.pathname),
+      distractionFreeMode: 'true'
+    })
+    gitalk.render('gitalk-container')
+  </script>
 
 
   
