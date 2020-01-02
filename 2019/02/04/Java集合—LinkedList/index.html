@@ -83,7 +83,7 @@
 <meta name="keywords" content="LinkedList">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java集合—LinkedList">
-<meta property="og:url" content="https://zhaoxiaofa.com/2019/09/25/Java集合—LinkedList/index.html">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/04/Java集合—LinkedList/index.html">
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理LinkedList 底层是双向链表，对应的是链表这种基本的数据结构。同样，它的大多数特性都来源于链表。 我们看看 LinkedList 类的继承结构： 123public class LinkedList&amp;lt;E&amp;gt;    extends AbstractSequentialList&amp;lt;E&amp;gt;    implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E">
 <meta property="og:locale" content="zh-Hans">
@@ -104,7 +104,7 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/LinkedList/linkedlist_20.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/LinkedList/linkedlist_21.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/LinkedList/linkedlist_22.png">
-<meta property="og:updated_time" content="2019-12-31T08:40:31.386Z">
+<meta property="og:updated_time" content="2020-01-02T03:25:32.026Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—LinkedList">
 <meta name="twitter:description" content="1. 原理LinkedList 底层是双向链表，对应的是链表这种基本的数据结构。同样，它的大多数特性都来源于链表。 我们看看 LinkedList 类的继承结构： 123public class LinkedList&amp;lt;E&amp;gt;    extends AbstractSequentialList&amp;lt;E&amp;gt;    implements List&amp;lt;E&amp;gt;, Deque&amp;lt;E">
@@ -138,7 +138,7 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.com/2019/09/25/Java集合—LinkedList/">
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/04/Java集合—LinkedList/">
 
 
 
@@ -273,7 +273,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/09/25/Java集合—LinkedList/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/04/Java集合—LinkedList/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -302,8 +302,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-25T22:09:56+08:00">
-                2019-09-25
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-04T22:09:56+08:00">
+                2019-02-04
               </time>
             
 
@@ -342,7 +342,7 @@
 
           
           
-             <span id="/2019/09/25/Java集合—LinkedList/" class="leancloud_visitors" data-flag-title="Java集合—LinkedList">
+             <span id="/2019/02/04/Java集合—LinkedList/" class="leancloud_visitors" data-flag-title="Java集合—LinkedList">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -407,7 +407,7 @@
         <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>LinkedList 底层是<strong>双向链表</strong>，对应的是链表这种基本的数据结构。同样，它的大多数特性都来源于链表。</p>
 <p>我们看看 LinkedList 类的继承结构：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedList</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">extends</span> <span class="title">AbstractSequentialList</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt;, <span class="title">Deque</span>&lt;<span class="title">E</span>&gt;, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span></span></span><br></pre></td></tr></table></figure>
-<p>如图所示，LinkedList 实现了 Deque、Cloneable、Serializable。</p>
+<p>如代码所示，LinkedList 实现了 Deque、Cloneable、Serializable。</p>
 <ul>
 <li>Deque：Deque 是 Queue 的子接口，双向队列</li>
 <li>Cloneable：支持克隆</li>
@@ -507,12 +507,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/09/25/Java集合—LinkedList/">Java集合—LinkedList</a></p>
+  <p><span>本文标题:</span><a href="/2019/02/04/Java集合—LinkedList/">Java集合—LinkedList</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
- <!-- <p><span>发布时间:</span>2019年09月25日 - 22:09</p> -->
- <!-- <p><span>最后更新:</span>2019年12月31日 - 16:12</p> -->
-  <p><span>原始链接:</span><a href="/2019/09/25/Java集合—LinkedList/" title="Java集合—LinkedList">https://zhaoxiaofa.com/2019/09/25/Java集合—LinkedList/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/09/25/Java集合—LinkedList/" aria-label="复制成功！"></i></span>
+ <!-- <p><span>发布时间:</span>2019年02月04日 - 22:02</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月02日 - 11:01</p> -->
+  <p><span>原始链接:</span><a href="/2019/02/04/Java集合—LinkedList/" title="Java集合—LinkedList">https://zhaoxiaofa.com/2019/02/04/Java集合—LinkedList/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/04/Java集合—LinkedList/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -556,8 +556,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/09/21/Java序列化—Externalizable/" rel="next" title="Java序列化—Externalizable">
-                <i class="fa fa-chevron-left"></i> Java序列化—Externalizable
+              <a href="/2019/02/03/Java集合—ArrayList/" rel="next" title="Java集合—ArrayList">
+                <i class="fa fa-chevron-left"></i> Java集合—ArrayList
               </a>
             
           </div>
@@ -566,8 +566,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/10/02/CAP定理/" rel="prev" title="CAP定理">
-                CAP定理 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/05/Java集合—HashMap之hash优化算法/" rel="prev" title="Java集合—HashMap之hash优化算法">
+                Java集合—HashMap之hash优化算法 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -674,7 +674,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -696,7 +696,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -787,7 +787,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共23.6k字</span>
+  <span class="post-count">博客全站共26.9k字</span>
 </div>
         
 
