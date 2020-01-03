@@ -1304,7 +1304,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  400
+                  1.8k
                 </span>
               
 
@@ -1320,7 +1320,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  1
+                  7
                 </span>
               
             </div>
@@ -1343,10 +1343,8 @@
       
         
           
-          1. 原理基于 ZooKeeper 的临时顺序节点。
-2. 加锁3. Curator实现使用 Curator 客户端实现，不用自己手撸代码。
-学习第一步，官网探个路。建议看这篇文章的时候打开 Curator 的官网。
-注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异
+          1. 原理底层是基于 ZooKeeper 的临时顺序节点。
+ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -2333,7 +2331,7 @@ value
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共26.9k字</span>
+  <span class="post-count">博客全站共28.3k字</span>
 </div>
         
 
