@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_13.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_14.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png">
-<meta property="og:updated_time" content="2020-01-05T14:40:29.665Z">
+<meta property="og:updated_time" content="2020-01-05T14:44:17.350Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
 <meta name="twitter:description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
@@ -443,7 +443,7 @@
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png" alt></p>
 <p>如上图所示，有一个子节点，后面几位全是 0 ，我推测下一个子节点后几位应该是 00000000001 。上面这个截图是我在解锁之前截的，如果过了 30 秒，这个临时节点就会被删除了。</p>
 <p>在我们实际的使用过程中，会结合 Spring 去注册 CuratorFramework 的 bean ，之后的用法就是如 9 ~ 15 代码所示。实际的业务代码放在 try 里面就行，最后 finally 里面记得一定要释放锁即可。讲到这里，ZooKeeper 做分布式锁的原理和用户就大多讲完了。</p>
-<p>下一篇，我们讲 ZooKeeper 分布式锁源码。</p>
+<p>下一篇，我们讲 ZooKeeper 分布式锁源码，<a href="https://zhaoxiaofa.com/2019/08/30/Curator%E5%AE%9E%E7%8E%B0ZooKeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%BA%90%E7%A0%81/#more">Curator实现ZooKeeper分布式锁源码</a> 。</p>
 
       
     </div>
@@ -649,7 +649,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-count">16</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
