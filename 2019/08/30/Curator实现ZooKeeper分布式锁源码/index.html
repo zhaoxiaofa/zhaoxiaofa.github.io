@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="「分布式锁,ZooKeeper」,">
+  <meta name="keywords" content="分布式锁,ZooKeeper,Curator,">
 
 
 
@@ -79,18 +79,18 @@
 
 
 
-<meta name="description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。">
-<meta name="keywords" content="「分布式锁,ZooKeeper」">
+<meta name="description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。 再贴上我们的实现代码： 123456789101112131415161718public class CuratorTest &amp;#123;    public static void main(String[] args) throws Except">
+<meta name="keywords" content="分布式锁,ZooKeeper,Curator">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Curator实现ZooKeeper分布式锁源码">
 <meta property="og:url" content="https://zhaoxiaofa.com/2019/08/30/Curator实现ZooKeeper分布式锁源码/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。">
+<meta property="og:description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。 再贴上我们的实现代码： 123456789101112131415161718public class CuratorTest &amp;#123;    public static void main(String[] args) throws Except">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-05T14:45:28.012Z">
+<meta property="og:updated_time" content="2020-01-05T15:11:03.903Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Curator实现ZooKeeper分布式锁源码">
-<meta name="twitter:description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。">
+<meta name="twitter:description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。 再贴上我们的实现代码： 123456789101112131415161718public class CuratorTest &amp;#123;    public static void main(String[] args) throws Except">
 
 
 
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  45
+                  233
                 </span>
               
 
@@ -387,6 +387,13 @@
 
       
         <h2 id="3-Curator源码"><a href="#3-Curator源码" class="headerlink" title="3. Curator源码"></a>3. Curator源码</h2><p>上一篇文章，<a href="https://zhaoxiaofa.com/2019/08/30/%E5%9F%BA%E4%BA%8EZooKeeper%E7%9A%84%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81/#more">基于ZooKeeper的分布式锁</a> 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。</p>
+<p>再贴上我们的实现代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CuratorTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);</span><br><span class="line">        CuratorFramework client = CuratorFrameworkFactory.newClient(</span><br><span class="line">                <span class="string">"127.0.0.1:2181"</span>,</span><br><span class="line">                retryPolicy);</span><br><span class="line">        client.start();</span><br><span class="line"></span><br><span class="line">        InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(client, <span class="string">"/distribute_lock/product01_lock"</span>);</span><br><span class="line">        lock.acquire();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 执行业务逻辑,这里停30秒，为了看效果</span></span><br><span class="line">            Thread.sleep(<span class="number">30000L</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.release();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先从第 9 行代码说起，InterProcessMutex 是什么呢？为什么我们选择它来加锁和解锁呢？</p>
+<p>来，上源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * A re-entrant mutex that works across JVMs. Uses Zookeeper to hold the lock. All processes in all JVMs that</span></span><br><span class="line"><span class="comment"> * use the same lock path will achieve an inter-process critical section. Further, this mutex is</span></span><br><span class="line"><span class="comment"> * "fair" - each user will get the mutex in the order requested (from ZK's point of view)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterProcessMutex</span> <span class="keyword">implements</span> <span class="title">InterProcessLock</span>, <span class="title">Revocable</span>&lt;<span class="title">InterProcessMutex</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>翻译一下 InterProcessMutex 的注释：</p>
+<p>TODO ，待续。。。</p>
 
       
     </div>
@@ -406,7 +413,7 @@
   <p><span>本文标题:</span><a href="/2019/08/30/Curator实现ZooKeeper分布式锁源码/">Curator实现ZooKeeper分布式锁源码</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 23:08</p> -->
- <!-- <p><span>最后更新:</span>2020年01月05日 - 22:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月05日 - 23:01</p> -->
   <p><span>原始链接:</span><a href="/2019/08/30/Curator实现ZooKeeper分布式锁源码/" title="Curator实现ZooKeeper分布式锁源码">https://zhaoxiaofa.com/2019/08/30/Curator实现ZooKeeper分布式锁源码/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/08/30/Curator实现ZooKeeper分布式锁源码/" aria-label="复制成功！"></i></span>
   </p>
@@ -439,7 +446,11 @@
       
         <div class="post-tags">
           
-            <a href="/tags/「分布式锁-ZooKeeper」/" rel="tag"># 「分布式锁,ZooKeeper」</a>
+            <a href="/tags/分布式锁/" rel="tag"># 分布式锁</a>
+          
+            <a href="/tags/ZooKeeper/" rel="tag"># ZooKeeper</a>
+          
+            <a href="/tags/Curator/" rel="tag"># Curator</a>
           
         </div>
       
@@ -592,7 +603,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -683,7 +694,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共28.6k字</span>
+  <span class="post-count">博客全站共28.8k字</span>
 </div>
         
 

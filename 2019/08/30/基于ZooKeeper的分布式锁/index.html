@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="分布式锁,">
+  <meta name="keywords" content="分布式锁,ZooKeeper,Curator,">
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
-<meta name="keywords" content="分布式锁">
+<meta name="keywords" content="分布式锁,ZooKeeper,Curator">
 <meta property="og:type" content="article">
 <meta property="og:title" content="基于ZooKeeper的分布式锁">
 <meta property="og:url" content="https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/index.html">
@@ -92,7 +92,7 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_13.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_14.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png">
-<meta property="og:updated_time" content="2020-01-05T14:44:17.350Z">
+<meta property="og:updated_time" content="2020-01-05T14:47:52.143Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
 <meta name="twitter:description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
@@ -498,6 +498,10 @@
           
             <a href="/tags/分布式锁/" rel="tag"># 分布式锁</a>
           
+            <a href="/tags/ZooKeeper/" rel="tag"># ZooKeeper</a>
+          
+            <a href="/tags/Curator/" rel="tag"># Curator</a>
+          
         </div>
       
 
@@ -649,7 +653,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -740,7 +744,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共28.6k字</span>
+  <span class="post-count">博客全站共28.8k字</span>
 </div>
         
 
