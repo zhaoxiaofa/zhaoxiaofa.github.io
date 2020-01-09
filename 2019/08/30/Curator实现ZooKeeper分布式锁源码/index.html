@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。 再贴上我们的实现代码： 123456789101112131415161718public class CuratorTest &amp;#123;    public static void main(String[] args) throws Except">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-05T15:11:03.903Z">
+<meta property="og:updated_time" content="2020-01-07T15:57:44.196Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Curator实现ZooKeeper分布式锁源码">
 <meta name="twitter:description" content="3. Curator源码上一篇文章，基于ZooKeeper的分布式锁 已经讲了原理和使用了。接下来我们来看看 Curator 实现分布式锁的源码。 再贴上我们的实现代码： 123456789101112131415161718public class CuratorTest &amp;#123;    public static void main(String[] args) throws Except">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  233
+                  432
                 </span>
               
 
@@ -393,7 +393,11 @@
 <p>来，上源码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * A re-entrant mutex that works across JVMs. Uses Zookeeper to hold the lock. All processes in all JVMs that</span></span><br><span class="line"><span class="comment"> * use the same lock path will achieve an inter-process critical section. Further, this mutex is</span></span><br><span class="line"><span class="comment"> * "fair" - each user will get the mutex in the order requested (from ZK's point of view)</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterProcessMutex</span> <span class="keyword">implements</span> <span class="title">InterProcessLock</span>, <span class="title">Revocable</span>&lt;<span class="title">InterProcessMutex</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>翻译一下 InterProcessMutex 的注释：</p>
-<p>TODO ，待续。。。</p>
+<p>在 JVM 的运行过程中，是可重入的，并且是互斥的。通过 Zookeeper 获得这把锁，在使用的 JVM 进程中，只要是用的同一个锁路径的线程，都会获取到进程间的临界区资源。更进一步地说，这个互斥锁是公平的，每一个线程都会根据请求的顺序最终获取锁。</p>
+<p><strong>总结一下很简单，这是个可重入互斥锁，并且是公平锁。</strong>有点多线程基础的同学应该知道公平锁是什么意思。</p>
+<blockquote>
+<p>23:56:52.011 [main-SendThread(127.0.0.1:2181)] DEBUG org.apache.zookeeper.ClientCnxn - Reading reply sessionid:0x100b887615d0028, packet:: clientPath:null serverPath:null finished:false header:: 11,1  replyHeader:: 11,207,0  request:: ‘/distribute_lock/product01_lock/_c_84fb3903-14c4-40fe-ac80-322820dfec37-lock-,#3139322e3136382e3130312e3231,v{s{31,s{‘world,’anyone}}},3  response:: ‘/distribute_lock/product01_lock/_c_84fb3903-14c4-40fe-ac80-322820dfec37-lock-0000000000 </p>
+</blockquote>
 
       
     </div>
@@ -413,7 +417,7 @@
   <p><span>本文标题:</span><a href="/2019/08/30/Curator实现ZooKeeper分布式锁源码/">Curator实现ZooKeeper分布式锁源码</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 23:08</p> -->
- <!-- <p><span>最后更新:</span>2020年01月05日 - 23:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月07日 - 23:01</p> -->
   <p><span>原始链接:</span><a href="/2019/08/30/Curator实现ZooKeeper分布式锁源码/" title="Curator实现ZooKeeper分布式锁源码">https://zhaoxiaofa.com/2019/08/30/Curator实现ZooKeeper分布式锁源码/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/08/30/Curator实现ZooKeeper分布式锁源码/" aria-label="复制成功！"></i></span>
   </p>
@@ -581,7 +585,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -603,7 +607,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -694,7 +698,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共28.8k字</span>
+  <span class="post-count">博客全站共30.5k字</span>
 </div>
         
 
