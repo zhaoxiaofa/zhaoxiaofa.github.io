@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Java集合,">
+  <meta name="keywords" content="HashMap,Java集合,">
 
 
 
@@ -79,18 +79,22 @@
 
 
 
-<meta name="description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0; 可以发现，均使用了 transient 关键字来修饰 modCount。那">
-<meta name="keywords" content="Java集合">
+<meta name="description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
+<meta name="keywords" content="HashMap,Java集合">
 <meta property="og:type" content="article">
-<meta property="og:title" content="集合中的modCount">
-<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/02/集合中的modCount/index.html">
+<meta property="og:title" content="Java集合—HashMap之梳理put方法逻辑">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0; 可以发现，均使用了 transient 关键字来修饰 modCount。那">
+<meta property="og:description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-02T02:58:05.711Z">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png">
+<meta property="og:updated_time" content="2020-01-10T09:03:12.145Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="集合中的modCount">
-<meta name="twitter:description" content="1.  modCount 在各集合中的使用12345678// ArrayListprotected transient int modCount = 0;// HashMaptransient int modCount;// LinkedListprotected transient int modCount = 0; 可以发现，均使用了 transient 关键字来修饰 modCount。那">
+<meta name="twitter:title" content="Java集合—HashMap之梳理put方法逻辑">
+<meta name="twitter:description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
 
 
 
@@ -120,13 +124,13 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/02/集合中的modCount/">
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/">
 
 
 
 
 
-  <title>集合中的modCount | 赵小发</title>
+  <title>Java集合—HashMap之梳理put方法逻辑 | 赵小发</title>
   
 
 
@@ -255,7 +259,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/02/集合中的modCount/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -272,7 +276,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">集合中的modCount</h1>
+          <h1 class="post-title" itemprop="name headline">Java集合—HashMap之梳理put方法逻辑</h1>
         
 
         <div class="post-meta">
@@ -284,8 +288,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-02T21:09:56+08:00">
-                2019-02-02
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-06T00:09:56+08:00">
+                2019-02-06
               </time>
             
 
@@ -324,7 +328,7 @@
 
           
           
-             <span id="/2019/02/02/集合中的modCount/" class="leancloud_visitors" data-flag-title="集合中的modCount">
+             <span id="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" class="leancloud_visitors" data-flag-title="Java集合—HashMap之梳理put方法逻辑">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -349,7 +353,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  859
+                  1.3k
                 </span>
               
 
@@ -365,7 +369,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  5
                 </span>
               
             </div>
@@ -386,25 +390,34 @@
       
 
       
-        <h2 id="1-modCount-在各集合中的使用"><a href="#1-modCount-在各集合中的使用" class="headerlink" title="1.  modCount 在各集合中的使用"></a>1.  modCount 在各集合中的使用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ArrayList</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">transient</span> <span class="keyword">int</span> modCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> modCount;</span><br><span class="line"></span><br><span class="line"><span class="comment">// LinkedList</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">transient</span> <span class="keyword">int</span> modCount = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<p>可以发现，均使用了 transient 关键字来修饰 modCount。那 modCount 的作用是什么呢？我们来看源码的注释（以 ArrayList 为例）。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">* The number of times this list has been &lt;i&gt;structurally modified&lt;/i&gt;.</span><br><span class="line">* Structural modifications are those that change the size of the</span><br><span class="line">* list, or otherwise perturb it in such a fashion that iterations in</span><br><span class="line">* progress may yield incorrect results.</span><br></pre></td></tr></table></figure>
-<p>翻译一下就是：</p>
-<p>记录 list 集合结构被修改的次数，结构修改指的是 list 的 size 值发生变化，或者以其他形式扰乱 size 值，导致在迭代过程中出现错误结果。</p>
-<h2 id="2-why-modCount"><a href="#2-why-modCount" class="headerlink" title="2. why modCount ?"></a>2. why modCount ?</h2><p>为什么要记录 size 值的修改次数呢？即使记录了，也没有向外提供查询的方法，而且定义为 protected 。很明显 modCount 是自身进行操作时所用的。JDK 的作者并没有打算暴露给开发者使用。</p>
-<p>我们知道，ArrayList 是线程不安全的，可能会有线程 A 读取数据的同时线程 B 正在修改数据。对于这种情况，ArrayList 是怎么处理的呢？</p>
-<p>下面看源码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> E&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> expectedModCount = modCount;</span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">    <span class="keyword">final</span> E[] elementData = (E[]) <span class="keyword">this</span>.elementData;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> size = <span class="keyword">this</span>.size;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; modCount == expectedModCount &amp;&amp; i &lt; size; i++) &#123;</span><br><span class="line">        action.accept(elementData[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (modCount != expectedModCount) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>为什么先把 modCount 的值赋值给 expectedModCount ，然后循环结束之后又判断 二者是否相等呢？expectedModCount 是方法内变量，在该方法执行过程中肯定不会变，但是 modCount 是类的变量，如果在循环时，有其他线程操作 List ，进而修改了 modCount 的值，就有可能导致 modCount != expectedModCount 。</p>
-<p>写个单元测试来试验下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="comment">// 定义一个 ArrayList</span></span><br><span class="line">    List&lt;Integer&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        list.add(i);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  	<span class="comment">// 使用多线程去操作 list</span></span><br><span class="line">  	<span class="comment">// 该线程遍历</span></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          	<span class="comment">// 这里调用的就是上面的 forEach(Consumer&lt;? super E&gt; action) </span></span><br><span class="line">            list.forEach(e -&gt; &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span>);</span><br><span class="line">                    System.out.println(e);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException ex) &#123;</span><br><span class="line">                    ex.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">		</span><br><span class="line">  	<span class="comment">// 该线程在上一个线程遍历的时候，给 list 添加数据</span></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">                list.add(<span class="number">100</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">		</span><br><span class="line">  	<span class="comment">// 主线程阻塞</span></span><br><span class="line">    System.in.read();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>执行结果：</p>
-<blockquote>
-<p>0<br>1<br>2<br>Exception in thread “Thread-0” java.util.ConcurrentModificationException<br>    at java.util.ArrayList.forEach(ArrayList.java:1260)<br>    at com.hema.carloan.ModCountTest$1.run(ModCountTest.java:27)<br>    at java.lang.Thread.run(Thread.java:748)</p>
-</blockquote>
-<p>如执行结果所示，抛出的异常正是 forEach(Consumer&lt;? super E&gt; action)  源码中当 modCount != expectedModCount 时抛出的。这是线程不安全集合的 fail-fast 机制。</p>
-<p><strong>线程不安全的集合类中都有 modCount ，比如 ArrayList、HashMap，而线程安全的集合类中没有 modCount，比如 CopyOnWriteArrayList、ConcurrentHashMap。</strong></p>
-<h2 id="3-why-transient"><a href="#3-why-transient" class="headerlink" title="3. why transient ?"></a>3. why transient ?</h2><p>现在我们已经知道，modCount 是在同一个 JVM 进程内用来判断是否有多线程操作集合数据。而序列化的过程往往不是同一个进程内的事情，比如 rpc 远程调用，是两个进程之间的访问，又或者是数据写入磁盘后由其他进程从磁盘中读取数据。modCount 不在乎初始值是多少，只在乎多线程访问时能否记录下来。所有是不需要进行序列化的。</p>
+        <p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/05/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8Bhash%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95/#more">Java集合—HashMap之hash优化算法</a> 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。</p>
+<h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><h3 id="2-3-梳理put方法逻辑"><a href="#2-3-梳理put方法逻辑" class="headerlink" title="2.3 梳理put方法逻辑"></a>2.3 梳理put方法逻辑</h3><p>我们先贴出来 put 方法的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最核心的还是调用了 putVal 方法。其中 onlyIfAbsent 表示是否替换相同 key 的旧 value 值，默认都是替换。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在详细分析源码之前，我们先画一张图。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg" alt></p>
+<p>这张图中画出了大致的流程图，涉及到树结构的没有详细画出来，后面会专门写一篇文章处理的。结合这张图，我们再来看看代码。建议看这篇文章的时候打开 idea, 跟着我一起看 HashMap 的 put 方法的源码。</p>
+<p>第 4 行代码，判断 table 是否为空，为空的话进行初始化扩容。 resize 方法后面详解。</p>
+<p>第 6 行代码，根据传入的 key 算出对应的数组位置的 Node，即 p （p 这个 Node 在后面用处比较大）。如果为空，新建一个 Node 放在该位置，然后代码就执行到 37 行，判断是否需要扩容，直接返回。</p>
+<p>如果进入到第 8 行代码，八成就说明出现 hash 冲突了，会生成链表或者红黑树了。第 10 行代码，p 的 hash 就是当前存储值的 hash，如果 p 的 hash 和 传入的 hash 进行比较，如果相等，再比较 key 值。</p>
+<p><strong>小插曲：</strong>思考一个问题，如果 p 的 hash 和 传入 的 hash 相等，一定能证明是同一个 key 吗？</p>
+<p>答案是不一定，看过上一篇文章的同学应该知道，这个 hash 是 (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16) 算出来的。hash 相等并不意味着 key 相同。</p>
+<p>我们回到 key 值的比较，第 11 行代码，如果 key 值相等，把 p 赋值给 e，然后直接跳到第 29 行代码，很明显 e 不为空，接着执行，将旧的值赋值给 oldValue ，判断 onlyIfAbsent ，这个我们之前说过，我们默认的是覆盖旧值，所以执行第 32 行代码，用新的值覆盖旧值。</p>
+<p>如果不是同一个 key ，进入第 13 行代码，判断是否为树结构，之后执行树结构的相关逻辑，后面我们单独来讲。</p>
+<p>如果既不是同一个 key ，也不是树结构，说明就是链表结构了，此时就会进入 15 行代码的分支。首先进入一个死循环，这个死循环依赖于 break 进行退出。这个循环的逻辑就是对链表进行遍历，binCount 依次增加。</p>
+<p>数组转链表的分析是这篇文章的一个重点，所以下面我们边看源码边画图。来上图：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png" alt></p>
+<p>第 17 行代码，判断 p 的下一个节点是否为空，并把 p.next 赋值给 e 。</p>
+<p>我们假设是 tab[i] 第一次 hash 冲突，那么此时肯定是空，如图 A 所示。然后我们以传入的 key、value、hash 新建一个 Node ，此时就会如图 B 所示。然后第 19 行代码判断是否需要转化为树结构，这里我们跳过，后面细讲。因为是第一次 hash 冲突，此时不会树化，然后执行第 21 行代码，退出循环。</p>
+<p>我们假设  tab[i] 进入第二次 hash 冲突，进入到第 17 行代码，此时 p.next 就不为空了，就会进入到第 23 行代码的判断，我们假设不是同一个 key ，这个时候执行第 26 行代码，p 指针指向 e ，如图 C 所示。</p>
+<p>我们假设  tab[i] 进入第三次 hash 冲突，进入到第 17 行代码，我们看看图 C ，这个时候，p.next 又为空了，这个时候就和第一次 hash 冲突类似了。来，上图：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png" alt></p>
+<p>第 17 行执行完毕如图 D，18 行执行完如图 E 。</p>
+<p>然后第四次 hash 冲突，执行完之后如图 F 。周而复始，链表的长度不断增长。</p>
+<p>第 29 ~ 34 行代码处理返回的旧值，就不用深究了。</p>
+<p>第 37 ~ 41 行代码处理扩容，后面我们会单独讲。</p>
+<p>这一篇文章已经大致将 put 方法的流程讲完了，剩余的链表转树结构，扩容方法后面单独讲。</p>
 
       
     </div>
@@ -421,12 +434,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/02/02/集合中的modCount/">集合中的modCount</a></p>
+  <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/">Java集合—HashMap之梳理put方法逻辑</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
- <!-- <p><span>发布时间:</span>2019年02月02日 - 21:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月02日 - 10:01</p> -->
-  <p><span>原始链接:</span><a href="/2019/02/02/集合中的modCount/" title="集合中的modCount">https://zhaoxiaofa.com/2019/02/02/集合中的modCount/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/02/集合中的modCount/" aria-label="复制成功！"></i></span>
+ <!-- <p><span>发布时间:</span>2019年02月06日 - 00:02</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月10日 - 17:01</p> -->
+  <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" title="Java集合—HashMap之梳理put方法逻辑">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -457,6 +470,8 @@
       
         <div class="post-tags">
           
+            <a href="/tags/HashMap/" rel="tag"># HashMap</a>
+          
             <a href="/tags/Java集合/" rel="tag"># Java集合</a>
           
         </div>
@@ -470,8 +485,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/01/08/Java-SPI/" rel="next" title="Java SPI">
-                <i class="fa fa-chevron-left"></i> Java SPI
+              <a href="/2019/02/05/Java集合—HashMap之hash优化算法/" rel="next" title="Java集合—HashMap之hash优化算法">
+                <i class="fa fa-chevron-left"></i> Java集合—HashMap之hash优化算法
               </a>
             
           </div>
@@ -480,8 +495,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/02/03/Java集合—ArrayList/" rel="prev" title="Java集合—ArrayList">
-                Java集合—ArrayList <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/15/读写锁分离/" rel="prev" title="读写锁">
+                读写锁 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -643,7 +658,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-modCount-在各集合中的使用"><span class="nav-number">1.</span> <span class="nav-text">1.  modCount 在各集合中的使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-why-modCount"><span class="nav-number">2.</span> <span class="nav-text">2. why modCount ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-why-transient"><span class="nav-number">3.</span> <span class="nav-text">3. why transient ?</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-源码解析"><span class="nav-number">1.</span> <span class="nav-text">2. 源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-梳理put方法逻辑"><span class="nav-number">1.1.</span> <span class="nav-text">2.3 梳理put方法逻辑</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -975,6 +990,26 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
