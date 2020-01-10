@@ -90,7 +90,7 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png">
-<meta property="og:updated_time" content="2020-01-10T09:03:12.145Z">
+<meta property="og:updated_time" content="2020-01-10T10:30:31.676Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之梳理put方法逻辑">
 <meta name="twitter:description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
@@ -353,7 +353,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.3k
+                  1.4k
                 </span>
               
 
@@ -399,13 +399,13 @@
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg" alt></p>
 <p>这张图中画出了大致的流程图，涉及到树结构的没有详细画出来，后面会专门写一篇文章处理的。结合这张图，我们再来看看代码。建议看这篇文章的时候打开 idea, 跟着我一起看 HashMap 的 put 方法的源码。</p>
 <p>第 4 行代码，判断 table 是否为空，为空的话进行初始化扩容。 resize 方法后面详解。</p>
-<p>第 6 行代码，根据传入的 key 算出对应的数组位置的 Node，即 p （p 这个 Node 在后面用处比较大）。如果为空，新建一个 Node 放在该位置，然后代码就执行到 37 行，判断是否需要扩容，直接返回。</p>
-<p>如果进入到第 8 行代码，八成就说明出现 hash 冲突了，会生成链表或者红黑树了。第 10 行代码，p 的 hash 就是当前存储值的 hash，如果 p 的 hash 和 传入的 hash 进行比较，如果相等，再比较 key 值。</p>
+<p>第 6 行代码，根据传入的 key 算出对应的数组位置的 Node，即 p （p 这个 Node 在后面用处比较大）。如果为空，新建一个 Node 放在该位置，然后代码就执行到 37 行，判断是否需要扩容，直接返回。这一块代表的就是没有出现 hash 冲突，新增的元素直接放在一个空的数组位置上。</p>
+<p>如果进入到第 8 行代码，八成就说明出现 hash 冲突了，会生成链表或者红黑树了。第 10 行代码，p 的 hash 就是当前存储值的 hash，比较 p 的 hash 和 传入的 hash ，如果相等，再比较 key 值。</p>
 <p><strong>小插曲：</strong>思考一个问题，如果 p 的 hash 和 传入 的 hash 相等，一定能证明是同一个 key 吗？</p>
-<p>答案是不一定，看过上一篇文章的同学应该知道，这个 hash 是 (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16) 算出来的。hash 相等并不意味着 key 相同。</p>
-<p>我们回到 key 值的比较，第 11 行代码，如果 key 值相等，把 p 赋值给 e，然后直接跳到第 29 行代码，很明显 e 不为空，接着执行，将旧的值赋值给 oldValue ，判断 onlyIfAbsent ，这个我们之前说过，我们默认的是覆盖旧值，所以执行第 32 行代码，用新的值覆盖旧值。</p>
+<p>答案是不一定，看过上一篇文章的同学应该知道，这个 hash 是 (h = key.hashCode()) ^ (h &gt;&gt;&gt; 16) 算出来的。hash 相等并不意味着 key 相同。所以这里判断了 hash 相等之后依旧要判断 key 是否相等。</p>
+<p>我们回到 key 值的比较，第 11 行代码，如果 key 值相等，把 p 赋值给 e，然后直接跳到第 29 行代码，很明显 e 不为空，接着执行，将旧的值赋值给 oldValue ，判断 onlyIfAbsent ，这个我们之前说过，我们默认的是覆盖旧值，所以执行第 32 行代码，用新的值覆盖旧值。这一块代码代表的是传入的 key 和之前数组某个位置的 key 相同。</p>
 <p>如果不是同一个 key ，进入第 13 行代码，判断是否为树结构，之后执行树结构的相关逻辑，后面我们单独来讲。</p>
-<p>如果既不是同一个 key ，也不是树结构，说明就是链表结构了，此时就会进入 15 行代码的分支。首先进入一个死循环，这个死循环依赖于 break 进行退出。这个循环的逻辑就是对链表进行遍历，binCount 依次增加。</p>
+<p>如果既不是同一个 key ，也不是树结构，说明就是链表结构了，此时就会进入 15 行代码的分支。首先进入一个死循环，这个死循环依赖于 break 进行退出。<strong>这个循环的逻辑就是对链表进行遍历</strong>，binCount 依次增加。</p>
 <p>数组转链表的分析是这篇文章的一个重点，所以下面我们边看源码边画图。来上图：</p>
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png" alt></p>
 <p>第 17 行代码，判断 p 的下一个节点是否为空，并把 p.next 赋值给 e 。</p>
@@ -414,7 +414,7 @@
 <p>我们假设  tab[i] 进入第三次 hash 冲突，进入到第 17 行代码，我们看看图 C ，这个时候，p.next 又为空了，这个时候就和第一次 hash 冲突类似了。来，上图：</p>
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png" alt></p>
 <p>第 17 行执行完毕如图 D，18 行执行完如图 E 。</p>
-<p>然后第四次 hash 冲突，执行完之后如图 F 。周而复始，链表的长度不断增长。</p>
+<p>然后第四次 hash 冲突，这次执行逻辑和第二次 hash 冲突的逻辑一样，执行完之后如图 F 。如此这样周而复始的执行，链表的长度不断增长。</p>
 <p>第 29 ~ 34 行代码处理返回的旧值，就不用深究了。</p>
 <p>第 37 ~ 41 行代码处理扩容，后面我们会单独讲。</p>
 <p>这一篇文章已经大致将 put 方法的流程讲完了，剩余的链表转树结构，扩容方法后面单独讲。</p>
@@ -437,7 +437,7 @@
   <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/">Java集合—HashMap之梳理put方法逻辑</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月06日 - 00:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月10日 - 17:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月10日 - 18:01</p> -->
   <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" title="Java集合—HashMap之梳理put方法逻辑">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" aria-label="复制成功！"></i></span>
   </p>
@@ -716,7 +716,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共31.9k字</span>
+  <span class="post-count">博客全站共32k字</span>
 </div>
         
 
