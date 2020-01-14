@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="在看集合框架源码的过程中，发现很频繁的用到了 transient 关键字。趁此机会，顺便再复习下。 1. transient 的作用如果我们想把一个对象序列化，在 Java 中，只需要实现 Serializable 接口即可。但是如果不想把对象中的某个属性序列化，就可以使用 transient 修饰该属性。 目前我在实际开发过程中还没遇到过这种情况，网上有博客说当涉及敏感信息（比如密码、银行卡号等">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-02T02:55:58.789Z">
+<meta property="og:updated_time" content="2020-01-14T10:01:26.277Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="transient关键字">
 <meta name="twitter:description" content="在看集合框架源码的过程中，发现很频繁的用到了 transient 关键字。趁此机会，顺便再复习下。 1. transient 的作用如果我们想把一个对象序列化，在 Java 中，只需要实现 Serializable 接口即可。但是如果不想把对象中的某个属性序列化，就可以使用 transient 修饰该属性。 目前我在实际开发过程中还没遇到过这种情况，网上有博客说当涉及敏感信息（比如密码、银行卡号等">
@@ -349,7 +349,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.6k
+                  1.7k
                 </span>
               
 
@@ -365,7 +365,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  6
+                  7
                 </span>
               
             </div>
@@ -435,6 +435,7 @@
 <p>这个方法其实就是 ArrayList 手动序列化存储数据的。但是好好地实现 Serializable 接口就能自动序列化，为什么要多次一举自己实现呢？仔细看源码，发现手动存储数据时是从 0 到 size 进行遍历的，<strong>size 的值和 elementData 的 length 值是不一样的</strong>。举个例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">list.add(<span class="string">"test"</span>);</span><br></pre></td></tr></table></figure>
 <p>如上述代码所示，此时 elementData 的 length 值是容量是 10，而 size 的值为 1（不清楚的同学可以看看 ArrayList 的构造函数和 add 方法）。如果用 transient 修饰 elementData ，那么默认序列化时需要转化为流的大小就比手动序列化大不少。这里也体现了 JDK 源码对性能的追求。</p>
+<p>还有一个更重要的点：以 HashMap 为例，计算一个 key 最后放在数组位置的第一步就是使用 Object 类的 hashCode 方法，而这个方法是 native 方法，不同的 JVM 算出来的 hashCode 可能不一样，这样 HashMap 在反序列化时结构就发生了变化。</p>
 <p><strong>彩蛋：</strong>本文所讲的序列化基于 Serializable，如果是 Externalizable 呢？留到下一篇文章再讲。</p>
 
       
@@ -455,7 +456,7 @@
   <p><span>本文标题:</span><a href="/2019/01/03/transient关键字/">transient关键字</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年01月03日 - 21:01</p> -->
- <!-- <p><span>最后更新:</span>2020年01月02日 - 10:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月14日 - 18:01</p> -->
   <p><span>原始链接:</span><a href="/2019/01/03/transient关键字/" title="transient关键字">https://zhaoxiaofa.com/2019/01/03/transient关键字/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/01/03/transient关键字/" aria-label="复制成功！"></i></span>
   </p>
@@ -728,7 +729,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共32k字</span>
+  <span class="post-count">博客全站共32.1k字</span>
 </div>
         
 
