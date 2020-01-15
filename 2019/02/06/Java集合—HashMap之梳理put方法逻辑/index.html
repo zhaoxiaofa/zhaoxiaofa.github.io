@@ -79,21 +79,21 @@
 
 
 
-<meta name="description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
+<meta name="description" content="2. 源码解析上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
 <meta name="keywords" content="HashMap,Java集合">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java集合—HashMap之梳理put方法逻辑">
 <meta property="og:url" content="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
+<meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png">
-<meta property="og:updated_time" content="2020-01-14T12:55:20.705Z">
+<meta property="og:updated_time" content="2020-01-15T15:22:35.945Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之梳理put方法逻辑">
-<meta name="twitter:description" content="上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2. 源码解析2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
+<meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
 <meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
 
 
@@ -390,8 +390,8 @@
       
 
       
-        <p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/05/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8Bhash%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95/#more">Java集合—HashMap之hash优化算法</a> 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。</p>
-<h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><h3 id="2-3-梳理put方法逻辑"><a href="#2-3-梳理put方法逻辑" class="headerlink" title="2.3 梳理put方法逻辑"></a>2.3 梳理put方法逻辑</h3><p>我们先贴出来 put 方法的代码：</p>
+        <h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/05/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8Bhash%E4%BC%98%E5%8C%96%E7%AE%97%E6%B3%95/#more">Java集合—HashMap之hash优化算法</a> 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。</p>
+<h3 id="2-3-梳理put方法逻辑"><a href="#2-3-梳理put方法逻辑" class="headerlink" title="2.3 梳理put方法逻辑"></a>2.3 梳理put方法逻辑</h3><p>我们先贴出来 put 方法的代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>最核心的还是调用了 putVal 方法。其中 onlyIfAbsent 表示是否替换相同 key 的旧 value 值，默认都是替换。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -438,7 +438,7 @@
   <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/">Java集合—HashMap之梳理put方法逻辑</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月06日 - 00:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月14日 - 20:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月15日 - 23:01</p> -->
   <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" title="Java集合—HashMap之梳理put方法逻辑">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" aria-label="复制成功！"></i></span>
   </p>
@@ -604,7 +604,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -717,7 +717,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共35k字</span>
+  <span class="post-count">博客全站共35.5k字</span>
 </div>
         
 

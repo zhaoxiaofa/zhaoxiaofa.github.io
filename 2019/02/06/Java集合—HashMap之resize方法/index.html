@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2. 源码解析2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
+<meta name="description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
 <meta name="keywords" content="HashMap,Java集合,resize">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java集合—HashMap之resize方法">
 <meta property="og:url" content="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2. 源码解析2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
+<meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_01.png">
@@ -102,10 +102,10 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_12.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_13.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_14.png">
-<meta property="og:updated_time" content="2020-01-15T02:30:33.282Z">
+<meta property="og:updated_time" content="2020-01-15T15:22:51.447Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之resize方法">
-<meta name="twitter:description" content="上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2. 源码解析2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
+<meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
 <meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg">
 
 
@@ -402,8 +402,8 @@
       
 
       
-        <p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/06/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8B%E6%A2%B3%E7%90%86put%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/#more">Java集合—HashMap之梳理put方法逻辑</a> 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。</p>
-<h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><h3 id="2-4-resize"><a href="#2-4-resize" class="headerlink" title="2.4 resize"></a>2.4 resize</h3><p>在 putValue 方法当中就有 3 个地方使用到了 resize 方法</p>
+        <h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/06/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8B%E6%A2%B3%E7%90%86put%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/#more">Java集合—HashMap之梳理put方法逻辑</a> 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。</p>
+<h3 id="2-4-resize"><a href="#2-4-resize" class="headerlink" title="2.4 resize"></a>2.4 resize</h3><p>在 putValue 方法当中就有 3 个地方使用到了 resize 方法</p>
 <ul>
 <li>初始化数组，分配内存时</li>
 <li>链表转化为树时</li>
@@ -523,7 +523,7 @@
   <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之resize方法/">Java集合—HashMap之resize方法</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月06日 - 22:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月15日 - 10:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月15日 - 23:01</p> -->
   <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之resize方法/" title="Java集合—HashMap之resize方法">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/" aria-label="复制成功！"></i></span>
   </p>
@@ -583,8 +583,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/02/15/读写锁分离/" rel="prev" title="读写锁">
-                读写锁 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/02/07/Java集合—HashMap之红黑树/" rel="prev" title="Java集合—HashMap之红黑树">
+                Java集合—HashMap之红黑树 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -691,7 +691,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -804,7 +804,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共35k字</span>
+  <span class="post-count">博客全站共35.5k字</span>
 </div>
         
 
