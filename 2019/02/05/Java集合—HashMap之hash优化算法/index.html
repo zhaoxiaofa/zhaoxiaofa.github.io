@@ -89,7 +89,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_02.png">
-<meta property="og:updated_time" content="2020-01-10T04:46:15.802Z">
+<meta property="og:updated_time" content="2020-01-16T09:02:51.754Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之hash优化算法">
 <meta name="twitter:description" content="1. 原理HashMap 底层是数组 + 链表 + 红黑树。 数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。 链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。 再来看看 HashMap 继承或实现了">
@@ -368,7 +368,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  13
+                  14
                 </span>
               
             </div>
@@ -427,10 +427,8 @@
 <p>如果小于 0.5，假设取 0.3 。初始化数组长度 16，threshold = 16*0.3 = 4.8 ，也就是数组长度大于 5 的时候进行扩容，扩容到 32 ；以此类推，数组长度 10 的时候，扩容到 64 。越往后，未使用的空间会越来越大，纯属浪费。</p>
 <p>如果大于 1，假设取 1.5 。初始化数组长度 16，threshold = 16*1.5 = 24 。大家有没有发现一个问题，一个长度为 16 的数组要存储 24 条数据。那形成链表的几率就是百分之百了。会严重影响到查询的效率。</p>
 <p>那为什么在 0.5~1.0 之间选择了 0.75 呢？0.6 行不行，0.8 行不行？</p>
-<p>我找到了JDK1.8 API 文档上的一段话。</p>
-<blockquote>
-<p>As a general rule, the default load factor (.75) offers a good tradeoff between time and space costs. Higher values decrease the space overhead but increase the lookup cost (reflected in most of the operations of the <code>HashMap</code> class, including <code>get</code> and <code>put</code>). The expected number of entries in the map and its load factor should be taken into account when setting its initial capacity, so as to minimize the number of rehash operations. If the initial capacity is greater than the maximum number of entries divided by the load factor, no rehash operations will ever occur.</p>
-</blockquote>
+<p>看看源码注释里面的一段话：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">* &lt;p&gt;As a general rule, <span class="function">the <span class="keyword">default</span> load <span class="title">factor</span> <span class="params">(<span class="number">.75</span>)</span> offers a good</span></span><br><span class="line"><span class="function">* tradeoff between time and space costs.  Higher values decrease the</span></span><br><span class="line"><span class="function">* space overhead but increase the lookup <span class="title">cost</span> <span class="params">(reflected in most of</span></span></span><br><span class="line"><span class="function"><span class="params">* the operations of the &lt;tt&gt;HashMap&lt;/tt&gt; class, including</span></span></span><br><span class="line"><span class="function"><span class="params">* &lt;tt&gt;get&lt;/tt&gt; and &lt;tt&gt;put&lt;/tt&gt;)</span>.  The expected number of entries in</span></span><br><span class="line"><span class="function">* the map and its load factor should be taken into account when</span></span><br><span class="line"><span class="function">* setting its initial capacity, so as to minimize the number of</span></span><br><span class="line"><span class="function">* rehash operations.  If the initial capacity is greater than the</span></span><br><span class="line"><span class="function">* maximum number of entries divided by the load factor, no rehash</span></span><br><span class="line"><span class="function">* operations will ever occur.</span></span><br></pre></td></tr></table></figure>
 <p>翻译一下，默认的负载因子 0.75 在时间和空间消耗上提供了一个平衡。较高的值会降低空间使用但是会增加查找消耗（会影响 put 和 get 方法）。map 期望的 entries 数量和负载因子在初始化的时候就要考虑到，这样可以降低 rehash 的次数。如果初始化的数组长度大于 map 存储数据的最大值除以负载因子，将不会有 rehash 发生。</p>
 <p>其实官方的说法跟我上面实际使用中的取值方法一样，0.75 是官方认为最优的平衡时间和空间的值。至于 0.75 是怎么推算出来的，这是个数学问题。有兴趣的同学可以自行研究。</p>
 <p><strong>小结：</strong>负载因子默认使用 0.75 就行了，不要自以为是的瞎改。</p>
@@ -520,7 +518,7 @@
   <p><span>本文标题:</span><a href="/2019/02/05/Java集合—HashMap之hash优化算法/">Java集合—HashMap之hash优化算法</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月05日 - 00:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月10日 - 12:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月16日 - 17:01</p> -->
   <p><span>原始链接:</span><a href="/2019/02/05/Java集合—HashMap之hash优化算法/" title="Java集合—HashMap之hash优化算法">https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/" aria-label="复制成功！"></i></span>
   </p>
@@ -799,7 +797,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共35.5k字</span>
+  <span class="post-count">博客全站共36.4k字</span>
 </div>
         
 

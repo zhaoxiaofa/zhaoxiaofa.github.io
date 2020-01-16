@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-01-02T02:15:34.585Z">
+<meta property="og:updated_time" content="2020-01-16T05:40:03.637Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="算法基础—时间复杂度">
 <meta name="twitter:description" content="大 O 表示法精髓：忽略低阶、常量、系数项。比如：$T(n)=O (2n^2 + 2n + 2) = O (n^2)$ 1. 时间复杂度分析原则1.1 只关注循环执行最多的代码我们在分析一段代码的时间复杂度的时候，只关注循环次数最多的那一段代码就可以了。举例： 12345678private static int calculate(int n) &amp;#123;    int sum = 0;">
@@ -405,6 +405,7 @@
 <h3 id="2-1-常量阶O-1"><a href="#2-1-常量阶O-1" class="headerlink" title="2.1 常量阶O(1)"></a>2.1 常量阶O(1)</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> m = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> n = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> sum = m + n;</span><br></pre></td></tr></table></figure>
 <p>虽然有3行代码，但是时间复杂度是 O(1) 不是 O(3) 。即使再加 1000行代码，依旧是 O(1) 。</p>
 <p><strong>小结：</strong>只要代码中不存在循环、递归，无论是1行、10行还是1万行，时间复杂度都是 O(1) 。</p>
+<p><strong>补充</strong>：经过他人提醒，这里补充说明下，存在循环不意味着时间复杂度就是 O(n) 了，也可能是 O(1) 。</p>
 <h3 id="2-2-对数阶O-logn"><a href="#2-2-对数阶O-logn" class="headerlink" title="2.2 对数阶O($logn$)"></a>2.2 对数阶O($logn$)</h3><p>对数阶其实不难，本质其实是中学数学。先看一段代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">logn</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (; i &lt; n ; i ++) &#123;</span><br><span class="line">        i = i * <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在代码的执行过程中，i 的取值如下：</p>
@@ -460,7 +461,7 @@
   <p><span>本文标题:</span><a href="/2019/09/01/算法基础—时间复杂度/">算法基础—时间复杂度</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年09月01日 - 22:09</p> -->
- <!-- <p><span>最后更新:</span>2020年01月02日 - 10:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月16日 - 13:01</p> -->
   <p><span>原始链接:</span><a href="/2019/09/01/算法基础—时间复杂度/" title="算法基础—时间复杂度">https://zhaoxiaofa.com/2019/09/01/算法基础—时间复杂度/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/09/01/算法基础—时间复杂度/" aria-label="复制成功！"></i></span>
   </p>
@@ -737,7 +738,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共35.5k字</span>
+  <span class="post-count">博客全站共36.4k字</span>
 </div>
         
 
