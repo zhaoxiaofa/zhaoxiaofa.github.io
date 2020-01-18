@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="HashMap,Java集合,">
+  <meta name="keywords" content="Java集合,HashMap,">
 
 
 
@@ -80,7 +80,7 @@
 
 
 <meta name="description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
-<meta name="keywords" content="HashMap,Java集合">
+<meta name="keywords" content="Java集合,HashMap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java集合—HashMap之红黑树">
 <meta property="og:url" content="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/index.html">
@@ -96,7 +96,7 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_05.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_06.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/1dcbaaa72fba00afd6542b457b4bfae896a1a373/pictures/collection/hashmap/hashmap_tree_07.png">
-<meta property="og:updated_time" content="2020-01-17T10:00:43.660Z">
+<meta property="og:updated_time" content="2020-01-18T04:38:28.281Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之红黑树">
 <meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
@@ -359,7 +359,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.7k
+                  2.9k
                 </span>
               
 
@@ -375,7 +375,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  10
+                  11
                 </span>
               
             </div>
@@ -455,7 +455,13 @@
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/1dcbaaa72fba00afd6542b457b4bfae896a1a373/pictures/collection/hashmap/hashmap_tree_07.png" alt></p>
 <p>最后执行第 18 行代码 hd.treeify(tab) 。这个方法是将双向链表转化为红黑树。 转化过程也是红黑树的相关操作，我这里就不详细说明了。</p>
 <p><strong>小结：</strong>关于红黑树，其实很复杂，也没有必要去手撕；关于红黑树在 HashMap 中的使用，其实主要搞清楚，为什么要用，什么时候转化为红黑树大致就可以了。</p>
-<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h2><p>HashMap 相关的四篇文章暂时就写到这了，核心的差不多也就这些了。</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h2><p>HashMap 相关的四篇文章暂时就写到这了，核心的差不多也就这些了。我们再回顾下之前的几篇文章讲到的内容。</p>
+<ol>
+<li>基本的底层数据结构、常用构造函数、负载因子为何取 0.75以及hash 优化算法。</li>
+<li>详细介绍了 put 方法，出现 hash 冲突时，是如何一步一步形成链表的。</li>
+<li>什么时候会扩容，扩容的时候原先链表上的元素会被放到新数组的哪个位置？</li>
+<li>什么时候会转化为红黑树？链表上普通 Node 是先转化为 TreeNode 类型的双向链表再转化为红黑树的 。</li>
+</ol>
 <p>有兴趣的同学还可以去研究下面几点：</p>
 <ul>
 <li>HashMap 在遍历的时候是怎么保证每次遍历的结果的顺序都是一致的，当然这个顺序并不是和插入的顺序相同的。</li>
@@ -481,7 +487,7 @@
   <p><span>本文标题:</span><a href="/2019/02/07/Java集合—HashMap之红黑树/">Java集合—HashMap之红黑树</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月07日 - 23:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月17日 - 18:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月18日 - 12:01</p> -->
   <p><span>原始链接:</span><a href="/2019/02/07/Java集合—HashMap之红黑树/" title="Java集合—HashMap之红黑树">https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/" aria-label="复制成功！"></i></span>
   </p>
@@ -514,9 +520,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/HashMap/" rel="tag"># HashMap</a>
-          
             <a href="/tags/Java集合/" rel="tag"># Java集合</a>
+          
+            <a href="/tags/HashMap/" rel="tag"># HashMap</a>
           
         </div>
       
@@ -760,7 +766,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共37.8k字</span>
+  <span class="post-count">博客全站共38k字</span>
 </div>
         
 
