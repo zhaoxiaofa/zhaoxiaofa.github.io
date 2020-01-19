@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="分布式锁,ZooKeeper,Curator,">
+  <meta name="keywords" content="synchronized,">
 
 
 
@@ -79,24 +79,20 @@
 
 
 
-<meta name="description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
-<meta name="keywords" content="分布式锁,ZooKeeper,Curator">
+<meta name="description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码： 12345@Override@Transactional(rollbackFor = Exception.class)public synchronized Result&amp;lt;Object&amp;gt; addCustomer(InsertCustomer">
+<meta name="keywords" content="synchronized">
 <meta property="og:type" content="article">
-<meta property="og:title" content="基于ZooKeeper的分布式锁">
-<meta property="og:url" content="https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/index.html">
+<meta property="og:title" content="synchronized失效">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/21/synchronized失效/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
+<meta property="og:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码： 12345@Override@Transactional(rollbackFor = Exception.class)public synchronized Result&amp;lt;Object&amp;gt; addCustomer(InsertCustomer">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_11.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_12.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_13.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_14.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png">
-<meta property="og:updated_time" content="2020-01-05T14:47:52.143Z">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png">
+<meta property="og:updated_time" content="2020-01-19T07:55:57.458Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="基于ZooKeeper的分布式锁">
-<meta name="twitter:description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_11.png">
+<meta name="twitter:title" content="synchronized失效">
+<meta name="twitter:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码： 12345@Override@Transactional(rollbackFor = Exception.class)public synchronized Result&amp;lt;Object&amp;gt; addCustomer(InsertCustomer">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png">
 
 
 
@@ -126,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/">
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/21/synchronized失效/">
 
 
 
 
 
-  <title>基于ZooKeeper的分布式锁 | 赵小发</title>
+  <title>synchronized失效 | 赵小发</title>
   
 
 
@@ -261,7 +257,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/21/synchronized失效/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -278,7 +274,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">基于ZooKeeper的分布式锁</h1>
+          <h1 class="post-title" itemprop="name headline">synchronized失效</h1>
         
 
         <div class="post-meta">
@@ -290,8 +286,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-30T17:39:12+08:00">
-                2019-08-30
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-21T23:59:39+08:00">
+                2019-02-21
               </time>
             
 
@@ -313,8 +309,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式-微服务/" itemprop="url" rel="index">
-                    <span itemprop="name">分布式&微服务</span>
+                  <a href="/categories/并发编程/" itemprop="url" rel="index">
+                    <span itemprop="name">并发编程</span>
                   </a>
                 </span>
 
@@ -330,7 +326,7 @@
 
           
           
-             <span id="/2019/08/30/基于ZooKeeper的分布式锁/" class="leancloud_visitors" data-flag-title="基于ZooKeeper的分布式锁">
+             <span id="/2019/02/21/synchronized失效/" class="leancloud_visitors" data-flag-title="synchronized失效">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -355,7 +351,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.1k
+                  573
                 </span>
               
 
@@ -371,7 +367,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  7
+                  2
                 </span>
               
             </div>
@@ -392,58 +388,24 @@
       
 
       
-        <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>底层是基于 ZooKeeper 的<strong>临时顺序</strong>节点。</p>
-<p>ZooKeeper 的节点类型可以分为<strong>持久节点、持久顺序节点、临时节点、以及临时顺序节点</strong>。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。</p>
-<p>我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时节点。</p>
-<p>那为什么是顺序节点呢？我们先来画张图，看看 ZooKeeper 做分布式锁的原理。</p>
-<p>我们设置锁节点的父节点为 /distribute_lock/productId_lock 。distribute_lock 表示所有的分布式锁都放在这个节点下，productId_lock 表示这个是某个商品用到的锁，如果别的模块也需要用分布式锁，也可以对应创建节点。比如，用户系统可以设置为 /distribute_lock/userId_lock 。那么此时，ZooKeeper 的节点如下图所示。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_11.png" alt></p>
-<p><strong>注意：</strong> 这里的 distribute_lock 和 productId_lock 这两个节点是持久节点。我们最终是在 productId_lock 节点下创建临时节点。</p>
-<p>如果这个时候多个线程来同时加锁，会怎么样呢？ZooKeeper 的底层保证同一时间只有一个线程能创建临时节点，这一点类似于 Redis 的单线程。当其他线程来创建节点发现已经有一个临时节点了，就会等着。图就会变成下面这个样子。来，上图：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_12.png" alt></p>
-<p>如果不用顺序节点，没有创建节点成功的线程都会等着，等到线程1完成业务，解锁之后，其他所有的线程都会<strong>一拥而上</strong>去创建自己的节点。</p>
-<p>我们回忆一下，使用 Redission 分布式锁的时候是不是就是这样。一个线程加锁成功之后，其他的线程就等着，在死循环里不断尝试去加锁。但是这里有个问题，Redis 可是单机能抗 10 万并发的，而 ZooKeeper 是没有这么高性能的。所以如果这里等待的线程过多，当线程1删除节点解锁之后，其他所有线程同时争抢着创建节点，ZooKeeper 未必抗的住。所以，引入了顺序节点。</p>
-<p>如果使用临时<strong>顺序节点</strong>会怎样呢？来，上图：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_13.png" alt></p>
-<p>如上图，线程1表示第一个加锁成功的线程，线程2表示加锁失败的线程。如果使用的是临时顺序节点，上来不管三七二十一，先创建一个临时节点再说。然后再判断自己创建的子节点是不是第一个子节点，如果是，证明加锁成功，如果不是，加锁失败。加锁失败的线程会创建一个监听器，用来<strong>监听自己的上一个节点</strong>。</p>
-<p>这样，线程2加锁失败，监听线程1；线程3加锁失败，监听线程2；以此类推。。。</p>
-<p>那使用临时顺序节点，解锁的时候又会发生什么呢？线程1加锁成功后，执行自身的业务，执行完毕之后删除临时节点1，<strong>同时通知线程2</strong>，此时线程2就会去加锁。而此时临时节点1已经被删除了，线程2创建的临时节点就是第一个子节点，就会加锁成功。至于后面的线程，以此类推即可。</p>
-<p>在使用临时顺序节点之后，解锁的时候就不会造成很多线程同时去争抢着创建节点了。相当于一个一个的线程排着队加锁了。这个实现的就是<strong>公平锁</strong>。哪个线程先来，就排队排在前面。</p>
-<p><strong>思考：</strong>我们在讲 Redis 分布式锁的时候提到了一个续期的概念，ZooKeeper 有类似的概念吗？</p>
-<p>答：ZooKeeper 没有续期的概念，但是 ZooKeeper 的客户端和服务端在建立连接之后会保持心跳，只要服务端确认客户端之间的通信正常，就不会删除节点。</p>
-<p><strong>再思考：</strong>如果 ZooKeeper 客户端在执行自身业务的过程中挂掉了，没来得及删除节点，会怎么样？</p>
-<p>答：因为客户端和服务端会保持心跳，如果客户端挂了，无法向服务端发送心跳，服务端过段时间就会自动删除节点。这一点和 Redis 分布式锁设置的过期时间实现的结果是一样的，不会造成死锁。</p>
-<h2 id="2-Curator实现"><a href="#2-Curator实现" class="headerlink" title="2. Curator实现"></a>2. Curator实现</h2><p>在我们弄清楚了加锁、争抢锁、解锁之后，我们来看看实际项目中是怎样使用 ZooKeeper 做分布式锁的。其实和 Redis 分布式锁一样，一般也是使用封装好的框架，不用自己手撸代码。一般使用 <strong>Curator</strong> 客户端实现。接下来简单了解下 Curator 。</p>
-<p><strong>学习第一步，官网来探路。</strong>建议看这篇文章的时候打开 Curator 的官网。我们直接看 Getting Started ，这里给出了 Curator 实现分布式锁的方案。</p>
-<p>这里要注意 Curator 版本和 ZooKeeper 服务器版本的对应关系，否则会报异常。</p>
-<blockquote>
-<p>org.apache.zookeeper.KeeperException$UnimplementedException:</p>
-</blockquote>
-<p>我的虚拟机上 ZooKeeper 版本是3.4.14 ，按照<a href="https://curator.apache.org/zk-compatibility.html#" target="_blank" rel="noopener">Curator 官网</a>上的指导选择合适的 Curator 版本。官网上有这样一段话。</p>
-<blockquote>
-<p>Curator 4.0 supports ZooKeeper 3.4.x ensembles in a soft-compatibility mode. To use this mode you must exclude ZooKeeper when adding Curator to your dependency management tool.</p>
-</blockquote>
-<p>在这句的意思大致上，如果使用 Curator 4.0 ，需要在 maven 依赖中移除掉 ZooKeeper 。官方给的示例如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">    &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">    &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">    &lt;version&gt;$&#123;curator-version&#125;&lt;/version&gt;</span><br><span class="line">    &lt;exclusions&gt;</span><br><span class="line">        &lt;exclusion&gt;</span><br><span class="line">            &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">        &lt;/exclusion&gt;</span><br><span class="line">    &lt;/exclusions&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>紧接着，下面又有这么一句话。</p>
-<blockquote>
-<p>You must add a dependency on ZooKeeper 3.4.x also.</p>
-</blockquote>
-<p>提示我们需要手动添加  ZooKeeper 3.4.x 的依赖，我这里选择的是 3.4.14 。最终依赖如下所示：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">   &lt;groupId&gt;org.apache.curator&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;curator-recipes&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;4.2.0&lt;/version&gt;</span><br><span class="line">   &lt;exclusions&gt;</span><br><span class="line">      &lt;exclusion&gt;</span><br><span class="line">         &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">         &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">      &lt;/exclusion&gt;</span><br><span class="line">   &lt;/exclusions&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br><span class="line">&lt;dependency&gt;</span><br><span class="line">   &lt;groupId&gt;org.apache.zookeeper&lt;/groupId&gt;</span><br><span class="line">   &lt;artifactId&gt;zookeeper&lt;/artifactId&gt;</span><br><span class="line">   &lt;version&gt;3.4.14&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
-<p>这样，我们的依赖就配置好了。接下来，我们直接拿官网上的示例来用。</p>
-<p>来，上代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CuratorTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        RetryPolicy retryPolicy = <span class="keyword">new</span> ExponentialBackoffRetry(<span class="number">1000</span>, <span class="number">3</span>);</span><br><span class="line">        CuratorFramework client = CuratorFrameworkFactory.newClient(</span><br><span class="line">                <span class="string">"127.0.0.1:2181"</span>,</span><br><span class="line">                retryPolicy);</span><br><span class="line">        client.start();</span><br><span class="line"></span><br><span class="line">        InterProcessMutex lock = <span class="keyword">new</span> InterProcessMutex(client, <span class="string">"/distribute_lock/product01_lock"</span>);</span><br><span class="line">        lock.acquire();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 执行业务逻辑,这里停30秒，为了看效果</span></span><br><span class="line">            Thread.sleep(<span class="number">30000L</span>);</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            lock.release();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>代码极其简单，第 2 行代码是设置重试机制，第 4 ~ 7 行代码使用工厂模式创建客户端，然后启动客户端。</p>
-<p>第 9 行代码创建一个加锁对象，这个是<strong>可重入锁</strong>，后面源码分析的时候会讲到。</p>
-<p>第 10 行代码加锁，11 ~ 14 模拟执行业务代码，15 行解锁。</p>
-<p>执行一次，看看效果。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_14.png" alt></p>
-<p>这个是我使用命令行查看的节点状态，在 /distribute_lock 节点下有一个 /product01_lock 节点，我们创建的临时顺序节点就是 /product01_lock 的子节点。来，看一下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png" alt></p>
-<p>如上图所示，有一个子节点，后面几位全是 0 ，我推测下一个子节点后几位应该是 00000000001 。上面这个截图是我在解锁之前截的，如果过了 30 秒，这个临时节点就会被删除了。</p>
-<p>在我们实际的使用过程中，会结合 Spring 去注册 CuratorFramework 的 bean ，之后的用法就是如 9 ~ 15 代码所示。实际的业务代码放在 try 里面就行，最后 finally 里面记得一定要释放锁即可。讲到这里，ZooKeeper 做分布式锁的原理和用户就大多讲完了。</p>
-<p>下一篇，我们讲 ZooKeeper 分布式锁源码，<a href="https://zhaoxiaofa.com/2019/08/30/Curator%E5%AE%9E%E7%8E%B0ZooKeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%BA%90%E7%A0%81/#more">Curator实现ZooKeeper分布式锁源码</a> 。</p>
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Result&lt;Object&gt; <span class="title">addCustomer</span><span class="params">(InsertCustomerReq req)</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 省略业务逻辑代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>扫一眼，看到 Transactional 注解之后，我已经知道是什么原因了。</p>
+<h2 id="2-为什么synchronized遇到-Transactional会失效？"><a href="#2-为什么synchronized遇到-Transactional会失效？" class="headerlink" title="2. 为什么synchronized遇到@Transactional会失效？"></a>2. 为什么synchronized遇到@Transactional会失效？</h2><h3 id="2-1-synchronized锁失效"><a href="#2-1-synchronized锁失效" class="headerlink" title="2.1 synchronized锁失效"></a>2.1 synchronized锁失效</h3><p>这个得从 @Transactional 说起，我们都知道 Transactional 的实现是基于 Spring 的 AOP 。Spring 会对 addCustomer 方法进行动态代理，执行前开始事务，然后执行 addCustomer 方法的业务逻辑，最后提交事务。而执行 addCustomer 方法的时候，先加锁，执行逻辑，再解锁。最后的大致流程图如下：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png" alt></p>
+<p>假设线程1先抢到锁，在解锁之后，<strong>这个时候事务还没有提交，数据库数据还没有更新</strong>。然后线程2获取到了锁，执行逻辑，执行业务逻辑的时候很有可能获取的还是旧数据，出现锁失效的情况。</p>
+<h3 id="2-2-分布式锁失效"><a href="#2-2-分布式锁失效" class="headerlink" title="2.2 分布式锁失效"></a>2.2 分布式锁失效</h3><p>大多数情况下，我们都是分布式系统，会使用分布式锁。比如使用 ZooKeeper 或者 Redis 实现的分布式锁。不熟悉分布式锁的同学可以看这几篇文章—— 。</p>
+<p>此时代码会变成这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Result&lt;Object&gt; <span class="title">addCustomer</span><span class="params">(InsertCustomerReq req)</span> </span>&#123;</span><br><span class="line">  	RLock rLock = redissonClient.getLock(<span class="string">"customer_lock"</span>);</span><br><span class="line">  	rLock.lock();</span><br><span class="line">  	<span class="comment">// 省略代码</span></span><br><span class="line">  	rLock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其实，效果是一样的，无论使用 synchronized 还是分布式锁，最终导致锁失效的本质原因是<strong>解锁在提交事务之前</strong>。</p>
+<h2 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3. 解决方案"></a>3. 解决方案</h2><p>第一种方案就是在 Controller 层加锁了，类似于下面这样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> customerService.addCustomer(req);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二种方案是在 Service 层里面再写一个方法，类似于下面这样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Result&lt;Object&gt; <span class="title">addCustomer</span><span class="params">(InsertCustomerReq req)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> addCustomerOne(req);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> Result&lt;Object&gt; <span class="title">addCustomerOne</span><span class="params">(InsertCustomerReq req)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><ul>
+<li>在实际开发过程中，要确认好是否需要使用 @Transactional 进行事务管理，不要瞎用。 </li>
+<li>在需要加锁并且需要保证事务的场景中，尤其需要注意锁是否在事务提交之前释放。</li>
+</ul>
 
       
     </div>
@@ -460,12 +422,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/">基于ZooKeeper的分布式锁</a></p>
+  <p><span>本文标题:</span><a href="/2019/02/21/synchronized失效/">synchronized失效</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
- <!-- <p><span>发布时间:</span>2019年08月30日 - 17:08</p> -->
- <!-- <p><span>最后更新:</span>2020年01月05日 - 22:01</p> -->
-  <p><span>原始链接:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/" title="基于ZooKeeper的分布式锁">https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/" aria-label="复制成功！"></i></span>
+ <!-- <p><span>发布时间:</span>2019年02月21日 - 23:02</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月19日 - 15:01</p> -->
+  <p><span>原始链接:</span><a href="/2019/02/21/synchronized失效/" title="synchronized失效">https://zhaoxiaofa.com/2019/02/21/synchronized失效/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/21/synchronized失效/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -496,11 +458,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/分布式锁/" rel="tag"># 分布式锁</a>
-          
-            <a href="/tags/ZooKeeper/" rel="tag"># ZooKeeper</a>
-          
-            <a href="/tags/Curator/" rel="tag"># Curator</a>
+            <a href="/tags/synchronized/" rel="tag"># synchronized</a>
           
         </div>
       
@@ -513,8 +471,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/" rel="next" title="基于Redis的分布式锁之ReentrantLock">
-                <i class="fa fa-chevron-left"></i> 基于Redis的分布式锁之ReentrantLock
+              <a href="/2019/02/17/Synchronized关键字/" rel="next" title="Synchronized关键字">
+                <i class="fa fa-chevron-left"></i> Synchronized关键字
               </a>
             
           </div>
@@ -523,8 +481,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/08/30/README/" rel="prev" title="README">
-                README <i class="fa fa-chevron-right"></i>
+              <a href="/2019/08/30/分布式锁使用场景/" rel="prev" title="分布式锁使用场景">
+                分布式锁使用场景 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -686,7 +644,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Curator实现"><span class="nav-number">2.</span> <span class="nav-text">2. Curator实现</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-为什么synchronized遇到-Transactional会失效？"><span class="nav-number">2.</span> <span class="nav-text">2. 为什么synchronized遇到@Transactional会失效？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-synchronized锁失效"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 synchronized锁失效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-分布式锁失效"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 分布式锁失效</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-解决方案"><span class="nav-number">3.</span> <span class="nav-text">3. 解决方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结："><span class="nav-number">4.</span> <span class="nav-text">总结：</span></a></li></ol></div>
             
 
           </div>
