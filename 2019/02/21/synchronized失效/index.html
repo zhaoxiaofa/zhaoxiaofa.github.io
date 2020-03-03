@@ -79,19 +79,19 @@
 
 
 
-<meta name="description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码： 12345@Override@Transactional(rollbackFor = Exception.class)public synchronized Result&amp;lt;Object&amp;gt; addCustomer(InsertCustomer">
+<meta name="description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码。 大致需求是这样的，客户表中类型 (type) 为 1 的手机号不能重复，但是其他类型的手机号可以重复，这就意味着 mobile 是不能加唯一索引的，mobile 和 type 也不能加联合唯一索引。 在插入客户时需要根据 mobile 和 type 为">
 <meta name="keywords" content="synchronized">
 <meta property="og:type" content="article">
 <meta property="og:title" content="synchronized失效">
 <meta property="og:url" content="https://zhaoxiaofa.com/2019/02/21/synchronized失效/index.html">
 <meta property="og:site_name" content="赵小发">
-<meta property="og:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码： 12345@Override@Transactional(rollbackFor = Exception.class)public synchronized Result&amp;lt;Object&amp;gt; addCustomer(InsertCustomer">
+<meta property="og:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码。 大致需求是这样的，客户表中类型 (type) 为 1 的手机号不能重复，但是其他类型的手机号可以重复，这就意味着 mobile 是不能加唯一索引的，mobile 和 type 也不能加联合唯一索引。 在插入客户时需要根据 mobile 和 type 为">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png">
-<meta property="og:updated_time" content="2020-01-19T07:55:57.458Z">
+<meta property="og:updated_time" content="2020-01-19T09:31:49.732Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="synchronized失效">
-<meta name="twitter:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码： 12345@Override@Transactional(rollbackFor = Exception.class)public synchronized Result&amp;lt;Object&amp;gt; addCustomer(InsertCustomer">
+<meta name="twitter:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码。 大致需求是这样的，客户表中类型 (type) 为 1 的手机号不能重复，但是其他类型的手机号可以重复，这就意味着 mobile 是不能加唯一索引的，mobile 和 type 也不能加联合唯一索引。 在插入客户时需要根据 mobile 和 type 为">
 <meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png">
 
 
@@ -262,7 +262,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/headpic.jpg">
+      <meta itemprop="image" content="/images/headpic.jpeg">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -351,7 +351,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  573
+                  745
                 </span>
               
 
@@ -388,9 +388,11 @@
       
 
       
-        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Result&lt;Object&gt; <span class="title">addCustomer</span><span class="params">(InsertCustomerReq req)</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 省略业务逻辑代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>扫一眼，看到 Transactional 注解之后，我已经知道是什么原因了。</p>
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码。</p>
+<p>大致需求是这样的，客户表中类型 (type) 为 1 的手机号不能重复，但是其他类型的手机号可以重复，这就意味着 mobile 是不能加唯一索引的，mobile 和 type 也不能加联合唯一索引。</p>
+<p>在插入客户时需要根据 mobile 和 type 为 1 来判断记录是否存在，为了防止并发问题在方法上加了 synchronized 关键字。而在插入成功后还要同时操作其他数据表，所以方法上加上了 @Transactional 事务注解。伪代码看起来就是下面这样子。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Result&lt;Object&gt; <span class="title">addCustomer</span><span class="params">(InsertCustomerReq req)</span> </span>&#123;</span><br><span class="line">  	Customer customer = dao.getCustomerByMobileAndTypeOne();</span><br><span class="line">  	<span class="keyword">if</span>(<span class="keyword">null</span> != customer)&#123;</span><br><span class="line">      dao.insert();</span><br><span class="line">      dao.insertOtherData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看起来是不是考虑很周全，很完美？其实我看的 Transactional 注解之后，我已经知道是什么原因了。</p>
 <h2 id="2-为什么synchronized遇到-Transactional会失效？"><a href="#2-为什么synchronized遇到-Transactional会失效？" class="headerlink" title="2. 为什么synchronized遇到@Transactional会失效？"></a>2. 为什么synchronized遇到@Transactional会失效？</h2><h3 id="2-1-synchronized锁失效"><a href="#2-1-synchronized锁失效" class="headerlink" title="2.1 synchronized锁失效"></a>2.1 synchronized锁失效</h3><p>这个得从 @Transactional 说起，我们都知道 Transactional 的实现是基于 Spring 的 AOP 。Spring 会对 addCustomer 方法进行动态代理，执行前开始事务，然后执行 addCustomer 方法的业务逻辑，最后提交事务。而执行 addCustomer 方法的时候，先加锁，执行逻辑，再解锁。最后的大致流程图如下：</p>
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png" alt></p>
 <p>假设线程1先抢到锁，在解锁之后，<strong>这个时候事务还没有提交，数据库数据还没有更新</strong>。然后线程2获取到了锁，执行逻辑，执行业务逻辑的时候很有可能获取的还是旧数据，出现锁失效的情况。</p>
@@ -425,7 +427,7 @@
   <p><span>本文标题:</span><a href="/2019/02/21/synchronized失效/">synchronized失效</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月21日 - 23:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月19日 - 15:01</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月19日 - 17:01</p> -->
   <p><span>原始链接:</span><a href="/2019/02/21/synchronized失效/" title="synchronized失效">https://zhaoxiaofa.com/2019/02/21/synchronized失效/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/21/synchronized失效/" aria-label="复制成功！"></i></span>
   </p>
@@ -576,10 +578,10 @@
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
-              <img class="site-author-image" itemprop="image" src="/images/headpic.jpg" alt="zhaoxiaofa">
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
             
               <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
-              <p class="site-description motion-element" itemprop="description">扫头像关注我的微信公众号，QQ交流群:1023368234</p>
+              <p class="site-description motion-element" itemprop="description">QQ交流群:1023368234</p>
           </div>
 
           <nav class="site-state motion-element">
@@ -702,7 +704,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共38.6k字</span>
+  <span class="post-count">博客全站共38.7k字</span>
 </div>
         
 
