@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HashMap,Java集合,resize,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
+<meta name="keywords" content="HashMap,Java集合,resize">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java集合—HashMap之resize方法">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/index.html">
+<meta property="og:site_name" content="赵小发">
+<meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_01.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_02.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_03.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_04.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_05.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_06.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_07.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_08.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_09.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_10.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_11.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_12.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_13.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_14.png">
+<meta property="og:updated_time" content="2020-01-15T15:22:51.447Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java集合—HashMap之resize方法">
+<meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/">
+
+
+
+
+
+  <title>Java集合—HashMap之resize方法 | 赵小发</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">赵小发</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Winter is coming</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java集合—HashMap之resize方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-06T22:09:56+08:00">
+                2019-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java集合/" itemprop="url" rel="index">
+                    <span itemprop="name">Java集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/02/06/Java集合—HashMap之resize方法/" class="leancloud_visitors" data-flag-title="Java集合—HashMap之resize方法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/06/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8B%E6%A2%B3%E7%90%86put%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/#more">Java集合—HashMap之梳理put方法逻辑</a> 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。</p>
+<h3 id="2-4-resize"><a href="#2-4-resize" class="headerlink" title="2.4 resize"></a>2.4 resize</h3><p>在 putValue 方法当中就有 3 个地方使用到了 resize 方法</p>
+<ul>
+<li>初始化数组，分配内存时</li>
+<li>链表转化为树时</li>
+<li>每次新增元素之后都会进行判断是否需要扩容</li>
+</ul>
+<p>下面我们结合这 3 个地方来看看 resize 的源码。首先我们看一下 resize 方法的注释。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Initializes or doubles table size.  If null, allocates in</span></span><br><span class="line"><span class="comment"> * accord with initial capacity target held in field threshold.</span></span><br><span class="line"><span class="comment"> * Otherwise, because we are using power-of-two expansion, the</span></span><br><span class="line"><span class="comment"> * elements from each bin must either stay at same index, or move</span></span><br><span class="line"><span class="comment"> * with a power of two offset in the new table.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> the table</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br></pre></td></tr></table></figure>
+<p>翻译一下注释：初始化数组或者数组翻倍。如果是初始化（即数组为空），通过初始化的长度 initial capacity 和 threshold 来指定长度。否则，进行扩容，又因为每次扩容都是 2 倍，所以扩容之后元素要么还停留在原来的位置，要么移动 2 的幂次方。</p>
+<p><strong>具体扩容之后的偏移量这篇文章会细讲。</strong></p>
+<p>老规矩，先上一张图，辅助我们理解 resize 方法的大致流程。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg" alt></p>
+<p>这张流程图只是描述了大致的流程，具体代码实现的细节我们对着源码来看，来，上源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">    <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span> oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                 oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">        newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                  (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr;</span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"rawtypes"</span>,<span class="string">"unchecked"</span>&#125;)</span><br><span class="line">    Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">    table = newTab;</span><br><span class="line">    <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">            Node&lt;K,V&gt; e;</span><br><span class="line">            <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)</span><br><span class="line">                    newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">                    ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">                    Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; next;</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        next = e.next;</span><br><span class="line">                        <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                                loHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                loTail.next = e;</span><br><span class="line">                            loTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                                hiHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hiTail.next = e;</span><br><span class="line">                            hiTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j] = loHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j + oldCap] = hiHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>源码很长，有的讲源码的博客文章会在代码中写注释，但是我觉得很多东西一两行注释说不清楚。但是我这样写又会导致在看说明的时候还得往上翻看对应的哪一行代码，所以建议大家看的时候开两个窗口，一个看代码，一个看说明。</strong></p>
+<p>第 2 ~ 5 行代码是做初始化赋值，没什么好说的。</p>
+<p>看第 6 行代码的判断，oldCap &gt; 0 ，很明显，扩容的时候会进这个代码块，第 7 行代码判断是否超过了最大容量，如果是，将阈值 threshold 设置为 int 最大值。否则将 newCap 设置为 oldCap 的两倍，同样 newThr 也是 oldThr 的两倍。</p>
+<p>第 15 行代码，是 oldCap 等于 0 并且 oldThr 大于 0 。后面的注释的意思是，如果使用了带有初始化容量的构造函数，此时 oldThr 是大于 0 的。回顾下带有初始化容量的构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略代码</span></span><br><span class="line">    <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上述代码所示，会将 initialCapacity 经过 tableSizeFor 方法处理之后赋值给 threshold ，此时 oldThr 就会大于 0 。然后进入第 16 行代码，将 oldThr 赋值给 newCap 。那如果我们使用的是无参构造函数呢？很明显，会进入第 17 行代码，给 newCap 和 newThr 设置默认值。</p>
+<p><strong>来，小结下</strong>：上面的代码总共判断了如下三种情况。之后使用到这三种情况会简称为 1、2、3 。</p>
+<ol>
+<li>数组不为空</li>
+<li>数组为空，使用带初始容量的构造函数创建的</li>
+<li>数组为空，使用无参构造函数创建的</li>
+</ol>
+<p>如果 1，会扩容，新数组长度 newCap 为原先两倍；</p>
+<p>如果 2，数组长度 newCap 取初始容量（前提是初始容量是合理的，不合理的会自动转化，之前文章提到过）；</p>
+<p>如果 3，数组长度 newCap 取默认值；</p>
+<p>我们接着往下看第 21 行代码，只有 2 才会 newThr 等于 0 ，第 22 ~ 23 行代码是给 newThr 赋值。</p>
+<p>第 26 代码的意思是，无论是新创建初始化的还是扩容的，都将上面代码处理完毕之后得到的 newThr 赋值给 threshold 。</p>
+<p>第 28 ~ 29 行新建了一个 Node 数组，然后赋值给 table 。然后进入第 30 行代码，最关键的扩容方法。当然，只有 1 才能进入。我们画一张图，假设 HashMap 目前如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_01.png" alt></p>
+<p>第 31 行先对老数组进行遍历，将数组的每个 index 的值赋值给 e，第 33 行代码很容易理解，不为空才继续。图中 index 为 3 的位置为空，就不会进入到 if 分支来。</p>
+<p>第 35 行代码是判断 e.next 是否为空，其实就是判断 index 对应位置后面有没有挂链表或者红黑树，图中 index  2 和 4 没有挂链表，会进入第 36 行代码，e.hash &amp; (newCap - 1) 是根据新的数组长度再次进行 hash 算法算出新的 index 方法新数组对应位置上。<strong>这个操作被称作 rehash。</strong></p>
+<p>比如“张三”扩容前是通过 张三.hash &amp; (16 - 1) 算出的 index 为 2，那么此时 张三.hash &amp; (32 - 1) 可能算出来就是 18 了，如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_02.png" alt></p>
+<p>为什么是 18 呢？我们接下来会讲。当然，也有可能 rehash 之后还是在原来的位置 2 上。</p>
+<p>第 37 行代码是红黑树的 rehash ，我们后面单独讲。</p>
+<p>进入到第 39 行代码，也是这篇文章最重要的链表的 rehash 方法。在分析之前，我们来思考一下，为什么原先在 index 为 2 位置上的元素要么停留在原位，要么跑到 index 为 18 的位置上呢？我们来举个例子：</p>
+<p>假设张三的 hash 的后 5 位是 <strong>00010</strong>（在这种情况下，只有后 5 位比较重要，如果不知道为什么的同学先看看我之前的 hash 优化算法的那篇文章）。</p>
+<blockquote>
+<p>0 0010（张三的hash）</p>
+<p>0 1111（n - 1 = 16 -1 = 15）</p>
+<p>0 0010</p>
+</blockquote>
+<p>这是在扩容前（初始容量16），张三算出来的 index 是 2 。如果此时扩容，新容量为 32 ，那么 rehash 的结果为</p>
+<blockquote>
+<p>0 0010（张三的hash）</p>
+<p>1 1111（n - 1 = 32 -1 = 31）</p>
+<p>0 0010</p>
+</blockquote>
+<p>rehash 的结果，index 还是 2，位置不变。</p>
+<p>那如果张三的 hash 的后 5 位是 <strong>10010</strong> 呢？</p>
+<blockquote>
+<p><strong>1</strong> 0010（张三的hash）</p>
+<p>0 1111（n - 1 = 16 -1 = 15）</p>
+<p>0 0010</p>
+</blockquote>
+<p>即 10010 &amp; 15 = 2 ，那此时扩容 rehash 后呢？</p>
+<blockquote>
+<p><strong>1</strong> 0010 （张三的hash）</p>
+<p><strong>1</strong> 1111（n - 1 = 16 -1 = 15）</p>
+<p>1 0010</p>
+</blockquote>
+<p>1 0010 的十进制是 18 。我们思考一个问题，18 有什么特殊的含义呢？</p>
+<p><strong>18 = 2 + 16 = 2 + oldCap </strong>。我们找到了一个规律，在 rehash 之后，要么停留在原位置，要么移到<strong>原 index + 原数组长度</strong>的位置上。其实很容易理解，初始化和 （16 - 1）做与运算时，只有低 4 位的 hash 是有意义的，但是扩容的时候，和 （32 -1 ）做与运算时，低 5 位也参与了运算，所以低 5 位的值决定了 rehash 后新的 index 的值。如果低 5 位为 0 ，index 值不变，如果低 5 位为1，则 index 改变，并且在原先基础上加了 2 的 4 次方，即 16 。</p>
+<p>依次类推，如果从 32 扩容到 64 ，则低 6 位决定了 index 是否改变，如果改变，在原先基础上加 2 的 5 次方，即 32 。</p>
+<p><strong>综上所述</strong>：在 resize 方法中，数组 rehash 时，要么停留在原位，要么移到 oldIndex + oldCap 的位置上。</p>
+<p>下面我们从第 39 行代码开始分析，我们以数组 index 为 1 的链表为例，首先定义了几个局部变量，然后进行循环，循环退出条件是链表遍历完毕。我们一步步画图分析。此时 j 的值为 1 。</p>
+<p>在 33 行代码中，首先是将指针 e 指向 index 为 1 的数组位置，44 代码将 next 指针指向 e.next ，那么图如下所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_03.png" alt></p>
+<p>第 45 行代码，e.hash &amp; oldCap ，这个非常非常关键。oldCap 为 16，因为此时 index 为 1，那么 e.hash 的后五位可能为 0 0001，也有可能为 1 0001，和 15 进行与运算之后都为 1 。</p>
+<p>0 0001 和 16 进行与运算为 0 ， 1 0001 和 16 进行与运算为 的结果为 16 ，不为 0。所以我们猜测，e.hash &amp; oldCap 等于 0 就是这个位置的元素不需要移位时的处理逻辑，而对应的 52 行代码的 else 就是需要移位的处理逻辑。</p>
+<p><strong>那我们就假设“赵小发”和“赵大发”不需要移位，即 (e.hash &amp; oldCap) == 0</strong>。</p>
+<p><strong>“赵二发”需要移位，即  (e.hash &amp; oldCap) != 0</strong>。</p>
+<p>进入“赵小发”的循环，此时会进入 45 行代码分支，执行 47 和 50 行代码后，如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_04.png" alt></p>
+<p>然后千万别忘了，在 59 行 while 循环里面有 e = next，这个时候把 e 指针指向 next ，最终执行完毕之后如下：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_05.png" alt></p>
+<p>进入“赵二发”的循环，首先执行 44 行 next = e.next ，如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_06.png" alt></p>
+<p>然后进入到 52 行代码的分支。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_07.png" alt></p>
+<p>最后依然别忘了 59 的代码 e = next ，最终执行完毕后如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_08.png" alt></p>
+<p>再进入“赵大发”的循环，首先执行 44 行 next = e.next。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_09.png" alt></p>
+<p>然后会进入 45 行代码分支，但是进入 46 行判断时，此时 loTail 不为空，所以执行第 49 和 50 行代码。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_10.png" alt></p>
+<p>最后依然别忘了 59 的代码 e = next ，最终执行完毕后如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_11.png" alt></p>
+<p>最后执行完毕 e 指向 null ，此时退出 while 循环。</p>
+<p>最后我们来看 60 ~ 67 行代码。loTail 此时不为 null ，执行 61、62 行，将 loHead 放在新数组的 index 为 1 的位置上。而此时，“赵小发“的数组后面挂着”赵大发“，新数组就会变成下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_12.png" alt></p>
+<p>然后执行第 64 行代码，此时 hiTail 也不为空，执行 65 行代码，图就会变成下面这样子。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_13.png" alt></p>
+<p>执行第 66 行代码，将 hiHead 放到新数组的 1 + oldCap = 1 + 16 = 17 位置上，如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_14.png" alt></p>
+<p>这样一个链表的 rehash 算法就完全结束了。和我们之前预想的一样，“赵小发”和“赵大发”不需要移位，“赵二发”需要移位，且新位置等于 oldIndex + oldCap 。</p>
+<p>这篇文章到这就结束了，主要是画图一步步分析了在扩容的时候，链表是如何进行 rehash 的。</p>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之resize方法/">Java集合—HashMap之resize方法</a></p>
+ <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
+ <!-- <p><span>发布时间:</span>2019年02月06日 - 22:02</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月15日 - 23:01</p> -->
+  <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之resize方法/" title="Java集合—HashMap之resize方法">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HashMap/" rel="tag"># HashMap</a>
+          
+            <a href="/tags/Java集合/" rel="tag"># Java集合</a>
+          
+            <a href="/tags/resize/" rel="tag"># resize</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" rel="next" title="Java集合—HashMap之梳理put方法逻辑">
+                <i class="fa fa-chevron-left"></i> Java集合—HashMap之梳理put方法逻辑
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/07/Java集合—HashMap之红黑树/" rel="prev" title="Java集合—HashMap之红黑树">
+                Java集合—HashMap之红黑树 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
+            
+              <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-源码解析"><span class="nav-number">1.</span> <span class="nav-text">2. 源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-resize"><span class="nav-number">1.1.</span> <span class="nav-text">2.4 resize</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhaoxiaofa</span>
+
+  
+</div>
+
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
+
+
+
+ <!-- <span class="post-meta-divider">|</span> -->
+
+
+
+<!--
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+
+
+    <div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    </div>
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共54.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("UH24xFi41uXyyckTrmyvd1OH-gzGzoHsz", "z1TYVlqePlShQ6FNHkiWeCkL");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Kafka,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 背景最近团队里的一个重 Kafka 项目频繁的发生 Rebalance ，导致经常性的出现消息堆积问题，峰值曾堆积过数千万条消息。因此来研究下 Kafka Rebalance 相关的问题。 2. Rebalance时机当 Kafka 遇到如下四种情况的时候，会触发 Rebalance 机制：  消费组成员发生了变更A：新消费者加入B：有消费者宕机 消费者无法在指定的时间之内完成消息的消费 消">
+<meta name="keywords" content="Kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka Rebalance">
+<meta property="og:url" content="https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/index.html">
+<meta property="og:site_name" content="赵小发">
+<meta property="og:description" content="1. 背景最近团队里的一个重 Kafka 项目频繁的发生 Rebalance ，导致经常性的出现消息堆积问题，峰值曾堆积过数千万条消息。因此来研究下 Kafka Rebalance 相关的问题。 2. Rebalance时机当 Kafka 遇到如下四种情况的时候，会触发 Rebalance 机制：  消费组成员发生了变更A：新消费者加入B：有消费者宕机 消费者无法在指定的时间之内完成消息的消费 消">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png">
+<meta property="og:image" content="https://img.kancloud.cn/f1/6f/f16fbcb798a53c21c3bf1bcd5b72b006_892x343.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/joinGroup1.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/syncGroup1.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-new.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-leave.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-down.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/Rebalance.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/okhttp.png">
+<meta property="og:updated_time" content="2022-01-11T13:09:41.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka Rebalance">
+<meta name="twitter:description" content="1. 背景最近团队里的一个重 Kafka 项目频繁的发生 Rebalance ，导致经常性的出现消息堆积问题，峰值曾堆积过数千万条消息。因此来研究下 Kafka Rebalance 相关的问题。 2. Rebalance时机当 Kafka 遇到如下四种情况的时候，会触发 Rebalance 机制：  消费组成员发生了变更A：新消费者加入B：有消费者宕机 消费者无法在指定的时间之内完成消息的消费 消">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/">
+
+
+
+
+
+  <title>Kafka Rebalance | 赵小发</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">赵小发</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Winter is coming</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka Rebalance</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-08T22:26:56+08:00">
+                2020-05-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2020/05/08/Kafka Rebalance/" class="leancloud_visitors" data-flag-title="Kafka Rebalance">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  16
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>最近团队里的一个重 Kafka 项目频繁的发生 Rebalance ，导致经常性的出现消息堆积问题，峰值曾堆积过数千万条消息。因此来研究下 Kafka Rebalance 相关的问题。</p>
+<h2 id="2-Rebalance时机"><a href="#2-Rebalance时机" class="headerlink" title="2. Rebalance时机"></a>2. Rebalance时机</h2><p>当 Kafka 遇到如下四种情况的时候，会触发 Rebalance 机制：</p>
+<ol>
+<li>消费组成员发生了变更<br>A：新消费者加入<br>B：有消费者宕机</li>
+<li>消费者无法在指定的时间之内完成消息的消费</li>
+<li>消费组订阅的 Topic 发生了变化</li>
+<li>订阅的 Topic 的 Partition 发生了变化</li>
+</ol>
+<p>对可能出现以上情况的场景进行说明：</p>
+<ul>
+<li>1A 出现在应用启动的时候，属于正常现象；</li>
+<li>1B 大多数出现在应用下线的时候，属于正常现象；</li>
+<li>1B 少部分会出现在 Consumer 长时间没有发送心跳给 Broker，Broker 会认为该 Consumer 异常，会将其剔除出 Consumer Group，触发 Rebalance，大概率属异常现象；</li>
+<li>2 是因为 Consumer 业务逻辑耗时过大，消费过慢导致的，几乎可以认为是异常现象；</li>
+<li>3 一般是修改了业务代码，重新部署，属于正常现象；</li>
+<li>4 一般是中间件团队对 Broker 集群进行操作引起的，比如增加 Topic 的 Partition 数量，属于正常现象；</li>
+</ul>
+<p><strong>小结：真正异常的且需要业务开发团队关注的只有两点：心跳机制和消费者业务逻辑。</strong></p>
+<h3 id="2-1-心跳机制"><a href="#2-1-心跳机制" class="headerlink" title="2.1 心跳机制"></a>2.1 心跳机制</h3><p>心跳机制主要由以下两个参数进行控制：</p>
+<ul>
+<li><code>heartbeat.interval.ms</code> ：心跳的间隔时间 默认 3s</li>
+<li><code>session.timeout.ms</code> ：超过该值而没有任何心跳发送给 Broker，Broker 会剔除 Consumer，进行 Reblance 默认 45s</li>
+</ul>
+<p>按照默认值的配置，连续 15 次没有发送心跳，才会进行 Rebalance，一般只有网络出现故障才会出现这种情况。即使是 Full GC，一般也不会超过 45s。</p>
+<h3 id="2-2-消费超时"><a href="#2-2-消费超时" class="headerlink" title="2.2 消费超时"></a>2.2 消费超时</h3><p>对于消费主要由以下两个参数进行控制：</p>
+<ul>
+<li><code>max.poll.interval.ms</code>：两次 poll 消息最大间隔时间，超过该值即认为 Consumer 崩溃 默认 5 分钟</li>
+<li><code>max.poll.records</code>：一次 poll 消息的最大数量 500</li>
+</ul>
+<p>如果在 5 分钟内无法处理掉拉取的消息，就会引发 Rebalance。而事实上，<strong>绝大多数 Rebalance 都是因为 Consumer 业务逻辑耗时过大引起的</strong>。</p>
+<h4 id="2-2-1-Consumer-超时测试"><a href="#2-2-1-Consumer-超时测试" class="headerlink" title="2.2.1 Consumer 超时测试"></a>2.2.1 Consumer 超时测试</h4><p>首先创建一个测试 topic（”consumer-delay-test“），分配 4 个 partition，脚本如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --create --partitions <span class="number">4</span> --replication-factor <span class="number">1</span> --topic consumer-delay-test --bootstrap-server localhost:<span class="number">9092</span></span><br></pre></td></tr></table></figure>
+<p>创建成功之后在 Kafka 的日志文件中可以看到有四个文件目录，如下：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png" alt></p>
+<p>创建多个 Consumer，消费该 topic，为了更快的看到现象，将 <code>max.poll.interval.ms</code> 的值设置为 1 分钟，消费逻辑中线程 sleep 10s，具体代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">3</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> finalI = i;</span><br><span class="line">            <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">                doConsumer(<span class="string">"consumerId-"</span> + finalI);</span><br><span class="line">            &#125;).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> KafkaConsumer <span class="title">buildConsumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line">        props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</span><br><span class="line">        props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"enable.auto.commit"</span>, <span class="string">"true"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.commit.interval.ms"</span>, <span class="string">"1000"</span>);</span><br><span class="line">        props.put(<span class="string">"session.timeout.ms"</span>, <span class="string">"30000"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.offset.reset"</span>, <span class="string">"latest"</span>);</span><br><span class="line">        props.put(<span class="string">"fetch.min.bytes"</span>, <span class="number">1000</span>);</span><br><span class="line">        props.put(<span class="string">"max.poll.interval.ms"</span>, <span class="number">1000</span> * <span class="number">60</span>);</span><br><span class="line">        <span class="comment">// groupId取传参</span></span><br><span class="line">        props.put(<span class="string">"group.id"</span>, <span class="string">"testDelay"</span>);</span><br><span class="line">        KafkaConsumer kafkaConsumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</span><br><span class="line">        kafkaConsumer.subscribe(Arrays.asList(<span class="string">"consumer-delay-test"</span>));</span><br><span class="line">        <span class="keyword">return</span> kafkaConsumer;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doConsumer</span><span class="params">(String consumerId)</span> </span>&#123;</span><br><span class="line">        KafkaConsumer kafkaConsumer = buildConsumer();</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            ConsumerRecords&lt;String, String&gt; consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(<span class="number">1</span>));</span><br><span class="line">            <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : consumerRecords) &#123;</span><br><span class="line">                System.out</span><br><span class="line">                        .println(<span class="string">"=======receive: consumerId="</span> + consumerId + <span class="string">",key = "</span> + record.key() + <span class="string">", value = "</span> + record.value() +</span><br><span class="line">                                <span class="string">" offset==="</span> + record.offset());</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span> * <span class="number">10</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>开始运行后，会发起 join group 的请求，成功 join 之后，会分配消费分区，初始化日志如下（仅节选部分日志）：</p>
+<blockquote>
+<p>2022-01-10 16:49:53.620 [Thread-0] INFO  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-3, groupId=testDelay] Successfully joined group with generation 6<br>2022-01-10 16:49:53.620 [Thread-1] INFO  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-2, groupId=testDelay] Successfully joined group with generation 6<br>2022-01-10 16:49:53.621 [Thread-2] INFO  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=testDelay] Successfully joined group with generation 6<br>2022-01-10 16:49:53.621 [Thread-2] INFO  o.a.k.c.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-1, groupId=testDelay] Setting newly assigned partitions: consumer-delay-test-0, consumer-delay-test-1<br>2022-01-10 16:49:53.621 [Thread-0] INFO  o.a.k.c.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-3, groupId=testDelay] Setting newly assigned partitions: consumer-delay-test-3<br>2022-01-10 16:49:53.622 [Thread-1] INFO  o.a.k.c.consumer.internals.ConsumerCoordinator - [Consumer clientId=consumer-2, groupId=testDelay] Setting newly assigned partitions: consumer-delay-test-2</p>
+</blockquote>
+<p>从运行日志中可以看出，consumer-1 消费 patition0和1，consumer-2 消费 patition2，consumer-3 消费 patition3。</p>
+<p>在正常消费一段时间后，出现如下 warn 日志：</p>
+<blockquote>
+<p>2022-01-10 16:59:33.488 [kafka-coordinator-heartbeat-thread | testDelay] WARN  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-3, groupId=testDelay] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records.<br>2022-01-10 16:59:33.488 [kafka-coordinator-heartbeat-thread | testDelay] WARN  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-2, groupId=testDelay] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records.<br>2022-01-10 16:59:33.490 [kafka-coordinator-heartbeat-thread | testDelay] INFO  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-2, groupId=testDelay] Member consumer-2-f3cac25b-3cc2-40f8-9514-af8e550d8dba sending LeaveGroup request to coordinator localhost:9092 (id: 2147483647 rack: null)<br>2022-01-10 16:59:33.490 [kafka-coordinator-heartbeat-thread | testDelay] INFO  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-3, groupId=testDelay] Member consumer-3-ba3b3947-2adf-444b-92c1-34a444065b14 sending LeaveGroup request to coordinator localhost:9092 (id: 2147483647 rack: null)<br>2022-01-10 16:59:33.556 [kafka-coordinator-heartbeat-thread | testDelay] WARN  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=testDelay] This member will leave the group because consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured max.poll.interval.ms, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing max.poll.interval.ms or by reducing the maximum size of batches returned in poll() with max.poll.records.<br>2022-01-10 16:59:33.556 [kafka-coordinator-heartbeat-thread | testDelay] INFO  o.a.k.c.consumer.internals.AbstractCoordinator - [Consumer clientId=consumer-1, groupId=testDelay] Member consumer-1-fac44445-0d07-4a7d-bd1f-10e446354af8 sending LeaveGroup request to coordinator localhost:9092 (id: 2147483647 rack: null)</p>
+</blockquote>
+<p>从告警日志中可以看出，Consumer 会离开 Group，原因是 poll 请求超时。告警中提供的解决方案是加大 <code>max.poll.interval.ms</code> 或者减少 <code>max.poll.records</code> 。</p>
+<h4 id="2-2-2-消费配置建议"><a href="#2-2-2-消费配置建议" class="headerlink" title="2.2.2 消费配置建议"></a>2.2.2 消费配置建议</h4><p>在生产环境中，不建议因为担心 Rebalance 而调高 <code>max.poll.interval.ms</code> 减少 <code>max.poll.records</code> ，一般采用默认值即可，最重要的其实是优化 Consumer 的消费逻辑，减少耗时。否则，仅靠调整这两个参数意义不大。</p>
+<h3 id="2-3-详细配置说明"><a href="#2-3-详细配置说明" class="headerlink" title="2.3 详细配置说明"></a>2.3 详细配置说明</h3><p>2.1 和 2.2 中的配置参数详细说明可参见之前的文章——<a href="https://zhaoxiaofa.com/2020/11/25/Kafka%E8%B0%83%E4%BC%98%E4%B8%8E%E8%AF%A6%E7%BB%86%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E/">Kafka调优与详细参数说明</a> 。</p>
+<h2 id="3-Rebalance原理"><a href="#3-Rebalance原理" class="headerlink" title="3. Rebalance原理"></a>3. Rebalance原理</h2><p>文章该部分主要摘抄于《参考资料》中的 1。</p>
+<h3 id="3-1-Consumer-Group-状态机"><a href="#3-1-Consumer-Group-状态机" class="headerlink" title="3.1 Consumer Group 状态机"></a>3.1 Consumer Group 状态机</h3><p>要弄清楚 Rebalance 原理，首先要了解 Consumer Group 状态机。Kafka 设计 Consumer Group 状态机的目的是帮助 Coordinator 完成 Rebalance。</p>
+<p>Consumer Group 有 5 种状态，其流转图如下（图片来源于网络）：</p>
+<p><img src="https://img.kancloud.cn/f1/6f/f16fbcb798a53c21c3bf1bcd5b72b006_892x343.png" alt></p>
+<ol>
+<li>一个消费者组最开始是 Empty 状态</li>
+<li>在 Rebalance 开启后，会首先置于 PreparingRebalance 等待 Consumer 成员加入</li>
+<li>之后变更到 CompletingRebalance 等待 Consumer Leader 分配分区消费方案</li>
+<li>分配完成之后，状态流转到 Stable ，此时 Rebalance 结束</li>
+<li>当有成员变动时，消费者组状态从 Stable 变为 PreparingRebalance<ul>
+<li>此时所有现存成员需要重新申请加入 Consumer Group</li>
+<li>当所有组成员都退出组后，消费者组状态为 Empty</li>
+</ul>
+</li>
+<li>消费者组处于 Empty 状态，Kafka 会定期自动删除过期 offset</li>
+</ol>
+<p>Rebalance 过程分为两步：JoinGroup 和 SyncGroup。</p>
+<h3 id="3-2-JoinGroup"><a href="#3-2-JoinGroup" class="headerlink" title="3.2 JoinGroup"></a>3.2 JoinGroup</h3><p>在这一步中，所有 Consumer 向 Coordinator 发送 JoinGroup 的请求，Coordinator 会在 Consumer 中选择一个作为 Leader，并将所有 Consumer 的信息发送给 Leader，由 Leader 进行消费分区的分配。</p>
+<p>注意：Coordinator 是 Broker 中的概念，Leader 是 Consumer 客户端的概念。</p>
+<p>流程图大致如下（图片来源于网络）：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/joinGroup1.png" alt></p>
+<h3 id="3-3-SyncGroup"><a href="#3-3-SyncGroup" class="headerlink" title="3.3 SyncGroup"></a>3.3 SyncGroup</h3><p>在 JoinGroup 之后，选举出来的 Leader 会分配好消费方案，然后通过 SyncGroup 请求将分区消费方案发送给 Coordinator，非 Leader 也会发 SyncGroup 请求，只是内容为空。</p>
+<p>Coordinator 接收到分配方案之后会把方案塞进 SyncGroup 的 Response 中发给各个 Consumer。这样各 Consumer 都知道自己应该消费哪些分区了。</p>
+<p>流程图大致如下（图片来源于网络）：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/syncGroup1.png" alt></p>
+<h3 id="3-3-Rebalance场景"><a href="#3-3-Rebalance场景" class="headerlink" title="3.3 Rebalance场景"></a>3.3 Rebalance场景</h3><h4 id="3-3-1-新成员加入（应用上线）"><a href="#3-3-1-新成员加入（应用上线）" class="headerlink" title="3.3.1 新成员加入（应用上线）"></a>3.3.1 新成员加入（应用上线）</h4><p>流程图大致如下（图片来源于网络，网络来自于《Apache Kafka 实战》）：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-new.png" alt></p>
+<p>图中，从成员2发起 JoinGroup 请求至成员2收到 SyncGroup 响应，期间 Consumer 处于 STW 状态，不会消费消息。</p>
+<h4 id="3-3-2-成员注定离开（应用下线）"><a href="#3-3-2-成员注定离开（应用下线）" class="headerlink" title="3.3.2 成员注定离开（应用下线）"></a>3.3.2 成员注定离开（应用下线）</h4><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-leave.png" alt></p>
+<h4 id="3-3-3-成员奔溃离开（消费超时）"><a href="#3-3-3-成员奔溃离开（消费超时）" class="headerlink" title="3.3.3 成员奔溃离开（消费超时）"></a>3.3.3 成员奔溃离开（消费超时）</h4><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-down.png" alt></p>
+<h2 id="4-生产环境故障处理"><a href="#4-生产环境故障处理" class="headerlink" title="4. 生产环境故障处理"></a>4. 生产环境故障处理</h2><h3 id="4-1-不知名topic业务代码引起的故障"><a href="#4-1-不知名topic业务代码引起的故障" class="headerlink" title="4.1 不知名topic业务代码引起的故障"></a>4.1 不知名topic业务代码引起的故障</h3><h4 id="4-1-1-告警"><a href="#4-1-1-告警" class="headerlink" title="4.1.1 告警"></a>4.1.1 告警</h4><p>有一次收到了线上的电话告警，消息量大的一个 topic （消息量约 5 万/s）线上堆积了上千万条消息。在 Kafka 监控台可以看到集群在疯狂的 Rebalance ，几乎是 Rebalance 一次完毕之后立马又开始 Rebalance。<br>因为监控聚合后具体时间间隔不够精准，于是搜索了 Rebalance 相关的日志，日志大致如下：</p>
+<blockquote>
+<p><strong>August 15th 2020, 11:18:49.082</strong> message:2020-08-15 03:18:48, INFO, o.a.k.c.c.i.AbstractCoordinator , 916, maybeLeaveGroup [Consumer clientId=consumer-####-53, groupId=####] Member consumer-###### sending LeaveGroup request to coordinator ####### (id: ##### rack: null) due to consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured <a href="http://max.poll.interval.ms/" target="_blank" rel="noopener">max.poll.interval.ms</a>, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing <a href="http://max.poll.interval.ms/" target="_blank" rel="noopener">max.poll.interval.ms</a> or by reducing the maximum size of batches returned in poll() with max.poll.records.</p>
+</blockquote>
+<p>因为涉及生产环境机器，引用中 “##” 为打码。</p>
+<p>分析日志发现，大约隔了 5 分钟左右，便发生一次 Rebalance，说明集群刚开始消费，然后消费的消息就卡住了，导致超过 <code>session.timeout.ms</code> 的设置，再次 Rebalance。</p>
+<h4 id="4-1-2-定位"><a href="#4-1-2-定位" class="headerlink" title="4.1.2 定位"></a>4.1.2 定位</h4><p>对线上机器 Jstack 之后，搜索该 topic 的消费堆栈时，却没有发现什么问题。此时，遵循先止血再分析的原则，在消费逻辑中打开异步线程池消费的开关，开启之后，从监控看，消费速度明显上涨，我们以为问题已经得到解决，没想到，不到 5 分钟，集群再次 Rebalance，消费再次跌零。</p>
+<p><strong>此时的我，一脸懵逼，已经开启异步线程池消费了呀，消费逻辑里就是把消息解析出来，扔到线程池里，然后就 ack，怎么可能消费超时呢？</strong></p>
+<p>正在迷茫之际，看到企业微信又跳出来一个告警，某个不知名 topic，堆积了 2 条消息。对，你没有看错，2 条消息！！！看到这个告警，如梦初醒。</p>
+<p><strong>导致集群疯狂 Rebalance 的不一定就是消息量最大、堆积最多的那个 topic 呀！</strong></p>
+<p><strong>导致集群疯狂 Rebalance 的不一定就是消息量最大、堆积最多的那个 topic 呀！</strong></p>
+<p><strong>导致集群疯狂 Rebalance 的不一定就是消息量最大、堆积最多的那个 topic 呀！</strong></p>
+<p>再次线上 Jstack，搜索堆积了 2 条消息的那个消息者堆栈信息，定位到了阻塞的那行代码。同时，通过 uid 关键字在 kibana 中搜索相关日志。发现该 uid 下面挂了 3 万个设备，而这个不知名的 topic 的消费逻辑里面是遍历设备列表，进行一系列的操作。</p>
+<p>很明显，这 3 万个设备的后续逻辑是无法在 5 分钟内完成的，因此，无论 Rebalance 后哪个 Consumer 消费这条消息，都无法完全，只会再次触发 Rebalance。</p>
+<h4 id="4-1-3-处理"><a href="#4-1-3-处理" class="headerlink" title="4.1.3 处理"></a>4.1.3 处理</h4><p>至此，问题已定位到，“前辈”写下的代码终有一天会在你的手里爆发。于是修改代码，将消费逻辑扔到线程池里，提紧急发布，该问题在发布之后得以解决。</p>
+<h4 id="4-1-4-感悟"><a href="#4-1-4-感悟" class="headerlink" title="4.1.4 感悟"></a>4.1.4 感悟</h4><p>对于自己负责的系统，边边角角都要照顾到，尤其是容易出现故障的地方。有时候，边缘业务也会对系统造成致命伤害。</p>
+<h3 id="4-2-请求三方授权接口耗时过高导致的故障"><a href="#4-2-请求三方授权接口耗时过高导致的故障" class="headerlink" title="4.2 请求三方授权接口耗时过高导致的故障"></a>4.2 请求三方授权接口耗时过高导致的故障</h3><h4 id="4-2-1-告警"><a href="#4-2-1-告警" class="headerlink" title="4.2.1 告警"></a>4.2.1 告警</h4><p>同样是一次线上 Kafka 消息堆积的电话告警，这次吸收了之前的经验后，首先排查是否有其他 topic 也出现了消息堆积，最终确认没有，确实是只有流量最大的 topic 消息堵塞了。</p>
+<h4 id="4-2-2-定位"><a href="#4-2-2-定位" class="headerlink" title="4.2.2 定位"></a>4.2.2 定位</h4><p>于是，找到对应堆积的 partition 对应的机器，Jstack 搜索对应 Consumer 的堆栈信息，定位到了阻塞在对外接口的 Http 请求上。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/Rebalance.png" alt></p>
+<h4 id="4-2-3-处理"><a href="#4-2-3-处理" class="headerlink" title="4.2.3 处理"></a>4.2.3 处理</h4><p>问题处理很简单，打开异步消费的开关即可，打开后线上立马恢复。</p>
+<h4 id="4-2-4-后续"><a href="#4-2-4-后续" class="headerlink" title="4.2.4 后续"></a>4.2.4 后续</h4><p>在处理完问题之后，后面分析了为什么会导致 http 请求阻塞这么久，后面在看代码的时候，发现了下面一坨代码，我震惊了。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/okhttp.png" alt></p>
+<p>应该是因为笔误的原因，原先写代码的同学将 http 的超时时间设置为了 20000s，即 5.5 小时。这就是消息能阻塞如此之久的原因。你永远不知道你的前辈会给你准备什么样的惊喜。</p>
+<p>备注：后面我们对 OkHttp 做了详细的监控和参数调优，该类型问题已全部解决。</p>
+<h2 id="5-如何避免-Rebalance"><a href="#5-如何避免-Rebalance" class="headerlink" title="5. 如何避免 Rebalance"></a>5. 如何避免 Rebalance</h2><h3 id="5-1-Rebalance-的危害"><a href="#5-1-Rebalance-的危害" class="headerlink" title="5.1 Rebalance 的危害"></a>5.1 Rebalance 的危害</h3><p>先说说 Rebalance 的危害，大概如下：</p>
+<ol>
+<li>Rebalance 影响 Consumer 端 TPS，在 Rebalance 期间，Consumer 会停下手头的事情，什么也干不了，类似于 GC 中的 Stop The World。</li>
+<li>Rebalance 很慢，尤其是当 Group 下 Consumer 成员很多的时候，以我经历的项目为例，15 台机器，Rebalance 需要 5s。</li>
+<li>Rebalance 效率不高。当前 Kafka 的设计机制决定了每次 Rebalance 时，Group 下的所有成员都要参与进来，而且通常不会考虑局部性原理，但局部性原理对提升系统性能是特别重要的。</li>
+</ol>
+<h3 id="5-2-怎样尽可能避免-Rebalance"><a href="#5-2-怎样尽可能避免-Rebalance" class="headerlink" title="5.2 怎样尽可能避免 Rebalance"></a>5.2 怎样尽可能避免 Rebalance</h3><p>网上有很多文章说需要调节参数的，比如调节 <code>heartbeat.interval.ms</code> 和<code>session.timeout.ms</code> ，或者调节 <code>max.poll.interval.ms</code> 和 <code>max.poll.records</code>。</p>
+<p>但是个人认为，大多数情况下，我们根本不需要调节以上几个参数，使用默认值即可。</p>
+<p>真正应该去做的如下：</p>
+<ul>
+<li>优化业务逻辑代码，降低消费 RT</li>
+<li>Kafka 的业务消费逻辑一定要进行消费耗时监控，提前观察哪些 topic 对应的消费业务逻辑可能会存在极端耗时的情况。往往一个不起眼的，流量很小的，平时不大注意的 topic 在某些时刻就能让整个 Consumer 集群陷入崩溃的边缘</li>
+<li>凡是涉及调用第三方接口的，一定要做相关监控，不仅仅局限于 Kafka 链路，应用的任何链路都需要</li>
+</ul>
+<p><strong>监控、监控、监控！！！</strong></p>
+<p><strong>优化、优化、优化！！！</strong></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><p>《Apache Kafka 实战》</p>
+</li>
+<li><p>建议阅读：<a href="https://medium.com/streamthoughts/apache-kafka-rebalance-protocol-or-the-magic-behind-your-streams-applications-e94baf68e4f2" target="_blank" rel="noopener">https://medium.com/streamthoughts/apache-kafka-rebalance-protocol-or-the-magic-behind-your-streams-applications-e94baf68e4f2</a></p>
+</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/05/08/Kafka Rebalance/">Kafka Rebalance</a></p>
+ <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
+ <!-- <p><span>发布时间:</span>2020年05月08日 - 22:05</p> -->
+ <!-- <p><span>最后更新:</span>2022年01月11日 - 21:01</p> -->
+  <p><span>原始链接:</span><a href="/2020/05/08/Kafka Rebalance/" title="Kafka Rebalance">https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/" rel="next" title="Kafka的Topic、Partition、Segment那些事儿">
+                <i class="fa fa-chevron-left"></i> Kafka的Topic、Partition、Segment那些事儿
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/11/25/Kafka调优与详细参数说明/" rel="prev" title="Kafka调优与详细参数说明">
+                Kafka调优与详细参数说明 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
+            
+              <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-背景"><span class="nav-number">1.</span> <span class="nav-text">1. 背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Rebalance时机"><span class="nav-number">2.</span> <span class="nav-text">2. Rebalance时机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-心跳机制"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 心跳机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-消费超时"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 消费超时</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-1-Consumer-超时测试"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 Consumer 超时测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-2-消费配置建议"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.2.2 消费配置建议</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-详细配置说明"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 详细配置说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Rebalance原理"><span class="nav-number">3.</span> <span class="nav-text">3. Rebalance原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Consumer-Group-状态机"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 Consumer Group 状态机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-JoinGroup"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 JoinGroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-SyncGroup"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 SyncGroup</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-Rebalance场景"><span class="nav-number">3.4.</span> <span class="nav-text">3.3 Rebalance场景</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-1-新成员加入（应用上线）"><span class="nav-number">3.4.1.</span> <span class="nav-text">3.3.1 新成员加入（应用上线）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-2-成员注定离开（应用下线）"><span class="nav-number">3.4.2.</span> <span class="nav-text">3.3.2 成员注定离开（应用下线）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-3-成员奔溃离开（消费超时）"><span class="nav-number">3.4.3.</span> <span class="nav-text">3.3.3 成员奔溃离开（消费超时）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-生产环境故障处理"><span class="nav-number">4.</span> <span class="nav-text">4. 生产环境故障处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-不知名topic业务代码引起的故障"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 不知名topic业务代码引起的故障</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-1-告警"><span class="nav-number">4.1.1.</span> <span class="nav-text">4.1.1 告警</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-2-定位"><span class="nav-number">4.1.2.</span> <span class="nav-text">4.1.2 定位</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-3-处理"><span class="nav-number">4.1.3.</span> <span class="nav-text">4.1.3 处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-4-感悟"><span class="nav-number">4.1.4.</span> <span class="nav-text">4.1.4 感悟</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-请求三方授权接口耗时过高导致的故障"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 请求三方授权接口耗时过高导致的故障</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-1-告警"><span class="nav-number">4.2.1.</span> <span class="nav-text">4.2.1 告警</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-2-定位"><span class="nav-number">4.2.2.</span> <span class="nav-text">4.2.2 定位</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-3-处理"><span class="nav-number">4.2.3.</span> <span class="nav-text">4.2.3 处理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-4-后续"><span class="nav-number">4.2.4.</span> <span class="nav-text">4.2.4 后续</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-如何避免-Rebalance"><span class="nav-number">5.</span> <span class="nav-text">5. 如何避免 Rebalance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-Rebalance-的危害"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 Rebalance 的危害</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-怎样尽可能避免-Rebalance"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 怎样尽可能避免 Rebalance</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhaoxiaofa</span>
+
+  
+</div>
+
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
+
+
+
+ <!-- <span class="post-meta-divider">|</span> -->
+
+
+
+<!--
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+
+
+    <div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    </div>
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共54.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("UH24xFi41uXyyckTrmyvd1OH-gzGzoHsz", "z1TYVlqePlShQ6FNHkiWeCkL");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

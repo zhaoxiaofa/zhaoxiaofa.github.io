@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Kafka,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 前言Kafka 的调优包含四部分，操作系统、服务端、客户端。对于业务开发人员来讲，需要着重关注客户端的调优，操作系统和服务端一般由运维和中间件同学负责。 2. 目标对 Kafka 而言，调优一般是指吞吐量和延时。 3. 操作系统、服务端操作系统和服务端的调优了解下，主要是遇到问题能和运维、中间件同学对话，别让人觉得你啥都不懂，懒得理你。从个人经历来看，你懂的越多，运维、中间件同学越乐意给你答">
+<meta name="keywords" content="Kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka调优与详细参数说明">
+<meta property="og:url" content="https://zhaoxiaofa.com/2020/11/25/Kafka调优与详细参数说明/index.html">
+<meta property="og:site_name" content="赵小发">
+<meta property="og:description" content="1. 前言Kafka 的调优包含四部分，操作系统、服务端、客户端。对于业务开发人员来讲，需要着重关注客户端的调优，操作系统和服务端一般由运维和中间件同学负责。 2. 目标对 Kafka 而言，调优一般是指吞吐量和延时。 3. 操作系统、服务端操作系统和服务端的调优了解下，主要是遇到问题能和运维、中间件同学对话，别让人觉得你啥都不懂，懒得理你。从个人经历来看，你懂的越多，运维、中间件同学越乐意给你答">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/faf41ee0de96b7d7b121a3bba97c1f99ebd2e907/pictures/kafka/kafka_producer_buffer.png">
+<meta property="og:updated_time" content="2022-01-10T03:06:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka调优与详细参数说明">
+<meta name="twitter:description" content="1. 前言Kafka 的调优包含四部分，操作系统、服务端、客户端。对于业务开发人员来讲，需要着重关注客户端的调优，操作系统和服务端一般由运维和中间件同学负责。 2. 目标对 Kafka 而言，调优一般是指吞吐量和延时。 3. 操作系统、服务端操作系统和服务端的调优了解下，主要是遇到问题能和运维、中间件同学对话，别让人觉得你啥都不懂，懒得理你。从个人经历来看，你懂的越多，运维、中间件同学越乐意给你答">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/faf41ee0de96b7d7b121a3bba97c1f99ebd2e907/pictures/kafka/kafka_producer_buffer.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhaoxiaofa.com/2020/11/25/Kafka调优与详细参数说明/">
+
+
+
+
+
+  <title>Kafka调优与详细参数说明 | 赵小发</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">赵小发</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Winter is coming</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2020/11/25/Kafka调优与详细参数说明/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka调优与详细参数说明</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-25T21:09:56+08:00">
+                2020-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2020/11/25/Kafka调优与详细参数说明/" class="leancloud_visitors" data-flag-title="Kafka调优与详细参数说明">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  21
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>Kafka 的调优包含四部分，操作系统、服务端、客户端。对于业务开发人员来讲，需要着重关注客户端的调优，操作系统和服务端一般由运维和中间件同学负责。</p>
+<h2 id="2-目标"><a href="#2-目标" class="headerlink" title="2. 目标"></a>2. 目标</h2><p>对 Kafka 而言，调优一般是指吞吐量和延时。</p>
+<h2 id="3-操作系统、服务端"><a href="#3-操作系统、服务端" class="headerlink" title="3. 操作系统、服务端"></a>3. 操作系统、服务端</h2><p>操作系统和服务端的调优了解下，主要是遇到问题能和运维、中间件同学对话，别让人觉得你啥都不懂，懒得理你。从个人经历来看，你懂的越多，运维、中间件同学越乐意给你答疑。</p>
+<h3 id="3-1-操作系统"><a href="#3-1-操作系统" class="headerlink" title="3.1 操作系统"></a>3.1 操作系统</h3><p>操作系统的调优本人也不懂，但是 Kafka 的零拷贝依赖 Page Cache，所以预留给 Kafka 的 Page Cache 要足够，可以通过 Broker 端参数 <code>log.segment.bytes</code> 进行配置。</p>
+<h3 id="3-2-服务端"><a href="#3-2-服务端" class="headerlink" title="3.2 服务端"></a>3.2 服务端</h3><h4 id="3-2-1-JVM"><a href="#3-2-1-JVM" class="headerlink" title="3.2.1 JVM"></a>3.2.1 JVM</h4><p>因为 Kafka 也是 Java 应用，所以，JVM 调优是必须的。JVM 的调优主要涉及 GC 收集器的选择和 JVM 参数设置，Kafka 肯定部署在大内存的机器上，所以收集器选择 G1 而不是 CMS。</p>
+<p>使用 G1 时要注意大对象问题，可以适当地增加区域大小，对应的 JVM 参数为 -XX:+G1HeapRegionSize。</p>
+<h4 id="3-2-3-Broker"><a href="#3-2-3-Broker" class="headerlink" title="3.2.3 Broker"></a>3.2.3 Broker</h4><p>参数 <code>num.replica.fetchers</code> 表示的是 Follower 副本用多少个线程来拉取消息，默认使用 1 个线程。一般可以调大该值（小于 CPU 核数），加快 Follower 副本的同步速度，尤其是配置了 acks=all 的 Producer 程序，吞吐量会受副本同步性能的影响。</p>
+<h2 id="4-客户端"><a href="#4-客户端" class="headerlink" title="4. 客户端"></a>4. 客户端</h2><p>总体思路如下：</p>
+<ul>
+<li><strong>不要频繁地创建 Producer 和 Consumer 对象实例</strong>。</li>
+<li><strong>用完及时关闭</strong>，这些对象底层会创建很多物理资源。</li>
+<li><strong>合理利用多线程</strong>。Kafka 的 Producer 是线程安全的，可以多线程共用；而 Consumer 虽不是线程安全的，但同样有两种多线程使用方式。</li>
+</ul>
+<p>实际使用过程中，可以对参数设置进行调优，详细参数说明见<a href="https://kafka.apache.org/documentation/#configuration" target="_blank" rel="noopener">官网</a> 。其中，重要但是基本不可调的参数略过。</p>
+<h3 id="4-1-Producer参数"><a href="#4-1-Producer参数" class="headerlink" title="4.1 Producer参数"></a>4.1 Producer参数</h3><h4 id="buffer-memory-默认值：32M"><a href="#buffer-memory-默认值：32M" class="headerlink" title="buffer.memory 默认值：32M"></a>buffer.memory 默认值：32M</h4><blockquote>
+<p>The total bytes of memory the producer can use to buffer records waiting to be sent to the server. If records are sent faster than they can be delivered to the server the producer will block for <code>max.block.ms</code> after which it will throw an exception.</p>
+<p>This setting should correspond roughly to the total memory the producer will use, but is not a hard bound since not all memory the producer uses is used for buffering. Some additional memory will be used for compression (if compression is enabled) as well as for maintaining in-flight requests.</p>
+</blockquote>
+<p>多线程共用 Producer 时，可能会出现缓冲区不够的情况，此时会 block 住，block 时间若超过 <code>max.block.ms</code> ，会抛出异常（TimeoutException：Failed to allocate memory within the configured max blocking time）。</p>
+<p>可以通过<strong>调大该参数提高 Producer 的吞吐量</strong>。</p>
+<p>题外话：in-flight requests 指的是发送出去但是还没有收到响应的请求。</p>
+<h4 id="max-block-ms-默认值：1分钟"><a href="#max-block-ms-默认值：1分钟" class="headerlink" title="max.block.ms 默认值：1分钟"></a>max.block.ms 默认值：1分钟</h4><blockquote>
+<p>The configuration controls how long the <code>KafkaProducer</code>‘s <code>send()</code>, <code>partitionsFor()</code>, <code>initTransactions()</code>, <code>sendOffsetsToTransaction()</code>, <code>commitTransaction()</code> and <code>abortTransaction()</code> methods will block. For <code>send()</code> this timeout bounds the total time waiting for both metadata fetch and buffer allocation (blocking in the user-supplied serializers or partitioner is not counted against this timeout). For <code>partitionsFor()</code> this timeout bounds the time spent waiting for metadata if it is unavailable. The transaction-related methods always block, but may timeout if the transaction coordinator could not be discovered or did not respond within the timeout.</p>
+</blockquote>
+<p>Producer 很多 API 都依靠该值来控制 block 的最大时间。对 send 方法而言，该值规定了获取元数据和申请缓存去的时间（与上面 buffer.memory 的解释相呼应）；对 partitionsFor 方法而言，限定了元数据不可用时获取元数据的时间；对事物相关的方法而言，规定了无法发现协调者或协调者无法响应的时间。</p>
+<h4 id="batch-size-默认值：16Kb"><a href="#batch-size-默认值：16Kb" class="headerlink" title="batch.size 默认值：16Kb"></a>batch.size 默认值：16Kb</h4><blockquote>
+<p>The producer will attempt to batch records together into fewer requests whenever multiple records are being sent to the same partition. This helps performance on both the client and the server. This configuration controls the default batch size in bytes.</p>
+<p>No attempt will be made to batch records larger than this size.</p>
+<p>Requests sent to brokers will contain multiple batches, one for each partition with data available to be sent.</p>
+<p>A small batch size will make batching less common and may reduce throughput (a batch size of zero will disable batching entirely). A very large batch size may use memory a bit more wastefully as we will always allocate a buffer of the specified batch size in anticipation of additional records.</p>
+</blockquote>
+<p>批处理大小，适当调大该值，可以提高吞吐量。</p>
+<h4 id="linger-ms-默认值：0"><a href="#linger-ms-默认值：0" class="headerlink" title="linger.ms 默认值：0"></a>linger.ms 默认值：0</h4><blockquote>
+<p>The producer groups together any records that arrive in between request transmissions into a single batched request. Normally this occurs only under load when records arrive faster than they can be sent out. However in some circumstances the client may want to reduce the number of requests even under moderate load. This setting accomplishes this by adding a small amount of artificial delay—that is, rather than immediately sending out a record the producer will wait for up to the given delay to allow other records to be sent so that the sends can be batched together. This can be thought of as analogous to Nagle’s algorithm in TCP. This setting gives the upper bound on the delay for batching: once we get <code>batch.size</code> worth of records for a partition it will be sent immediately regardless of this setting, however if we have fewer than this many bytes accumulated for this partition we will ‘linger’ for the specified time waiting for more records to show up. This setting defaults to 0 (i.e. no delay). Setting <code>linger.ms=5</code>, for example, would have the effect of reducing the number of requests sent but would add up to 5ms of latency to records sent in the absence of load.</p>
+</blockquote>
+<p>这个参数和 <code>batch.size</code> 都是用于控制消息发送的，如果消息量达到  <code>batch.size</code>  会被立刻发送到 Server，如果时间达到 <code>linger.ms</code> 消息也会被发出。</p>
+<p>适当调大该值，可以提高吞吐量，但是消息延时也会更高。</p>
+<h4 id="max-request-size-默认值：1M"><a href="#max-request-size-默认值：1M" class="headerlink" title="max.request.size 默认值：1M"></a>max.request.size 默认值：1M</h4><blockquote>
+<p>The maximum size of a request in bytes. This setting will limit the number of record batches the producer will send in a single request to avoid sending huge requests. This is also effectively a cap on the maximum uncompressed record batch size. Note that the server has its own cap on the record batch size (after compression if compression is enabled) which may be different from this.</p>
+</blockquote>
+<p>定义了单次请求发送消息的最大值（压缩前），Server 端有类似的参数定义（压缩后）。</p>
+<h4 id="buffer-memory、batch-size、-max-request-size-三者大小关系"><a href="#buffer-memory、batch-size、-max-request-size-三者大小关系" class="headerlink" title="buffer.memory、batch.size、 max.request.size 三者大小关系"></a>buffer.memory、batch.size、 max.request.size 三者大小关系</h4><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/faf41ee0de96b7d7b121a3bba97c1f99ebd2e907/pictures/kafka/kafka_producer_buffer.png" alt></p>
+<p>注意：该图仅表示三者大小关系，并不代表内存存储结构。</p>
+<h4 id="compression-type-默认值：none"><a href="#compression-type-默认值：none" class="headerlink" title="compression.type 默认值：none"></a>compression.type 默认值：none</h4><blockquote>
+<p>The compression type for all data generated by the producer. The default is none (i.e. no compression). Valid values are <code>none</code>, <code>gzip</code>, <code>snappy</code>, <code>lz4</code>, or <code>zstd</code>. Compression is of full batches of data, so the efficacy of batching will also impact the compression ratio (more batching means better compression).</p>
+</blockquote>
+<p>如果希望提高吞吐量，可以使用压缩算法，减少网络 I/O，但是启用压缩算法会增大延时，毕竟压缩操作要消耗 CPU 时间。可根据业务自行选择，目前比较好的两个算法是 <strong>LZ4</strong> 和 <strong>zstd</strong>。</p>
+<p><strong>注意：</strong>如果 Broker 端指定了算法，Producer 最好和 Broker 的压缩算法保持一致，否则 Broker 在接受到消息之后会解压缩后再次按照 Broker 的压缩算法进行压缩，会导致 Broker 的 CPU 莫名的高。但是一般情况下，Broker 的压缩算法 producer，即 Broker 端会“尊重”Producer 端使用的压缩算法。Producer 配置前最好和中间件的同学确认好。</p>
+<h4 id="acks-默认值：all"><a href="#acks-默认值：all" class="headerlink" title="acks 默认值：all"></a>acks 默认值：all</h4><p>The number of acknowledgments the producer requires the leader to have received before considering a request complete. This controls the durability of records that are sent. The following settings are allowed:</p>
+<ul>
+<li><code>acks=0</code> If set to zero then the producer will not wait for any acknowledgment from the server at all. The record will be immediately added to the socket buffer and considered sent. No guarantee can be made that the server has received the record in this case, and the <code>retries</code> configuration will not take effect (as the client won’t generally know of any failures). The offset given back for each record will always be set to <code>-1</code>.</li>
+<li><code>acks=1</code> This will mean the leader will write the record to its local log but will respond without awaiting full acknowledgement from all followers. In this case should the leader fail immediately after acknowledging the record but before the followers have replicated it then the record will be lost.</li>
+<li><code>acks=all</code> This means the leader will wait for the full set of in-sync replicas to acknowledge the record. This guarantees that the record will not be lost as long as at least one in-sync replica remains alive. This is the strongest available guarantee. This is equivalent to the acks=-1 setting.</li>
+</ul>
+<p>如果希望生产者不丢消息，可以设置为 all，但是对应吞吐量会降低。</p>
+<h4 id="connections-max-idle-ms-默认值：9分钟"><a href="#connections-max-idle-ms-默认值：9分钟" class="headerlink" title="connections.max.idle.ms 默认值：9分钟"></a>connections.max.idle.ms 默认值：9分钟</h4><p>Close idle connections after the number of milliseconds specified by this config.</p>
+<h4 id="retries-默认值：int-最大值"><a href="#retries-默认值：int-最大值" class="headerlink" title="retries 默认值：int 最大值"></a>retries 默认值：int 最大值</h4><blockquote>
+<p>Setting a value greater than zero will cause the client to resend any record whose send fails with a potentially transient error. Note that this retry is no different than if the client resent the record upon receiving the error. Allowing retries without setting <code>max.in.flight.requests.per.connection</code> to 1 will potentially change the ordering of records because if two batches are sent to a single partition, and the first fails and is retried but the second succeeds, then the records in the second batch may appear first. Note additionally that produce requests will be failed before the number of retries has been exhausted if the timeout configured by <code>delivery.timeout.ms</code> expires first before successful acknowledgement. Users should generally prefer to leave this config unset and instead use <code>delivery.timeout.ms</code> to control retry behavior.</p>
+</blockquote>
+<p>这个重试和 Producer 客户端重新发送消息并没有本质区别，如果  <code>max.in.flight.requests.per.connection</code>  值不为 1，允许重试可能会导致消息顺序错乱（本质是 Kafka 批处理导致的）。</p>
+<p>如果请求总时间超过 <code>delivery.timeout.ms</code> 的配置，不会再重试。官方推荐使用者使用默认值，通过  <code>delivery.timeout.ms</code>  来控制成功行为，这也是为什么该值默认 int 最大值。</p>
+<h4 id="delivery-timeout-ms-默认值：2分钟"><a href="#delivery-timeout-ms-默认值：2分钟" class="headerlink" title="delivery.timeout.ms  默认值：2分钟"></a>delivery.timeout.ms  默认值：2分钟</h4><blockquote>
+<p>An upper bound on the time to report success or failure after a call to <code>send()</code> returns. This limits the total time that a record will be delayed prior to sending, the time to await acknowledgement from the broker (if expected), and the time allowed for retriable send failures. The producer may report failure to send a record earlier than this config if either an unrecoverable error is encountered, the retries have been exhausted, or the record is added to a batch which reached an earlier delivery expiration deadline. The value of this config should be greater than or equal to the sum of <code>request.timeout.ms</code> and <code>linger.ms</code>.</p>
+</blockquote>
+<h4 id="max-in-flight-requests-per-connection-默认值：5"><a href="#max-in-flight-requests-per-connection-默认值：5" class="headerlink" title="max.in.flight.requests.per.connection 默认值：5"></a>max.in.flight.requests.per.connection 默认值：5</h4><blockquote>
+<p>The maximum number of unacknowledged requests the client will send on a single connection before blocking. Note that if this config is set to be greater than 1 and <code>enable.idempotence</code> is set to false, there is a risk of message re-ordering after a failed send due to retries (i.e., if retries are enabled).</p>
+</blockquote>
+<p>客户端在阻塞前在单个连接上发送的未被确认的请求的最大数量。如果该值设置大于 1 且  <code>enable.idempotence</code>  设置为 false，消息可能在重试时乱序。</p>
+<h4 id="enable-idempotence-默认值：true"><a href="#enable-idempotence-默认值：true" class="headerlink" title="enable.idempotence 默认值：true"></a>enable.idempotence 默认值：true</h4><blockquote>
+<p>When set to ‘true’, the producer will ensure that exactly one copy of each message is written in the stream. If ‘false’, producer retries due to broker failures, etc., may write duplicates of the retried message in the stream. Note that enabling idempotence requires <code>max.in.flight.requests.per.connection</code> to be less than or equal to 5 (with message ordering preserved for any allowable value), <code>retries</code> to be greater than 0, and <code>acks</code> must be ‘all’. If these values are not explicitly set by the user, suitable values will be chosen. If incompatible values are set, a <code>ConfigException</code> will be thrown.</p>
+</blockquote>
+<p>当设置为 “true “时，Producer 将确保每条消息有一份副本被写入流中。如果设置为 “false”，Producer 由于失败重试，可能会在流中写入重试消息的副本。所以该参数和重试消息的顺序性相关。</p>
+<p>使用前提条件：</p>
+<blockquote>
+<p> <code>max.in.flight.requests.per.connection</code>&lt;= 5 &amp;&amp;  <code>retries</code>  &gt; 0 &amp;&amp; <code>acks</code> == ‘false’ </p>
+</blockquote>
+<h4 id="retry-backoff-ms-默认值：1秒"><a href="#retry-backoff-ms-默认值：1秒" class="headerlink" title="retry.backoff.ms 默认值：1秒"></a>retry.backoff.ms 默认值：1秒</h4><blockquote>
+<p>The amount of time to wait before attempting to retry a failed request to a given topic partition. This avoids repeatedly sending requests in a tight loop under some failure scenarios.</p>
+</blockquote>
+<p>重试间隔时间，一般使用默认值即可。</p>
+<p><strong>关于重试的总结</strong></p>
+<p>综上，如果想重试且让消息不乱序，<code>max.in.flight.requests.per.connection</code> 必须设置为1，且 <code>enable.idempotence</code> 必须设置为 true。<strong>此时吞吐量会下降</strong>。</p>
+<h4 id="request-timeout-ms-默认值：30秒"><a href="#request-timeout-ms-默认值：30秒" class="headerlink" title="request.timeout.ms 默认值：30秒"></a>request.timeout.ms 默认值：30秒</h4><blockquote>
+<p>The configuration controls the maximum amount of time the client will wait for the response of a request. If the response is not received before the timeout elapses the client will resend the request if necessary or fail the request if retries are exhausted. This should be larger than <code>replica.lag.time.max.ms</code> (a broker configuration) to reduce the possibility of message duplication due to unnecessary producer retries.</p>
+</blockquote>
+<p>一次请求等待响应的最大时间（包含重试），该值需要比 broker 配置中的 <code>replica.lag.time.max.ms</code> （follower 从 leader 同步数据的时间）大。</p>
+<h3 id="4-2-Consumer参数"><a href="#4-2-Consumer参数" class="headerlink" title="4.2 Consumer参数"></a>4.2 Consumer参数</h3><h4 id="fetch-min-bytes-默认值：1"><a href="#fetch-min-bytes-默认值：1" class="headerlink" title="fetch.min.bytes 默认值：1"></a>fetch.min.bytes 默认值：1</h4><blockquote>
+<p>The minimum amount of data the server should return for a fetch request. If insufficient data is available the request will wait for that much data to accumulate before answering the request. The default setting of 1 byte means that fetch requests are answered as soon as a single byte of data is available or the fetch request times out waiting for data to arrive. Setting this to something greater than 1 will cause the server to wait for larger amounts of data to accumulate which can improve server throughput a bit at the cost of some additional latency.</p>
+</blockquote>
+<p>拉取请求的最小数据量，默认值 1 byte，即只要有数据，就会拉取，<strong>如果增大该值，会增大吞吐量，但是同时也会增高延时。</strong></p>
+<h4 id="fetch-max-bytes-默认值：50M"><a href="#fetch-max-bytes-默认值：50M" class="headerlink" title="fetch.max.bytes 默认值：50M"></a>fetch.max.bytes 默认值：50M</h4><blockquote>
+<p>The maximum amount of data the server should return for a fetch request. Records are fetched in batches by the consumer, and if the first record batch in the first non-empty partition of the fetch is larger than this value, the record batch will still be returned to ensure that the consumer can make progress. As such, this is not a absolute maximum. The maximum record batch size accepted by the broker is defined via <code>message.max.bytes</code> (broker config) or <code>max.message.bytes</code> (topic config). Note that the consumer performs multiple fetches in parallel.</p>
+</blockquote>
+<p>该参数定义了批量拉取的最大数据量，但是该值并不绝对，如果第一条数据的大小已经超过了该配置值，会返回第一条，并不会报错。</p>
+<h4 id="max-partition-fetch-bytes-默认值：1M"><a href="#max-partition-fetch-bytes-默认值：1M" class="headerlink" title="max.partition.fetch.bytes 默认值：1M"></a>max.partition.fetch.bytes 默认值：1M</h4><blockquote>
+<p>The maximum amount of data per-partition the server will return. Records are fetched in batches by the consumer. If the first record batch in the first non-empty partition of the fetch is larger than this limit, the batch will still be returned to ensure that the consumer can make progress. The maximum record batch size accepted by the broker is defined via <code>message.max.bytes</code> (broker config) or <code>max.message.bytes</code> (topic config). See fetch.max.bytes for limiting the consumer request size.</p>
+</blockquote>
+<p>该参数定义单个 partition 批量拉取最大数据量。</p>
+<h4 id="fetch-max-wait-ms-默认值：500ms"><a href="#fetch-max-wait-ms-默认值：500ms" class="headerlink" title="fetch.max.wait.ms 默认值：500ms"></a>fetch.max.wait.ms 默认值：500ms</h4><blockquote>
+<p>The maximum amount of time the server will block before answering the fetch request if there isn’t sufficient data to immediately satisfy the requirement given by fetch.min.bytes.</p>
+</blockquote>
+<p>这个参数定义在拉取数据时最大等待时间，防止消费延时过高，一般和 <code>fetch.min.bytes</code> 往往配合使用。<br>数据量达到 <code>fetch.min.bytes</code> 的配置值或者等待时间达到 <code>fetch.max.wait.ms</code> 都会促使 Consumer 拉取消息。</p>
+<h4 id="heartbeat-interval-ms-默认值：3秒"><a href="#heartbeat-interval-ms-默认值：3秒" class="headerlink" title="heartbeat.interval.ms 默认值：3秒"></a>heartbeat.interval.ms 默认值：3秒</h4><blockquote>
+<p>The expected time between heartbeats to the consumer coordinator when using Kafka’s group management facilities. Heartbeats are used to ensure that the consumer’s session stays active and to facilitate rebalancing when new consumers join or leave the group. The value must be set lower than <code>session.timeout.ms</code>, but typically should be set no higher than 1/3 of that value. It can be adjusted even lower to control the expected time for normal rebalances.</p>
+</blockquote>
+<p>心跳间隔时间，需要小于 <code>session.timeout.ms</code> * 1/3 ，一般使用默认值。</p>
+<h4 id="session-timeout-ms-默认值：45秒"><a href="#session-timeout-ms-默认值：45秒" class="headerlink" title="session.timeout.ms 默认值：45秒"></a>session.timeout.ms 默认值：45秒</h4><blockquote>
+<p>The timeout used to detect client failures when using Kafka’s group management facility. The client sends periodic heartbeats to indicate its liveness to the broker. If no heartbeats are received by the broker before the expiration of this session timeout, then the broker will remove this client from the group and initiate a rebalance. Note that the value must be in the allowable range as configured in the broker configuration by <code>group.min.session.timeout.ms</code> and <code>group.max.session.timeout.ms</code>.</p>
+</blockquote>
+<p>超过该值而没有任何心跳发送给 Broker，Broker 会剔除 Consumer，进行 Reblance 。</p>
+<h4 id="auto-offset-reset-默认值：latest"><a href="#auto-offset-reset-默认值：latest" class="headerlink" title="auto.offset.reset 默认值：latest"></a>auto.offset.reset 默认值：latest</h4><blockquote>
+<p>What to do when there is no initial offset in Kafka or if the current offset does not exist any more on the server (e.g. because that data has been deleted):</p>
+<ul>
+<li>earliest: automatically reset the offset to the earliest offset</li>
+<li>latest: automatically reset the offset to the latest offset</li>
+<li>none: throw exception to the consumer if no previous offset is found for the consumer’s group</li>
+<li>anything else: throw exception to the consumer.</li>
+</ul>
+</blockquote>
+<p>一般选默认值即可。</p>
+<h4 id="enable-auto-commit-默认值：true"><a href="#enable-auto-commit-默认值：true" class="headerlink" title="enable.auto.commit 默认值：true"></a>enable.auto.commit 默认值：true</h4><blockquote>
+<p>If true the consumer’s offset will be periodically committed in the background.</p>
+</blockquote>
+<p>一般填 false。</p>
+<h4 id="max-poll-interval-ms-默认值：5分钟"><a href="#max-poll-interval-ms-默认值：5分钟" class="headerlink" title="max.poll.interval.ms 默认值：5分钟"></a>max.poll.interval.ms 默认值：5分钟</h4><blockquote>
+<p>The maximum delay between invocations of poll() when using consumer group management. This places an upper bound on the amount of time that the consumer can be idle before fetching more records. If poll() is not called before expiration of this timeout, then the consumer is considered failed and the group will rebalance in order to reassign the partitions to another member. For consumers using a non-null <code>group.instance.id</code> which reach this timeout, partitions will not be immediately reassigned. Instead, the consumer will stop sending heartbeats and partitions will be reassigned after expiration of <code>session.timeout.ms</code>. This mirrors the behavior of a static consumer which has shutdown.</p>
+</blockquote>
+<p>如果超过该值 Consumer 没有 poll，会 Rebalance ，而对于  <code>group.instance.id</code>  配置不为空的，会再等待 <code>session.timeout.ms</code> 的时间才 Rebalance。</p>
+<h4 id="max-poll-records-默认值：500"><a href="#max-poll-records-默认值：500" class="headerlink" title="max.poll.records 默认值：500"></a>max.poll.records 默认值：500</h4><blockquote>
+<p>The maximum number of records returned in a single call to poll(). Note, that <code>max.poll.records</code> does not impact the underlying fetching behavior. The consumer will cache the records from each fetch request and returns them incrementally from each poll.</p>
+</blockquote>
+<p>该值定义单个 poll 返回的最大记录数。</p>
+<p><strong>注意：</strong>这个配置并不会影响 Consumer 底层拉取 Broker 消息的行为，Consumer 拉取消息后会将数据缓存在客户端，这个值只影响每次从缓存中读取消息进行业务处理的数据条数。</p>
+<p>需要满足 <code>max.poll.records</code> * 每条消息的业务耗时 &gt; <code>max.poll.interval.ms</code> ，否则容易造成消费过慢集群 Rebalance。</p>
+<h3 id="4-3-客户端调优总结"><a href="#4-3-客户端调优总结" class="headerlink" title="4.3 客户端调优总结"></a>4.3 客户端调优总结</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">客户端</th>
+<th style="text-align:center">调优方式</th>
+<th style="text-align:center">调优结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">增大batch.size</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">增大linger.ms</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">启用压缩算法</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">ack=0或1</td>
+<td style="text-align:center">吞吐量增大（有丢消息的风险）</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">设置压缩算法</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">多线程共享Producer，增大buffer.memory</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">linger.ms=0</td>
+<td style="text-align:center">延迟减小</td>
+</tr>
+<tr>
+<td style="text-align:center">Producer</td>
+<td style="text-align:center">不用压缩算法</td>
+<td style="text-align:center">延迟减小</td>
+</tr>
+<tr>
+<td style="text-align:center">Consumer</td>
+<td style="text-align:center">多线程消费</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Consumer</td>
+<td style="text-align:center">增大 fetch.min.bytes</td>
+<td style="text-align:center">吞吐量增大</td>
+</tr>
+<tr>
+<td style="text-align:center">Consumer</td>
+<td style="text-align:center">fetch.min.bytes=1</td>
+<td style="text-align:center">延迟减小</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>小结：有时候吞吐量和延时这两个指标是互斥的，吞吐量涨了，延时可能就会变大，所以需要根据自身业务场景合理选择是追求高吞吐量还是低延时。</p>
+<p>对于绝大多数的业务开发同学来说，需要做的是合理的使用 Kafka 提供的 API，并且合理的配置好各参数。</p>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/11/25/Kafka调优与详细参数说明/">Kafka调优与详细参数说明</a></p>
+ <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
+ <!-- <p><span>发布时间:</span>2020年11月25日 - 21:11</p> -->
+ <!-- <p><span>最后更新:</span>2022年01月10日 - 11:01</p> -->
+  <p><span>原始链接:</span><a href="/2020/11/25/Kafka调优与详细参数说明/" title="Kafka调优与详细参数说明">https://zhaoxiaofa.com/2020/11/25/Kafka调优与详细参数说明/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2020/11/25/Kafka调优与详细参数说明/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/08/Kafka Rebalance/" rel="next" title="Kafka Rebalance">
+                <i class="fa fa-chevron-left"></i> Kafka Rebalance
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/09/23/Kafka 无消息丢失配置/" rel="prev" title="Kafka无消息丢失配置">
+                Kafka无消息丢失配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
+            
+              <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-目标"><span class="nav-number">2.</span> <span class="nav-text">2. 目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-操作系统、服务端"><span class="nav-number">3.</span> <span class="nav-text">3. 操作系统、服务端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-操作系统"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 操作系统</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-服务端"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 服务端</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-JVM"><span class="nav-number">3.2.1.</span> <span class="nav-text">3.2.1 JVM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-3-Broker"><span class="nav-number">3.2.2.</span> <span class="nav-text">3.2.3 Broker</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-客户端"><span class="nav-number">4.</span> <span class="nav-text">4. 客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-Producer参数"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 Producer参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#buffer-memory-默认值：32M"><span class="nav-number">4.1.1.</span> <span class="nav-text">buffer.memory 默认值：32M</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-block-ms-默认值：1分钟"><span class="nav-number">4.1.2.</span> <span class="nav-text">max.block.ms 默认值：1分钟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#batch-size-默认值：16Kb"><span class="nav-number">4.1.3.</span> <span class="nav-text">batch.size 默认值：16Kb</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#linger-ms-默认值：0"><span class="nav-number">4.1.4.</span> <span class="nav-text">linger.ms 默认值：0</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-request-size-默认值：1M"><span class="nav-number">4.1.5.</span> <span class="nav-text">max.request.size 默认值：1M</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#buffer-memory、batch-size、-max-request-size-三者大小关系"><span class="nav-number">4.1.6.</span> <span class="nav-text">buffer.memory、batch.size、 max.request.size 三者大小关系</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#compression-type-默认值：none"><span class="nav-number">4.1.7.</span> <span class="nav-text">compression.type 默认值：none</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#acks-默认值：all"><span class="nav-number">4.1.8.</span> <span class="nav-text">acks 默认值：all</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#connections-max-idle-ms-默认值：9分钟"><span class="nav-number">4.1.9.</span> <span class="nav-text">connections.max.idle.ms 默认值：9分钟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#retries-默认值：int-最大值"><span class="nav-number">4.1.10.</span> <span class="nav-text">retries 默认值：int 最大值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#delivery-timeout-ms-默认值：2分钟"><span class="nav-number">4.1.11.</span> <span class="nav-text">delivery.timeout.ms  默认值：2分钟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-in-flight-requests-per-connection-默认值：5"><span class="nav-number">4.1.12.</span> <span class="nav-text">max.in.flight.requests.per.connection 默认值：5</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#enable-idempotence-默认值：true"><span class="nav-number">4.1.13.</span> <span class="nav-text">enable.idempotence 默认值：true</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#retry-backoff-ms-默认值：1秒"><span class="nav-number">4.1.14.</span> <span class="nav-text">retry.backoff.ms 默认值：1秒</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#request-timeout-ms-默认值：30秒"><span class="nav-number">4.1.15.</span> <span class="nav-text">request.timeout.ms 默认值：30秒</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-Consumer参数"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 Consumer参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#fetch-min-bytes-默认值：1"><span class="nav-number">4.2.1.</span> <span class="nav-text">fetch.min.bytes 默认值：1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fetch-max-bytes-默认值：50M"><span class="nav-number">4.2.2.</span> <span class="nav-text">fetch.max.bytes 默认值：50M</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-partition-fetch-bytes-默认值：1M"><span class="nav-number">4.2.3.</span> <span class="nav-text">max.partition.fetch.bytes 默认值：1M</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#fetch-max-wait-ms-默认值：500ms"><span class="nav-number">4.2.4.</span> <span class="nav-text">fetch.max.wait.ms 默认值：500ms</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#heartbeat-interval-ms-默认值：3秒"><span class="nav-number">4.2.5.</span> <span class="nav-text">heartbeat.interval.ms 默认值：3秒</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#session-timeout-ms-默认值：45秒"><span class="nav-number">4.2.6.</span> <span class="nav-text">session.timeout.ms 默认值：45秒</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#auto-offset-reset-默认值：latest"><span class="nav-number">4.2.7.</span> <span class="nav-text">auto.offset.reset 默认值：latest</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#enable-auto-commit-默认值：true"><span class="nav-number">4.2.8.</span> <span class="nav-text">enable.auto.commit 默认值：true</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-poll-interval-ms-默认值：5分钟"><span class="nav-number">4.2.9.</span> <span class="nav-text">max.poll.interval.ms 默认值：5分钟</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#max-poll-records-默认值：500"><span class="nav-number">4.2.10.</span> <span class="nav-text">max.poll.records 默认值：500</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-客户端调优总结"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 客户端调优总结</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhaoxiaofa</span>
+
+  
+</div>
+
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
+
+
+
+ <!-- <span class="post-meta-divider">|</span> -->
+
+
+
+<!--
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+
+
+    <div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    </div>
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共54.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("UH24xFi41uXyyckTrmyvd1OH-gzGzoHsz", "z1TYVlqePlShQ6FNHkiWeCkL");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

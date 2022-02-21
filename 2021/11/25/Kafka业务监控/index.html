@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Kafka,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 前言本文只探讨 Kafka 业务监控，基础监控（CPU、内存、JVM等）以及服务端 Broker 不在本文考虑范围内，这些一般属于中间件团队。 2. 业务指标2.1 Producer生产者主要关注的是发送速率和延迟，具体指标如下：  发送消息数 / {time}：在 time 时间段内一共发送的消息数 batch-size-avg：Sender 线程实际发送消息时一个批次（ProducerB">
+<meta name="keywords" content="Kafka">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka业务监控">
+<meta property="og:url" content="https://zhaoxiaofa.com/2021/11/25/Kafka业务监控/index.html">
+<meta property="og:site_name" content="赵小发">
+<meta property="og:description" content="1. 前言本文只探讨 Kafka 业务监控，基础监控（CPU、内存、JVM等）以及服务端 Broker 不在本文考虑范围内，这些一般属于中间件团队。 2. 业务指标2.1 Producer生产者主要关注的是发送速率和延迟，具体指标如下：  发送消息数 / {time}：在 time 时间段内一共发送的消息数 batch-size-avg：Sender 线程实际发送消息时一个批次（ProducerB">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-01-10T06:04:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kafka业务监控">
+<meta name="twitter:description" content="1. 前言本文只探讨 Kafka 业务监控，基础监控（CPU、内存、JVM等）以及服务端 Broker 不在本文考虑范围内，这些一般属于中间件团队。 2. 业务指标2.1 Producer生产者主要关注的是发送速率和延迟，具体指标如下：  发送消息数 / {time}：在 time 时间段内一共发送的消息数 batch-size-avg：Sender 线程实际发送消息时一个批次（ProducerB">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhaoxiaofa.com/2021/11/25/Kafka业务监控/">
+
+
+
+
+
+  <title>Kafka业务监控 | 赵小发</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">赵小发</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Winter is coming</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2021/11/25/Kafka业务监控/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kafka业务监控</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-11-25T23:09:56+08:00">
+                2021-11-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka/" itemprop="url" rel="index">
+                    <span itemprop="name">Kafka</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2021/11/25/Kafka业务监控/" class="leancloud_visitors" data-flag-title="Kafka业务监控">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  8
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h2><p>本文只探讨 Kafka 业务监控，基础监控（CPU、内存、JVM等）以及服务端 Broker 不在本文考虑范围内，这些一般属于中间件团队。</p>
+<h2 id="2-业务指标"><a href="#2-业务指标" class="headerlink" title="2. 业务指标"></a>2. 业务指标</h2><h3 id="2-1-Producer"><a href="#2-1-Producer" class="headerlink" title="2.1 Producer"></a>2.1 Producer</h3><p>生产者主要关注的是发送速率和延迟，具体指标如下：</p>
+<ul>
+<li>发送消息数 / {time}：在 time 时间段内一共发送的消息数</li>
+<li>batch-size-avg：Sender 线程实际发送消息时一个批次（ProducerBatch）的平均大小 </li>
+<li>batch-size-max：Sender 线程时间发送消息时一个批次的最大大小</li>
+<li>平均发送延时： 执行了 send 函数到返回结果的平均耗时</li>
+<li>最高发送延时：这段时间内 send 执行后返回结果最长的一次耗时</li>
+</ul>
+<p>如果 <code>batch-size-avg</code> 值远小于 <code>batch.size</code>，说明吞吐量不够，可以适当调大 <code>linger.ms</code> 。</p>
+<p>如果平均发送延时较高，比如超过 10ms，说明网络或者 Kafka 服务端负载过高，及时联系中间件和运维团队。</p>
+<p>如果经常出现生产者发送消息时报 TimeOutException:Failed to allocate memory within the configured max blocking time，检查 <code>buffer.memory</code> 是否设置过小或者消息过大。</p>
+<h3 id="2-2-Consumer"><a href="#2-2-Consumer" class="headerlink" title="2.2 Consumer"></a>2.2 Consumer</h3><p>消费者主要关注消费等待时间、业务逻辑耗时、拉取数据量、Rebalance、私信队列等指标，具体如下：</p>
+<ul>
+<li>平均消费等待时间：从消息发送到 Broker 到被开始被 Consumer 拉取的间隔时间</li>
+<li>最大消费等待时间：语义同上，某一个时间段内的最大等待时间</li>
+<li>平均业务逻辑耗时</li>
+<li>最大业务逻辑耗时</li>
+<li>指定时间内消费数</li>
+<li>消费失败次数、消费重试次数</li>
+<li>死信队列消息数</li>
+<li>Rebalance 次数</li>
+<li><strong>平均每次拉取消息数量</strong></li>
+<li><strong>平均每次拉取消息大小</strong></li>
+</ul>
+<p>平均等待时间如果过长，需要考虑优化延时，一般 100ms 以下比较正常，需要结合自身业务情况分析。</p>
+<p>业务逻辑耗时尽量不要超过 200ms，如果最大业务逻辑耗时有特别大的，要定位到原因，避免出现极端情况下导致 Rebalance。</p>
+<p>死信队列大于 0，一般来说是业务代码问题，需要分析相关日志。</p>
+<p>Rebalance 一般只会在重启、发布、下线等操作才会发生，如果日常会发生 Rebalance，说明消费不正常，需要调节参数或优化代码解决。</p>
+<h2 id="3-监控工具"><a href="#3-监控工具" class="headerlink" title="3. 监控工具"></a>3. 监控工具</h2><p>常见监控工具有 JMX、Kafka Manager、Prometheus + Grafana，一般来讲，中间件团队都会提供基础的监控，在 2.2 中，除了 <strong>平均每次拉取消息数量</strong> 和 <strong>平均每次拉取消息大小</strong> 外，其余指标，我司中间件团队的监控中均有采集。</p>
+<h4 id="3-1-自定义-Kafka-指标采集"><a href="#3-1-自定义-Kafka-指标采集" class="headerlink" title="3.1 自定义 Kafka 指标采集"></a>3.1 自定义 Kafka 指标采集</h4><p>Kafka 的 metrics 监控提供了一个接口 org.apache.kafka.common.metrics.MetricsReporter，只要实现该接口，可以获取到监控数据 org.apache.kafka.common.metrics.KafkaMetric。</p>
+<p>然后定期将 KafkaMetric 中的数据解析出来，收集到 Prometheus + Grafana 的监控平台中。</p>
+<p>以下是 Demo，生产环境解析收集会复杂的多。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerMetricMonitor</span> <span class="keyword">implements</span> <span class="title">MetricsReporter</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Logger logger = LoggerFactory.getLogger(ConsumerMetricMonitor.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">(List&lt;KafkaMetric&gt; list)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isNotEmpty(list)) &#123;</span><br><span class="line">            <span class="keyword">for</span> (KafkaMetric kafkaMetric : list) &#123;</span><br><span class="line">                logSingleMetric(kafkaMetric, <span class="string">"init"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">metricChange</span><span class="params">(KafkaMetric kafkaMetric)</span> </span>&#123;</span><br><span class="line">        logSingleMetric(kafkaMetric, <span class="string">"change"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">metricRemoval</span><span class="params">(KafkaMetric kafkaMetric)</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(Map&lt;String, ?&gt; map)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">logSingleMetric</span><span class="params">(KafkaMetric kafkaMetric, String type)</span> </span>&#123;</span><br><span class="line">        String name = kafkaMetric.metricName().name();</span><br><span class="line">        String clientId = kafkaMetric.metricName().tags().get(<span class="string">"client-id"</span>);</span><br><span class="line">        String topic = kafkaMetric.metricName().tags().get(<span class="string">"topic"</span>);</span><br><span class="line">        logger.info(<span class="string">"监控kafka数据,type:&#123;&#125;,topic:&#123;&#125;, name:&#123;&#125;,clientId:&#123;&#125;,metric:&#123;&#125;"</span>,</span><br><span class="line">                type, topic, name, clientId, kafkaMetric.metricName().tags());</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == topic || <span class="keyword">null</span> == clientId) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        ConsumerMetricLog.registerMetric(topic, name, clientId, kafkaMetric);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>按照 topic、监控指标名称、consumer 存储 KafkaMetric 数据，定期统计到监控台。 </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConsumerMetricLog</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Logger logger = LoggerFactory.getLogger(ConsumerMetricLog.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String<span class="comment">/*topic*/</span>, Map&lt;String<span class="comment">/*name*/</span>, Map&lt;String<span class="comment">/*consumerId*/</span>, KafkaMetric&gt;&gt;&gt; metricMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 定时线程池</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> ScheduledThreadPoolExecutor THREAD_POOL_EXECUTOR =</span><br><span class="line">            <span class="keyword">new</span> ScheduledThreadPoolExecutor(<span class="number">1</span>, <span class="keyword">new</span> DefaultManagedAwareThreadFactory(), <span class="keyword">new</span> ThreadPoolExecutor.AbortPolicy());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        THREAD_POOL_EXECUTOR.scheduleAtFixedRate(() -&gt; &#123;</span><br><span class="line">            doLog();</span><br><span class="line">        &#125;, <span class="number">3</span>, <span class="number">10</span>, TimeUnit.SECONDS);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doLog</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        metricMap.forEach((topic, nameMap) -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (MapUtils.isEmpty(nameMap)) &#123;</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            nameMap.forEach((name, consumerMap) -&gt; &#123;</span><br><span class="line">                <span class="keyword">if</span> (MapUtils.isEmpty(consumerMap)) &#123;</span><br><span class="line">                    <span class="keyword">return</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">double</span> avg = consumerMap.values().stream()</span><br><span class="line">                        .mapToDouble(mm -&gt; (Double) mm.metricValue())</span><br><span class="line">                        .filter(d -&gt; !Double.isNaN(d))</span><br><span class="line">                        .average()</span><br><span class="line">                        .orElse(-<span class="number">1</span>D);</span><br><span class="line">                <span class="keyword">if</span> (Double.isNaN(avg)) &#123;</span><br><span class="line">                    avg = -<span class="number">1</span>D;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (avg &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">                    logger.info(<span class="string">"kafka monitor,topic=&#123;&#125;,name=&#123;&#125;,value=&#123;&#125;"</span>, topic, name, avg);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 注册</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> topic</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> name</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> consumerId</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> kafkaMetric</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">registerMetric</span><span class="params">(String topic, String name, String consumerId, KafkaMetric kafkaMetric)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == metricMap) &#123;</span><br><span class="line">            metricMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        Map&lt;String, Map&lt;String, KafkaMetric&gt;&gt; nameMap = metricMap.get(topic);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == nameMap) &#123;</span><br><span class="line">            nameMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        Map&lt;String, KafkaMetric&gt; consumerMap = nameMap.get(consumerId);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> == consumerMap) &#123;</span><br><span class="line">            consumerMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        consumerMap.put(consumerId, kafkaMetric);</span><br><span class="line">        nameMap.put(name, consumerMap);</span><br><span class="line">        metricMap.put(topic, nameMap);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Consumer 的代码中只需要添加 <code>metric.reporters</code> 的配置即可。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line">        props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</span><br><span class="line">        props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"group.id"</span>, <span class="string">"333"</span>);</span><br><span class="line">        props.put(<span class="string">"enable.auto.commit"</span>, <span class="string">"true"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.commit.interval.ms"</span>, <span class="string">"1000"</span>);</span><br><span class="line">        props.put(<span class="string">"session.timeout.ms"</span>, <span class="string">"30000"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.offset.reset"</span>, <span class="string">"latest"</span>);</span><br><span class="line">        props.put(<span class="string">"fetch.min.bytes"</span>, <span class="number">1000</span>);</span><br><span class="line">        props.setProperty(<span class="string">"metric.reporters"</span>, ConsumerMetricMonitor.class.getName());</span><br><span class="line">        KafkaConsumer&lt;String, String&gt; kafkaConsumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</span><br><span class="line">        kafkaConsumer.subscribe(Arrays.asList(TOPIC));</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            ConsumerRecords&lt;String, String&gt; consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(<span class="number">3</span>));</span><br><span class="line">            <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : consumerRecords) &#123;</span><br><span class="line">                System.out.println(<span class="string">"=======receive: key = "</span> + record.key() + <span class="string">", value = "</span> + record.value() + <span class="string">" offset==="</span> + record.offset());</span><br><span class="line">                Thread.sleep(<span class="number">100</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>运行后，部分日志输出如下：</p>
+<blockquote>
+<p>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=bytes-consumed-rate,value=2.363349896982184<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-lag,value=0.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-lag-avg,value=0.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=fetch-size-max,value=78.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-consumed-total,value=6.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-lead-min,value=205223.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-lead-avg,value=205223.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-lead,value=205223.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=bytes-consumed-total,value=78.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-lag-max,value=0.0<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=records-consumed-rate,value=0.18179614592170648<br>2022-01-04 11:53:45.275 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=<strong>records-per-request-avg</strong>,value=6.0<br>2022-01-04 11:53:45.276 [DefaultManagedAwareThreadFactory-1] INFO  c.x.kafka.demo.consumer.metric.ConsumerMetricLog - kafka monitor,topic=xiaofa,name=<strong>fetch-size-avg,value</strong>=78.0</p>
+</blockquote>
+<p>其中，<code>records-per-request-avg</code> 是”平均每次拉取消息数量“，<code>fetch-size-avg</code> 是 ”平均每次拉取消息大小“。</p>
+<p>这里只是给了一个简单的示例，详细的 Kafka 统计指标可参见 org.apache.kafka.clients.consumer.internals.FetcherMetricsRegistry。可根据自身业务需要统计对应指标。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>关于 Kafka 的系统监控，可以参考腾讯云的文章：<a href="https://cloud.tencent.com/developer/article/1554002" target="_blank" rel="noopener">https://cloud.tencent.com/developer/article/1554002</a></p>
+<p>《Apache Kafka 实战》</p>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2021/11/25/Kafka业务监控/">Kafka业务监控</a></p>
+ <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
+ <!-- <p><span>发布时间:</span>2021年11月25日 - 23:11</p> -->
+ <!-- <p><span>最后更新:</span>2022年01月10日 - 14:01</p> -->
+  <p><span>原始链接:</span><a href="/2021/11/25/Kafka业务监控/" title="Kafka业务监控">https://zhaoxiaofa.com/2021/11/25/Kafka业务监控/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2021/11/25/Kafka业务监控/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/11/25/项目Kafka参数调优/" rel="next" title="项目Kafka参数调优">
+                <i class="fa fa-chevron-left"></i> 项目Kafka参数调优
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2021/12/23/技术视角看西安一码通/" rel="prev" title="技术视角看西安一码通">
+                技术视角看西安一码通 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
+            
+              <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-业务指标"><span class="nav-number">2.</span> <span class="nav-text">2. 业务指标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-Producer"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 Producer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-Consumer"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 Consumer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-监控工具"><span class="nav-number">3.</span> <span class="nav-text">3. 监控工具</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-自定义-Kafka-指标采集"><span class="nav-number">3.0.1.</span> <span class="nav-text">3.1 自定义 Kafka 指标采集</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhaoxiaofa</span>
+
+  
+</div>
+
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
+
+
+
+ <!-- <span class="post-meta-divider">|</span> -->
+
+
+
+<!--
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+
+
+    <div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    </div>
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共54.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("UH24xFi41uXyyckTrmyvd1OH-gzGzoHsz", "z1TYVlqePlShQ6FNHkiWeCkL");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

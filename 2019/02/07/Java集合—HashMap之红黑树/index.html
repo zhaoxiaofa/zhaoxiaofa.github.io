@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HashMap,Java集合,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
+<meta name="keywords" content="HashMap,Java集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java集合—HashMap之红黑树">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/index.html">
+<meta property="og:site_name" content="赵小发">
+<meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_01.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_02.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_01.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_02.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_03.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_04.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_05.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_06.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/1dcbaaa72fba00afd6542b457b4bfae896a1a373/pictures/collection/hashmap/hashmap_tree_07.png">
+<meta property="og:updated_time" content="2020-01-18T04:38:28.281Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java集合—HashMap之红黑树">
+<meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/">
+
+
+
+
+
+  <title>Java集合—HashMap之红黑树 | 赵小发</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">赵小发</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Winter is coming</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java集合—HashMap之红黑树</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-07T23:09:56+08:00">
+                2019-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java集合/" itemprop="url" rel="index">
+                    <span itemprop="name">Java集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/02/07/Java集合—HashMap之红黑树/" class="leancloud_visitors" data-flag-title="Java集合—HashMap之红黑树">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  11
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><p>上一篇文章 <a href="https://zhaoxiaofa.com/2019/02/06/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8Bresize%E6%96%B9%E6%B3%95/#more">Java集合—HashMap之resize方法</a> 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。</p>
+<h3 id="2-5-红黑树"><a href="#2-5-红黑树" class="headerlink" title="2.5 红黑树"></a>2.5 红黑树</h3><h4 id="2-5-1-多大的数据量会转化为红黑树？"><a href="#2-5-1-多大的数据量会转化为红黑树？" class="headerlink" title="2.5.1 多大的数据量会转化为红黑树？"></a>2.5.1 多大的数据量会转化为红黑树？</h4><p>我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已经能够保证及时的进行扩容，其实链表的长度超过 8 是一件很难的事情。那么在实际的使用过程中，出现红黑树的概率很小。只有当数据量及其庞大的时候，才可能会出现树化（链表转红黑树）。</p>
+<p>那么到底多大的数据量会出现呢？我闲来无事做了个试验。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line">        <span class="keyword">int</span> max = <span class="number">100000000</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; max; i++) &#123;</span><br><span class="line">            String string = UUID.randomUUID().toString();</span><br><span class="line">            map.put(string, string);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上述代码所示，循环一亿次，每次随机生成 key ，我在 HashMap 的 putVal 方法中的 treeifyBin(tab, hash) 这行代码打个断点，debug 一下，看什么时候会进入这个断点，就能看的什么时候进行树化，并记录下此时 size 的值。如下面截图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_01.png" alt></p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_02.png" alt></p>
+<p>此时，size 的值 为 1528475，即往 HashMap 中插入 1528475 条数据才会出现链表转化为红黑树。我们执行十次，最终记录的十次 size 如下所示：</p>
+<blockquote>
+<p>1528475、5654463、6267869、1495463、9770744、</p>
+<p>2869246、2839446、2812804、1327125、4950783。</p>
+</blockquote>
+<p>可以看出，只有在几百万数据量的时候，才会转化为红黑树。</p>
+<p>这个时候我们想一想，有谁会在 HashMap 中存入几百万的数据？我们知道，Spring 存储 bean 用的是 ConcurrentHashMap，Eureka 存储服务注册实例也是用的 ConcurrentHashMap ，RocketMQ 的 NameServer 存储路由元数据是用的 HashMap 。</p>
+<p>在开源框架里面，HashMap/ConcurrentHashMap 作为内存存储数据非常常见。但是不会在 Spring 中出现几百万个 bean，也不会注册几百万个服务实例到 Eureka，更不可能有几百万个 Broker 注册到 NameServer 中。</p>
+<p>综上所示，HashMap 的红黑树只有在极少场景下才可能会用到。但是呢，原理我们还是要研究滴！</p>
+<h4 id="2-5-1-为什么是8和64？"><a href="#2-5-1-为什么是8和64？" class="headerlink" title="2.5.1 为什么是8和64？"></a>2.5.1 为什么是8和64？</h4><p>我们来回忆下，在链表的长度大于等于 8 并且数组的长度大于等于 64 时，链表才会转化为红黑树。那为什么是 8 呢？我们接下来慢慢讲。</p>
+<p>首先思考一个问题：为什么要转化为红黑树？如果只是用链表会有什么问题？其实原因很简单，红黑树查询比链表快，如果 hash 冲突很严重，链表长度过长，会导致查询很慢。</p>
+<p>那再思考一个问题：既然红黑树查询快为什么还要链表，直接数组 + 红黑树不香吗？原因是红黑树查询快，但是插入慢，每次插入都可能伴随着节点的变色或者旋转，而且存储红黑树需要的内存比链表大。这就需要我们在存储空间和查询时间之间做一个平衡了，这个很符合中国人的中庸之道嘛。</p>
+<p>还记得之前文章中写的负载因子 0.75 的来历吗？0.75 就是官方在时间和空间上取的一个平衡。那这个 8 是不是也是取的一个平衡呢？</p>
+<p>来，我们来看看源码注释：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">* Because TreeNodes are about twice the size of regular nodes, we</span><br><span class="line">* use them only when bins contain enough nodes to warrant use</span><br><span class="line">* (see TREEIFY_THRESHOLD). <span class="function">And when they become too <span class="title">small</span> <span class="params">(due to</span></span></span><br><span class="line"><span class="function"><span class="params">* removal or resizing)</span> they are converted back to plain bins.  In</span></span><br><span class="line"><span class="function">* usages with well-distributed user hashCodes, tree bins are</span></span><br><span class="line"><span class="function">* rarely used.  Ideally, under random hashCodes, the frequency of</span></span><br><span class="line"><span class="function">* nodes in bins follows a Poisson distribution</span></span><br><span class="line"><span class="function">* <span class="params">(http://en.wikipedia.org/wiki/Poisson_distribution)</span> with a</span></span><br><span class="line"><span class="function">* parameter of about 0.5 on average <span class="keyword">for</span> the <span class="keyword">default</span> resizing</span></span><br><span class="line"><span class="function">* threshold of 0.75, although with a large variance because of</span></span><br><span class="line"><span class="function">* resizing granularity. Ignoring variance, the expected</span></span><br><span class="line"><span class="function">* occurrences of list size k <span class="title">are</span> <span class="params">(exp(<span class="number">-0.5</span>)</span> * <span class="title">pow</span><span class="params">(<span class="number">0.5</span>, k)</span> /</span></span><br><span class="line"><span class="function">* <span class="title">factorial</span><span class="params">(k)</span>). The first values are:</span></span><br><span class="line"><span class="function">*</span></span><br><span class="line"><span class="function">* 0:    0.60653066</span></span><br><span class="line"><span class="function">* 1:    0.30326533</span></span><br><span class="line"><span class="function">* 2:    0.07581633</span></span><br><span class="line"><span class="function">* 3:    0.01263606</span></span><br><span class="line"><span class="function">* 4:    0.00157952</span></span><br><span class="line"><span class="function">* 5:    0.00015795</span></span><br><span class="line"><span class="function">* 6:    0.00001316</span></span><br><span class="line"><span class="function">* 7:    0.00000094</span></span><br><span class="line"><span class="function">* 8:    0.00000006</span></span><br><span class="line"><span class="function">* more: less than 1 in ten million</span></span><br></pre></td></tr></table></figure>
+<p>简单翻译一下：TreeNodes 占用的内存是普通 Node 的两倍，只有在 node 数量达到阈值时才会使用它，阈值就是 TREEIFY_THRESHOLD 。而当 node 数量变小时（删除或者扩容），又会变回普通的 Node 。<strong>当 hashCode 的均匀分布的时候，TreeNode 是很少使用的。</strong>理想情况下，hashCode 的值遵循泊松分布。bala bala bala。。。</p>
+<p>之后官方推导出了一个数学公式，不好意思，我也看不懂了，也没必要去研究数学公式了。最终的结果就是当为 8 时的概率为 0.00000006 ，小于千万分之一。官方认为这个概率足够的低，所以指定链表长度为 8 时转化为红黑树。所以 8 这个数是经过数学推理的，不是瞎写的。</p>
+<p>从我们上面的试验也能看出来，平均几百万才会出现链表转化为红黑树（和官方理论值千万稍微有点不一致）。</p>
+<p>那为什么树化的时候还要满足数组的长度大于等于 64 呢？我们来看看源码注释：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * The smallest table capacity for which bins may be treeified.</span></span><br><span class="line"><span class="comment"> * (Otherwise the table is resized if too many nodes in a bin.)</span></span><br><span class="line"><span class="comment"> * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts</span></span><br><span class="line"><span class="comment"> * between resizing and treeification thresholds.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_TREEIFY_CAPACITY = <span class="number">64</span>;</span><br></pre></td></tr></table></figure>
+<p>翻译一下注释：64 是最小的树化时的数组容量，如果小于 64 ，优先考虑使用扩容降低冲突。</p>
+<p>这里我的理解是，在数组容量小时，扩容的频率本身就很高，而且容量小时，在某个数组位置出现 hash 冲突的概率肯定大于容量大时。此时进行扩容操作的话，会降低该数组位置冲突的个数，减小链表长度，就不用转化为红黑树了。</p>
+<p>那这个时候，是不是又有人会问了，为什么是 64 呢？40 行不行，80行不行？</p>
+<p>额。。。这一点官方文档和源码并未给出任何说明，只是说必须大于 4 * 8 = 32，然后官方取了 64。我猜这应该也是个统计数学的问题，就不过多纠结了。</p>
+<h4 id="2-5-2-TreeNode"><a href="#2-5-2-TreeNode" class="headerlink" title="2.5.2 TreeNode"></a>2.5.2 TreeNode</h4><p>到现在为止，之前写的文章，无论是 hash 优化算法，还是 put 方法中数组转化为链表，还是 resize 方法中的 rehash ，我们研究的都是 putValue 方法，而 putValue 方法中有两处和红黑树相关。</p>
+<ul>
+<li>treeifyBin 方法，链表转红黑树的方法</li>
+<li>putTreeVal 方法，已经产生红黑树之后，往里面添加元素的方法</li>
+</ul>
+<p>putTreeVal 方法已经完全是操作红黑树新增节点了，这个已经超越了我们分析 HashMap 的界限了，我们就不详细说了。其实是本人能力有限，还没有达到能手撕红黑树的地步，所以就一带而过好了（委屈脸）。</p>
+<h4 id="2-5-3-treeifyBin方法"><a href="#2-5-3-treeifyBin方法" class="headerlink" title="2.5.3 treeifyBin方法"></a>2.5.3 treeifyBin方法</h4><p>接下来，我们来简单分析下 treeifyBin 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">treeifyBin</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> hash)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, index; Node&lt;K,V&gt; e;</span><br><span class="line">    <span class="keyword">if</span> (tab == <span class="keyword">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)</span><br><span class="line">        resize();</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ((e = tab[index = (n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        TreeNode&lt;K,V&gt; hd = <span class="keyword">null</span>, tl = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            TreeNode&lt;K,V&gt; p = replacementTreeNode(e, <span class="keyword">null</span>);</span><br><span class="line">            <span class="keyword">if</span> (tl == <span class="keyword">null</span>)</span><br><span class="line">                hd = p;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                p.prev = tl;</span><br><span class="line">                tl.next = p;</span><br><span class="line">            &#125;</span><br><span class="line">            tl = p;</span><br><span class="line">        &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">if</span> ((tab[index] = hd) != <span class="keyword">null</span>)</span><br><span class="line">            hd.treeify(tab);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第 3~4 行代码其实就是判断数组长度是否满足 64，如果不满足，进行扩容，而不是进行树化。</p>
+<p>然后进入到一个循环，遍历整个链表。老规矩，我们边画图，边分析。假设这个时候 HashMap 的底层结构如下图所示（链表太长，我直接用 Node1 ~ Node8 进行命名了）：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_01.png" alt></p>
+<p>这个时候，数组 index 为 1 的位置后面挂了长度为 8 的链表，并且数组长度为 64，满足要求，进行链表转红黑树。</p>
+<p>首先进入第 8 行代码，通过 replacementTreeNode 方法将一个普通的 Node 转化为 TreeNode ，此时指针 e 指向的 “1-赵小发”，就是对这个 Node 进行转化，转化后新生成的对象我们统一用红色 “TreeNode” 字样进行标识。p 指针指向新生成的对象，因为此时 tl 指针为 null ，所以进入第 10 行代码，hd 指针也指向新生成的对象。同样执行到第 15 行代码，tl 指针也指向新生成的对象。最后图就是变成下面这样子：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_02.png" alt> </p>
+<p>然后执行第 16 行代码，e = e.next ，就变成了下面这张图。为了方便，我这里只截取了相关部分的图。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_03.png" alt></p>
+<p>此时 e 不为 null ，继续循环。</p>
+<p>再次进入第 8 行代码，此时转化的就是 Node1 节点了，此时 p 指针指向新创建的 TreeNode 对象，此时 tl 不为 null ，执行 第 12 ~ 13 代码，执行完毕之后如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_04.png" alt></p>
+<p>再执行第 15 行代码以及 16 行的 e = e.next ，tl 指针指向了新对象 ，e 指针指向 Node2 ，如下图所示：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_05.png" alt></p>
+<p>如此一直循环下去，会一直创建 TreeNode 并最终生成一个双向链表，而 e 指针一直往后指，最终指向 Node8 。最终图大致如下：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_06.png" alt></p>
+<p>此时 e.next 指向 null ，退出循环。</p>
+<p>执行第 17 行代码，tab[index] 此时就是数组 index 为 1 的位置，指向 hd 就变成了下面这样子了。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/1dcbaaa72fba00afd6542b457b4bfae896a1a373/pictures/collection/hashmap/hashmap_tree_07.png" alt></p>
+<p>最后执行第 18 行代码 hd.treeify(tab) 。这个方法是将双向链表转化为红黑树。 转化过程也是红黑树的相关操作，我这里就不详细说明了。</p>
+<p><strong>小结：</strong>关于红黑树，其实很复杂，也没有必要去手撕；关于红黑树在 HashMap 中的使用，其实主要搞清楚，为什么要用，什么时候转化为红黑树大致就可以了。</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h2><p>HashMap 相关的四篇文章暂时就写到这了，核心的差不多也就这些了。我们再回顾下之前的几篇文章讲到的内容。</p>
+<ol>
+<li>基本的底层数据结构、常用构造函数、负载因子为何取 0.75以及hash 优化算法。</li>
+<li>详细介绍了 put 方法，出现 hash 冲突时，是如何一步一步形成链表的。</li>
+<li>什么时候会扩容，扩容的时候原先链表上的元素会被放到新数组的哪个位置？</li>
+<li>什么时候会转化为红黑树？链表上普通 Node 是先转化为 TreeNode 类型的双向链表再转化为红黑树的 。</li>
+</ol>
+<p>有兴趣的同学还可以去研究下面几点：</p>
+<ul>
+<li>HashMap 在遍历的时候是怎么保证每次遍历的结果的顺序都是一致的，当然这个顺序并不是和插入的顺序相同的。</li>
+<li>在扩容的时候红黑树又是怎么处理的，其实红黑树的节点之间也是使用了 next 指针和 prev 指针保存了原先链表的顺序，这样在扩容 rehash 时可以直接把它当做链表一样处理，就不需要先转化成链表再 rehash 了。</li>
+</ul>
+<p>往深了研究，HashMap 其实是很复杂的。由于本人能力有限，就到此结束啦！（撒花）</p>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/02/07/Java集合—HashMap之红黑树/">Java集合—HashMap之红黑树</a></p>
+ <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
+ <!-- <p><span>发布时间:</span>2019年02月07日 - 23:02</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月18日 - 12:01</p> -->
+  <p><span>原始链接:</span><a href="/2019/02/07/Java集合—HashMap之红黑树/" title="Java集合—HashMap之红黑树">https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HashMap/" rel="tag"># HashMap</a>
+          
+            <a href="/tags/Java集合/" rel="tag"># Java集合</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/06/Java集合—HashMap之resize方法/" rel="next" title="Java集合—HashMap之resize方法">
+                <i class="fa fa-chevron-left"></i> Java集合—HashMap之resize方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/15/读写锁分离/" rel="prev" title="读写锁">
+                读写锁 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
+            
+              <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-源码解析"><span class="nav-number">1.</span> <span class="nav-text">2. 源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-红黑树"><span class="nav-number">1.1.</span> <span class="nav-text">2.5 红黑树</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-1-多大的数据量会转化为红黑树？"><span class="nav-number">1.1.1.</span> <span class="nav-text">2.5.1 多大的数据量会转化为红黑树？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-1-为什么是8和64？"><span class="nav-number">1.1.2.</span> <span class="nav-text">2.5.1 为什么是8和64？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-2-TreeNode"><span class="nav-number">1.1.3.</span> <span class="nav-text">2.5.2 TreeNode</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-3-treeifyBin方法"><span class="nav-number">1.1.4.</span> <span class="nav-text">2.5.3 treeifyBin方法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-总结"><span class="nav-number">2.</span> <span class="nav-text">3. 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhaoxiaofa</span>
+
+  
+</div>
+
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
+
+
+
+ <!-- <span class="post-meta-divider">|</span> -->
+
+
+
+<!--
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+
+
+    <div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    </div>
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共54.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("UH24xFi41uXyyckTrmyvd1OH-gzGzoHsz", "z1TYVlqePlShQ6FNHkiWeCkL");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

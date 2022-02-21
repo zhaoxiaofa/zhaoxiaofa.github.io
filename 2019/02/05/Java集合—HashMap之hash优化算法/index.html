@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="HashMap,Java集合,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1. 原理HashMap 底层是数组 + 链表 + 红黑树。 数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。 链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。 再来看看 HashMap 继承或实现了">
+<meta name="keywords" content="HashMap,Java集合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java集合—HashMap之hash优化算法">
+<meta property="og:url" content="https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/index.html">
+<meta property="og:site_name" content="赵小发">
+<meta property="og:description" content="1. 原理HashMap 底层是数组 + 链表 + 红黑树。 数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。 链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。 再来看看 HashMap 继承或实现了">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png">
+<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_02.png">
+<meta property="og:updated_time" content="2020-01-16T11:53:27.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java集合—HashMap之hash优化算法">
+<meta name="twitter:description" content="1. 原理HashMap 底层是数组 + 链表 + 红黑树。 数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。 链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。 再来看看 HashMap 继承或实现了">
+<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/">
+
+
+
+
+
+  <title>Java集合—HashMap之hash优化算法 | 赵小发</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <a href="https://github.com/zhaoxiaofa"><img style="position: absolute; top: 0; right: 0; border: 0;" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_gray_6d6d6d.png?resize=149%2C149" class="attachment-full sidebarze-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">赵小发</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Winter is coming</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zhaoxiaofa">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/headpic.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="赵小发">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Java集合—HashMap之hash优化算法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-05T00:09:56+08:00">
+                2019-02-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java集合/" itemprop="url" rel="index">
+                    <span itemprop="name">Java集合</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/02/05/Java集合—HashMap之hash优化算法/" class="leancloud_visitors" data-flag-title="Java集合—HashMap之hash优化算法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  14
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="1-原理"><a href="#1-原理" class="headerlink" title="1. 原理"></a>1. 原理</h2><p>HashMap 底层是<strong>数组 + 链表 + 红黑树</strong>。</p>
+<p>数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。</p>
+<p>链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。</p>
+<p>再来看看 HashMap 继承或实现了哪些类和接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">Map</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt;, <span class="title">Cloneable</span>, <span class="title">Serializable</span> </span>&#123;</span><br></pre></td></tr></table></figure>
+<p>如代码所示，HashMap 实现了 Cloneable、Serializable，说明支持克隆和序列化。</p>
+<p><strong>备注：</strong>所有关于 HashMap 的分析都是基于 JDK1.8 。</p>
+<h2 id="2-源码解析"><a href="#2-源码解析" class="headerlink" title="2. 源码解析"></a>2. 源码解析</h2><p>先来看看常用的基本属性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">4</span>; <span class="comment">// aka 16</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="keyword">int</span> threshold;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> TREEIFY_THRESHOLD = <span class="number">8</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> UNTREEIFY_THRESHOLD = <span class="number">6</span>;</span><br><span class="line"><span class="keyword">transient</span> Node&lt;K,V&gt;[] table;</span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> size;</span><br></pre></td></tr></table></figure>
+<p>默认 bucket 数组长度为16，默认负载因子 0.75 ，默认 threshold = 16 * 0.75 = 12 。当数组长度达到 12 时开始扩容。（这都不知道的同学建议去面壁思过）</p>
+<p>TREEIFY_THRESHOLD 是指链表长度达到 8 以后转化为红黑树，UNTREEIFY_THRESHOLD 则相反。</p>
+<p>size 是 HashMap 中元素的总个数，要和 table 的 length 区分开。</p>
+<p>我们着重来看一下 Node ，因为数据都存储在 Node 中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>hash: 根据存储元素的 key 的 hash 值</li>
+<li>next：因为是数组，肯定要存储下一个节点</li>
+</ul>
+<h3 id="2-1-构造函数"><a href="#2-1-构造函数" class="headerlink" title="2.1 构造函数"></a>2.1 构造函数</h3><p>思考一个问题：HashMap 是在什么时候给 bucket 数组分配内存的？是 new HashMap() 的时候吗？带着问题我们来看看HashMap 的四种构造函数。</p>
+<h4 id="2-1-1-HashMap"><a href="#2-1-1-HashMap" class="headerlink" title="2.1.1 HashMap()"></a>2.1.1 HashMap()</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR; <span class="comment">// all other fields defaulted</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，无参构造函数只是把 DEFAULT_LOAD_FACTOR 的值（默认 0.75）赋值给 loadFactor，loadFactor 是给 HashTable 用的，所以可以理解为啥正事都没干。</p>
+<h4 id="2-1-2-HashMap-int-initialCapacity"><a href="#2-1-2-HashMap-int-initialCapacity" class="headerlink" title="2.1.2 HashMap(int initialCapacity)"></a>2.1.2 HashMap(int initialCapacity)</h4><p>一般我们实际使用过程中都是用的这个，在新建一个 HashMap 的时候先预估存储的元素的个数，假设个数为 n ，然后用 n 除以 0.75 ，假设算出的值是 m ，initialCapacity 取不小于 m 的 2 的幂次方对应的值。</p>
+<p>举个例子：我现假设要往 HashMap 中存入 17 个值，17 / 0.75 = 22.67 。取不小于 22.67 的最近的 2 的幂次方，最终 initialCapacity 取 32（2的5次方） 。即 new HashMap(32) 。</p>
+<p>为什么 initialCapacity 要取 2 的幂次方呢？之后我们讲 put 方法的时候会讲到。</p>
+<p>如果我脑残，非要 new HashMap(17) ，会发生什么呢？</p>
+<p>来，上源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal initial capacity: "</span> +</span><br><span class="line">                                           initialCapacity);</span><br><span class="line">    <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">        initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">    <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal load factor: "</span> +</span><br><span class="line">                                           loadFactor);</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">    <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时，传入的 initialCapacity 是 17，loadFactor 是 0.75 。</p>
+<p>第 2~9 行代码都是判断 initialCapacity 的合法性，是否小于 0 ，是否大于最大数组长度等等。</p>
+<p>第 11 行代码才是重点，我们来看看 tableSizeFor 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Returns a power of two size for the given target capacity.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">tableSizeFor</span><span class="params">(<span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = cap - <span class="number">1</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">1</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">2</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">4</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">8</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">return</span> (n &lt; <span class="number">0</span>) ? <span class="number">1</span> : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看注释，power of two 是二次方的意思。翻译一下就是，根据传进来的数返回一个合适的二次方的结果。 最终的结果就是传入 17，算出来的返回值是 32 ，最后 threshold 等于 32 。 此时 threshold 是临时保存初始化容量 initialCapacity 的值，在后面会有用到。</p>
+<h4 id="2-1-3-HashMap-int-initialCapacity-float-loadFactor"><a href="#2-1-3-HashMap-int-initialCapacity-float-loadFactor" class="headerlink" title="2.1.3 HashMap(int initialCapacity, float loadFactor)"></a>2.1.3 HashMap(int initialCapacity, float loadFactor)</h4><p>这个和 2.2.2 的区别是它可以自定义负载因子，但是一般我们都不改负载因子，默认使用 0.75 就行。下面来说说为什么是负载因子是 0.75 。</p>
+<p>我们应该很容易理解负载因子应该在 0.5~1.0 之间。</p>
+<p>如果小于 0.5，假设取 0.3 。初始化数组长度 16，threshold = 16*0.3 = 4.8 ，也就是数组长度大于 5 的时候进行扩容，扩容到 32 ；以此类推，数组长度 10 的时候，扩容到 64 。越往后，未使用的空间会越来越大，纯属浪费。</p>
+<p>如果大于 1，假设取 1.5 。初始化数组长度 16，threshold = 16*1.5 = 24 。大家有没有发现一个问题，一个长度为 16 的数组要存储 24 条数据。那形成链表的几率就是百分之百了。会严重影响到查询的效率。</p>
+<p>那为什么在 0.5~1.0 之间选择了 0.75 呢？0.6 行不行，0.8 行不行？</p>
+<p>看看源码注释里面的一段话：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">* &lt;p&gt;As a general rule, <span class="function">the <span class="keyword">default</span> load <span class="title">factor</span> <span class="params">(<span class="number">.75</span>)</span> offers a good</span></span><br><span class="line"><span class="function">* tradeoff between time and space costs.  Higher values decrease the</span></span><br><span class="line"><span class="function">* space overhead but increase the lookup <span class="title">cost</span> <span class="params">(reflected in most of</span></span></span><br><span class="line"><span class="function"><span class="params">* the operations of the &lt;tt&gt;HashMap&lt;/tt&gt; class, including</span></span></span><br><span class="line"><span class="function"><span class="params">* &lt;tt&gt;get&lt;/tt&gt; and &lt;tt&gt;put&lt;/tt&gt;)</span>.  The expected number of entries in</span></span><br><span class="line"><span class="function">* the map and its load factor should be taken into account when</span></span><br><span class="line"><span class="function">* setting its initial capacity, so as to minimize the number of</span></span><br><span class="line"><span class="function">* rehash operations.  If the initial capacity is greater than the</span></span><br><span class="line"><span class="function">* maximum number of entries divided by the load factor, no rehash</span></span><br><span class="line"><span class="function">* operations will ever occur.</span></span><br></pre></td></tr></table></figure>
+<p>翻译一下，默认的负载因子 0.75 在时间和空间消耗上提供了一个平衡。较高的值会降低空间使用但是会增加查找消耗（会影响 put 和 get 方法）。map 期望的 entries 数量和负载因子在初始化的时候就要考虑到，这样可以降低 rehash 的次数。如果初始化的数组长度大于 map 存储数据的最大值除以负载因子，将不会有 rehash 发生。</p>
+<p>其实官方的说法跟我上面实际使用中的取值方法一样，0.75 是官方认为最优的平衡时间和空间的值。至于 0.75 是怎么推算出来的，这是个数学问题。有兴趣的同学可以自行研究。</p>
+<p><strong>小结：</strong>负载因子默认使用 0.75 就行了，不要自以为是的瞎改。</p>
+<h4 id="2-1-4-HashMap-Map-lt-extends-K-extends-V-gt-m"><a href="#2-1-4-HashMap-Map-lt-extends-K-extends-V-gt-m" class="headerlink" title="2.1.4 HashMap(Map&lt;? extends K, ? extends V&gt; m)"></a>2.1.4 HashMap(Map&lt;? extends K, ? extends V&gt; m)</h4><p>比较少用，有兴趣的同学自行研究，不是很重要。</p>
+<h4 id="2-1-5-总结"><a href="#2-1-5-总结" class="headerlink" title="2.1.5 总结"></a>2.1.5 总结</h4><p>回到我们最初的问题，在构造函数中并没有发现初始化 bucket 数组的操作。所以并不是在这个阶段给数组分配内存的。除此之外，我也讲了推荐的构造函数使用方法。</p>
+<h3 id="2-2-hash优化算法"><a href="#2-2-hash优化算法" class="headerlink" title="2.2 hash优化算法"></a>2.2 hash优化算法</h3><p>看完了构造方法，我们来看看 put 方法，这也是 HashMap 最重要最复杂的方法。</p>
+<p>在详细讲解 put 方法之前，我们先约定好几个变量的定义，以免后面发生混乱。</p>
+<ul>
+<li>h : 这个表示直接通过 Object 类的 hashCode 方法算出来的值</li>
+<li>hash : 这个表示优化之后的 hash 值</li>
+<li>index ：这个是数组的角标</li>
+</ul>
+<p>来，上源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们先看一下 hash(key) 这个方法，然后再看 putVal 方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>h = key.hashCode()) ^ (h &gt;&gt;&gt; 16) 这个就是最核心的 hash 优化算法了。</p>
+<p>key.hashCode() 就是调用的 Object 类的 hashCode 方法，算出一个 h 值，int 类型（4 个字节，32 位）。</p>
+<p>h ^ (h &gt;&gt;&gt; 16) 这个是干嘛用的呢？我们来举个例子。以我的名字为 key（原谅我臭不要脸），我们得出 “赵小发” 的 hashCode 是 35552727 。转化为二进制是 0000 0010 0001 1110 0111 1101 1101 0111 。</p>
+<p>那 h &gt;&gt;&gt; 16 就是把二进制右移 16 位，然后高位空出来的 16 位用 0 补充。</p>
+<p>得到的结果是： 0000 0000 0000 0000 0000 0010 0001 1110 。</p>
+<p>然后进行<strong>异或算法</strong>（异或算法的结果是相同为 0，不同为 1 ）。h ^ (h &gt;&gt;&gt; 16) 算出来的结果如下：</p>
+<blockquote>
+<p>0000 0010 0001 1110 0111 1101 1101 0111</p>
+<p>0000 0000 0000 0000 0000 0010 0001 1110</p>
+<p>0000 0000 0001 1110 0111 1111 1100 1001</p>
+</blockquote>
+<p>我们通过 hash 方法算出来的就是 0000 0000 0001 1110 0111 1111 1100 1001 。</p>
+<p>然后我们进入 putVal 方法 :</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 省略</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">   <span class="comment">// 省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们这一讲主要是讲 hash 优化算法，所以就不将完整代码截出来了。</p>
+<p>onlyIfAbsent、evict 并不是核心的属性，可以忽略。</p>
+<p>很明显，第一次 put 的时候是满足第 4 行代码的判断的，此时会执行第 5 行代码。</p>
+<p>此时，resize 方法做的事情主要就是第一次给数组分配内存，可以看一下我 debug 的截图。</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png" alt></p>
+<p>在 resize 方法中， Node<k,v>[] newTab = (Node<k,v>[])new Node[newCap];  这行代码才是初始化数组，分配内存的操作。所以，这也回答了上面构造函数中的那个问题，HashMap 是在执行 put 方法时给 bucket 数组分配内存的。</k,v></k,v></p>
+<p>resize 方法执行完毕后，table 的 length 是 16 ，即第 5 行代码  n = (tab = resize()).length 的值为 16 。</p>
+<p>然后执行第 6 行代码，这个非常非常非常重要。</p>
+<p>(n - 1) &amp; hash 这行代码是将数组长度和之前算出来的 hash 值进行与运算，如下所示：</p>
+<blockquote>
+<p>0000 0000 0001 1110 0111 1111 1100 1001</p>
+<p>0000 0000 0000 0000 0000 0000 0000 1111</p>
+<p>0000 0000 0000 0000 0000 0000 0000 1001</p>
+</blockquote>
+<p>算出来的值 1001 ，二进制是 9 。然后将 9 赋值给 i ，而 i 就是数组的 index 角标。也就是说，key 为“赵小发”的这条数据会被存储在数组的 index 为 9 的那个 Node 里。来，截个图看一下：</p>
+<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_02.png" alt></p>
+<p><strong>思考：</strong> (n - 1) &amp; hash 本质是啥？</p>
+<p>我们之前通过 h ^ (h &gt;&gt;&gt; 16)  算出来了一个 hash 值，但是这个 hash 值太大了，我们最终是要算出一个 index，而这个 index 必须在 0~(n - 1) 之间。那最先想到的应该就是取模算法了，对 n 取模，即 hash / n ,余数就是对应的 index 位置。那为什么不用取模算法呢？原因是性能没有位运算高。</p>
+<p>那  (n - 1) &amp; hash  为什么能保证算出来的值在 0~(n - 1) 之间呢？</p>
+<p>因为此时 n -1 = 15 ，15 的二进制是 0000 0000 0000 0000 0000 0000 0000 1111 ，前面的 28 位全部是0 。在进行与运算时，无论 hash 的值是多少，进行与运算之后前面的 28 位肯定也是 0 。而结果的后 4 位完全由 hash 的后 4 位决定，并且结果一定小于等于 15 。此时就可以把结果赋值给数组的 index 了。</p>
+<p>同样的，如果 n 是 32 ，那么 n - 1 = 31 ，31 的二进制是 0000 0000 0000 0000 0000 0000  0001 1111 。hash 的值无论是多少，(n - 1) &amp; hash 运算后前 27 位都是 0 ，后 5 位完全由 hash 的后 5 位决定，并且结果一定小于等于 31 。</p>
+<p>这里对二进制稍微敏感的同学很容易反应过来。</p>
+<p><strong>这也充分说明了 HashMap 的数组长度为什么必须是 2 的幂次方</strong>。因为只有 2 的幂次方在减 1 之后，它的二进制低位全部为1。</p>
+<p><strong>再思考</strong>：为什么要用 h ^ (h &gt;&gt;&gt; 16)  ？</p>
+<p>直接通过 Object 类的 hashCode 算法算出一个 h 值，直接拿来和 (n - 1) 做与运算，不是更简单吗？为什么要多此一举 h ^ (h &gt;&gt;&gt; 16) 。</p>
+<p>还是以“赵小发”为 key 来举例，h 值是  0000 0010 0001 1110 0111 1101 1101 0111 。如果这个时候直接拿来和  (n - 1) 做与运算，就是下面这样子。</p>
+<blockquote>
+<p>0000 0010 0001 1110 0111 1101 1101 0111</p>
+<p>0000 0000 0000 0000 0000 0000 0000 1111</p>
+</blockquote>
+<p>最终的计算结果由 h 值的后 4 位（0111）决定。那 h 值的前面的 28 位岂不是完全没有参与运算？下面我举几个例子：</p>
+<blockquote>
+<p>0000 0010 0001 1110 0111 1101 1101 0111 (“赵小发”)</p>
+<p><strong>1</strong>000 0010 0001 1110 0111 1101 1101 0111 (“赵大发”)</p>
+<p>000<strong>1</strong> 0010 0001 1110 0111 1101 1101 0111 (“赵二狗”)</p>
+</blockquote>
+<p>如上面我加粗的例子来看，高位不同，但是完全不影响和  (n - 1) 做与运算的结果，凭啥？凭啥我赵小发算出来和赵二狗在同一个 index 上面。高 28 位完全不起作用。所以我们要想着，让高位也要参与运算，这样可以减少 hash 冲突。所以要拿  h 和 (h &gt;&gt;&gt; 16) 做运算，让 h 的高 16 位和 h 进行计算，计算的结果再和  (n - 1) 做与运算，最终算出数组的 index 。</p>
+<p><strong>再再思考</strong>：为什么 h 和 (h &gt;&gt;&gt; 16) 做的是异或运算？</p>
+<p>原因是异或运算能更好的保留各部分的特征，与运算结果会向 1 靠拢，或运算结果会向 0 靠拢 。</p>
+<p><strong>总结：</strong>hash 优化算法包含两部分。一是通过 hashCode 值的高16 位参与运算来减少冲突，二是通过与运算而不是取模运算提高性能。</p>
+<p>下一篇文章，我们详细梳理下 put 方法的流程，<a href="https://zhaoxiaofa.com/2019/02/06/Java%E9%9B%86%E5%90%88%E2%80%94HashMap%E4%B9%8B%E6%A2%B3%E7%90%86put%E6%96%B9%E6%B3%95%E9%80%BB%E8%BE%91/#more">Java集合—HashMap之梳理put方法逻辑</a> 。</p>
+
+      
+    </div>
+    
+    
+    
+
+    <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2019/02/05/Java集合—HashMap之hash优化算法/">Java集合—HashMap之hash优化算法</a></p>
+ <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
+ <!-- <p><span>发布时间:</span>2019年02月05日 - 00:02</p> -->
+ <!-- <p><span>最后更新:</span>2020年01月16日 - 19:01</p> -->
+  <p><span>原始链接:</span><a href="/2019/02/05/Java集合—HashMap之hash优化算法/" title="Java集合—HashMap之hash优化算法">https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+      
+    </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/HashMap/" rel="tag"># HashMap</a>
+          
+            <a href="/tags/Java集合/" rel="tag"># Java集合</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/02/04/Java集合—LinkedList/" rel="next" title="Java集合—LinkedList">
+                <i class="fa fa-chevron-left"></i> Java集合—LinkedList
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" rel="prev" title="Java集合—HashMap之梳理put方法逻辑">
+                Java集合—HashMap之梳理put方法逻辑 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        
+  <script>
+    window._bd_share_config = {
+      "common": {
+        "bdText": "",
+        "bdMini": "1",
+        "bdMiniList": false,
+        "bdPic": ""
+      },
+      "image": {
+        "viewList": ["tsina", "douban", "sqq", "qzone", "weixin", "twi", "fbook"],
+        "viewText": "分享到：",
+        "viewSize": "16"
+      },
+      "slide": {
+        "bdImg": "5",
+        "bdPos": "left",
+        "bdTop": "100"
+      }
+    }
+  </script>
+
+<script>
+  with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+  
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/headpic.jpeg" alt="zhaoxiaofa">
+            
+              <p class="site-author-name" itemprop="name">zhaoxiaofa</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">32</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-原理"><span class="nav-number">1.</span> <span class="nav-text">1. 原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-源码解析"><span class="nav-number">2.</span> <span class="nav-text">2. 源码解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-构造函数"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-1-HashMap"><span class="nav-number">2.1.1.</span> <span class="nav-text">2.1.1 HashMap()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-2-HashMap-int-initialCapacity"><span class="nav-number">2.1.2.</span> <span class="nav-text">2.1.2 HashMap(int initialCapacity)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-3-HashMap-int-initialCapacity-float-loadFactor"><span class="nav-number">2.1.3.</span> <span class="nav-text">2.1.3 HashMap(int initialCapacity, float loadFactor)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-4-HashMap-Map-lt-extends-K-extends-V-gt-m"><span class="nav-number">2.1.4.</span> <span class="nav-text">2.1.4 HashMap(Map&lt;? extends K, ? extends V&gt; m)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-5-总结"><span class="nav-number">2.1.5.</span> <span class="nav-text">2.1.5 总结</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-hash优化算法"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 hash优化算法</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zhaoxiaofa</span>
+
+  
+</div>
+
+
+<!--
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+-->
+
+
+
+ <!-- <span class="post-meta-divider">|</span> -->
+
+
+
+<!--
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+-->
+
+
+
+
+
+    <div>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <span class="post-meta-divider">|</span>
+    <span id="busuanzi_container_site_uv">本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+    </div>
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共54.2k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("UH24xFi41uXyyckTrmyvd1OH-gzGzoHsz", "z1TYVlqePlShQ6FNHkiWeCkL");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
