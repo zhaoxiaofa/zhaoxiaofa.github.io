@@ -2018,7 +2018,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaofa.com/2020/05/02/ZooKeeper在Kafka中的使用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="zhaoxiaofa">
@@ -2037,7 +2037,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/" itemprop="url">Kafka的Topic、Partition、Segment那些事儿</a></h1>
+                <a class="post-title-link" href="/2020/05/02/ZooKeeper在Kafka中的使用/" itemprop="url">ZooKeeper在Kafka中的使用</a></h1>
         
 
         <div class="post-meta">
@@ -2089,7 +2089,7 @@
 
           
           
-             <span id="/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/" class="leancloud_visitors" data-flag-title="Kafka的Topic、Partition、Segment那些事儿">
+             <span id="/2020/05/02/ZooKeeper在Kafka中的使用/" class="leancloud_visitors" data-flag-title="ZooKeeper在Kafka中的使用">
                <span class="post-meta-divider">|</span>
                <span class="post-meta-item-icon">
                  <i class="fa fa-eye"></i>
@@ -2114,7 +2114,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.2k
+                  565
                 </span>
               
 
@@ -2130,7 +2130,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  5
+                  2
                 </span>
               
             </div>
@@ -2153,13 +2153,14 @@
       
         
           
-          1. 前言Topic 是一个逻辑概念，Partition 和 Segment 都是物理概念（有真实的日志文件）。
-一个 Topic 可以认为是一类消息，每个 Topic 将被分成多个 Partition，每个 Partition 在存储层面是 log 日志文件。
-任何发布到某个 Partition 
+          1. 前言本文涉及 Kafka 版本为 2.2.1。
+2. ZooKeeper在Kafka中的使用场景2.1 Broker端2.1.1 Broker注册本地启动 ZooKeeper 之后，再启动 Broker，ZooKeeper 打印了如下日志：
+
+[2022-01-11 10:54:49,631]
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/#more" rel="contents">
+            <a class="btn" href="/2020/05/02/ZooKeeper在Kafka中的使用/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
