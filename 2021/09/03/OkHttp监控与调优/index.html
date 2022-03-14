@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/question.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/answer.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/connection.png">
-<meta property="og:updated_time" content="2022-03-08T10:30:27.000Z">
+<meta property="og:updated_time" content="2022-03-14T13:57:17.881Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OkHttp监控与调优">
 <meta name="twitter:description" content="1. 前言其一，在做系统稳定性建设时，对日志进行优化，warn 日志中发现大量的 http 的 SocketTimeOutException，原因是”前辈“在写代码的时候直接 try catch 之后，打了 warn 日志。平时没有过多的关注 warn 日志，其实这个报错应该打 error 日志，需要引起关注。 其二，之前线上出问题排查时发现代码中将 Http 的超时时间误设置为 20 * 100">
@@ -356,7 +356,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.8k
+                  2.4k
                 </span>
               
 
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  8
+                  10
                 </span>
               
             </div>
@@ -408,7 +408,7 @@
 <p>0001 <a href="https://www.baidu.com/" target="_blank" rel="noopener">https://www.baidu.com/</a><br>0001 0.000 callStart<br>0001 0.018 dnsStart<br>0001 0.027 dnsEnd<br>0001 0.034 connectStart<br>0001 0.058 secureConnectStart<br>0001 0.242 secureConnectEnd<br>0001 0.242 connectEnd<br>0001 0.244 connectionAcquired<br>0001 0.246 requestHeadersStart<br>0001 0.249 requestHeadersEnd<br>同步Response{protocol=http/1.1, code=200, message=OK, url=<a href="https://www.baidu.com/}" target="_blank" rel="noopener">https://www.baidu.com/}</a><br>0002 <a href="https://www.baidu.com/" target="_blank" rel="noopener">https://www.baidu.com/</a><br>0002 0.000 callStart<br>0002 0.000 dnsStart<br>0002 0.001 dnsEnd<br>0002 0.002 connectStart<br>0002 0.018 secureConnectStart<br>0002 0.097 secureConnectEnd<br>0002 0.100 connectEnd<br>0002 0.101 connectionAcquired<br>0002 0.101 requestHeadersStart<br>0002 0.101 requestHeadersEnd<br>同步Response{protocol=http/1.1, code=200, message=OK, url=<a href="https://www.baidu.com/}" target="_blank" rel="noopener">https://www.baidu.com/}</a></p>
 </blockquote>
 <h3 id="2-2-线上监控"><a href="#2-2-线上监控" class="headerlink" title="2.2 线上监控"></a>2.2 线上监控</h3><p>在生产环境中，我们需要将 Demo 中的打印替换成 Trace 打点，再结合统一的监控平台，就可以监控每一个环节的具体耗时。</p>
-<p>同时，我们对请求量也进行了打点统计，在监控中发现，请求连接比（请求量/连接量）很小，也就是说，<strong>TCP 连接的复用率很低</strong>。</p>
+<p>同时，我们对连接量和请求量也进行了打点统计，在监控中发现，请求连接比（请求量/连接量）很小，大概 2~3之间，也就是说，一个连接发送 2~3 个 Http 请求之后就断开了。即 <strong>TCP 连接的复用率很低</strong>。</p>
 <p>于是登录机器查看 TCP 的状态，命令是运维大佬提供的，如下所示：<br><code>netstat -n | awk &#39;/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}&#39;</code></p>
 <p>生产环境的执行结果：</p>
 <blockquote>
@@ -442,7 +442,10 @@
 <p>3、线上添加监控，分析监控数据是否合理；</p>
 <p>4、根据监控数据且再次收集信息进行优化。</p>
 <p>Kafka 的调优和 OkHttp 的调优其实整体思路和流程都是差不多的，不断的进行<strong>梳理、监控、优化</strong>，形成闭环。</p>
-<h2 id="4-参考"><a href="#4-参考" class="headerlink" title="4. 参考"></a>4. 参考</h2><ol>
+<h2 id="4-疑问"><a href="#4-疑问" class="headerlink" title="4. 疑问"></a>4. 疑问</h2><p><strong>但是这里，我有一个疑问：</strong></p>
+<p> <code>maxIdleConnections</code> 是指“最大空闲链接数”，而我的应用是一个有稳定大流量的系统，基本不怎么可能出现空闲链接。这个在之前线程池调优的过程中有深刻的体会。参考 —— <a href="https://zhaoxiaofa.com/2020/09/25/%E9%A1%B9%E7%9B%AE%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%B0%83%E4%BC%98/">项目线程池调优</a> 。</p>
+<p>那为什么<code>maxIdleConnections</code> 需要设置这么大的值呢？后面在复盘的时候也没有搞清楚根本原因，问题解决了，根因还是没找到。后续有时间还要研究下。</p>
+<h2 id="5-参考"><a href="#5-参考" class="headerlink" title="5. 参考"></a>5. 参考</h2><ol>
 <li><a href="https://square.github.io/okhttp/" target="_blank" rel="noopener">官方文档</a></li>
 <li><p><a href="https://github.com/square/okhttp/issues/3907" target="_blank" rel="noopener">https://github.com/square/okhttp/issues/3907</a></p>
 </li>
@@ -452,6 +455,14 @@
 </li>
 <li><a href="https://stackoverflow.com/questions/63047533/connection-pool-okhttp" target="_blank" rel="noopener">https://stackoverflow.com/questions/63047533/connection-pool-okhttp</a></li>
 </ol>
+<h2 id="6-时隔一个月后的更新"><a href="#6-时隔一个月后的更新" class="headerlink" title="6. 时隔一个月后的更新"></a>6. 时隔一个月后的更新</h2><p>时隔一个月后，大致找到了 4 中疑问的答案。再次搜索了相关的资料，发现原来在参考资料 4 中，社区维护人员的一句话让我给忽略掉了。引用如下：</p>
+<blockquote>
+<p>Connections are either active and held by a particular in-flight call, or idle and in the pool. Limit the total number of connections by limiting the number of threads executing HTTP calls. If you’re using <code>Call.execute()</code> (synchronous) just size your thread pool appropriately. If you’re using <code>Call.enqueue()</code> (asynchronous) the limits are in <code>Dispatcher</code>.</p>
+</blockquote>
+<p>答案就在第一句中，如果一个连接正在发送请求，那它就是活跃的，否则它就是空闲的。按照这样的定义，空闲的连接可太多了，毕竟不是每个连接一直都在执行请求的。</p>
+<p>另外还有一个非常关键的点是在阅读清除空闲连接的代码时发现的，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (longestIdleDurationNs &gt;= <span class="keyword">this</span>.keepAliveDurationNs</span><br><span class="line">          || idleConnectionCount &gt; <span class="keyword">this</span>.maxIdleConnections) &#123;</span><br><span class="line">        <span class="comment">// We've found a connection to evict. Remove it from the list, then close it below (outside</span></span><br><span class="line">        <span class="comment">// of the synchronized block).</span></span><br><span class="line">        connections.remove(longestIdleConnection);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p>从代码中可见，如果一个连接空闲时间超过了 <code>keepAliveDurationNs</code>，会清除<code>longestIdleConnection</code>；如果空闲的连接数超过了 <code>maxIdleConnections</code>，同样会清除 <code>longestIdleConnection</code>。所以按照默认的配置，只要有超过 5 个空闲连接，就会触发连接清除。因此一旦 <code>maxIdleConnections</code> 值设置过小，就会导致连接复用率较低的情况。</p>
 
       
     </div>
@@ -471,7 +482,7 @@
   <p><span>本文标题:</span><a href="/2021/09/03/OkHttp监控与调优/">OkHttp监控与调优</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2021年09月03日 - 23:09</p> -->
- <!-- <p><span>最后更新:</span>2022年03月08日 - 18:03</p> -->
+ <!-- <p><span>最后更新:</span>2022年03月14日 - 21:03</p> -->
   <p><span>原始链接:</span><a href="/2021/09/03/OkHttp监控与调优/" title="OkHttp监控与调优">https://zhaoxiaofa.com/2021/09/03/OkHttp监控与调优/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2021/09/03/OkHttp监控与调优/" aria-label="复制成功！"></i></span>
   </p>
@@ -692,7 +703,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-监控"><span class="nav-number">2.</span> <span class="nav-text">2. 监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-监控指标及Demo"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 监控指标及Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-线上监控"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 线上监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-调优"><span class="nav-number">3.</span> <span class="nav-text">3. 调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-参考"><span class="nav-number">4.</span> <span class="nav-text">4. 参考</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-监控"><span class="nav-number">2.</span> <span class="nav-text">2. 监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-监控指标及Demo"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 监控指标及Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-线上监控"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 线上监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-调优"><span class="nav-number">3.</span> <span class="nav-text">3. 调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-疑问"><span class="nav-number">4.</span> <span class="nav-text">4. 疑问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-参考"><span class="nav-number">5.</span> <span class="nav-text">5. 参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-时隔一个月后的更新"><span class="nav-number">6.</span> <span class="nav-text">6. 时隔一个月后的更新</span></a></li></ol></div>
             
 
           </div>
@@ -750,7 +761,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共58.5k字</span>
+  <span class="post-count">博客全站共59.1k字</span>
 </div>
         
 
