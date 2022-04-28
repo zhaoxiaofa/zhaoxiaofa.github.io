@@ -87,13 +87,13 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="0. 写在前面 在网上搜集资料的时候，真正见证了什么叫做天下文章一大抄，更可恨的是错误的东西、未证明的东西也疯狂的抄袭。整个中文互联网环境全部污染了，真让人痛心疾首，这里实在忍不住要吐槽下。 由于涉及公司业务，所以做了很大的业务脱敏，导致很多细节不清晰，大家关注方法就好。  1. 背景在分析了我司某个应用之后，发现该应用线程模型不合理。大致有以下几个问题：  核心链路个数过多，作用不明晰，存在不必">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/threadpoll/3.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/threadpoll/4.png">
-<meta property="og:updated_time" content="2022-03-10T09:04:09.000Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/threadpoll/3.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/threadpoll/4.png">
+<meta property="og:updated_time" content="2022-04-27T05:57:12.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="项目线程池调优">
 <meta name="twitter:description" content="0. 写在前面 在网上搜集资料的时候，真正见证了什么叫做天下文章一大抄，更可恨的是错误的东西、未证明的东西也疯狂的抄袭。整个中文互联网环境全部污染了，真让人痛心疾首，这里实在忍不住要吐槽下。 由于涉及公司业务，所以做了很大的业务脱敏，导致很多细节不清晰，大家关注方法就好。  1. 背景在分析了我司某个应用之后，发现该应用线程模型不合理。大致有以下几个问题：  核心链路个数过多，作用不明晰，存在不必">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/threadpoll/3.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/threadpoll/3.png">
 
 
 
@@ -400,7 +400,7 @@
 <li>缺少监控和动态调整</li>
 </ul>
 <p>因此，对项目的线程模型进行系统性的调优。</p>
-<h2 id="2-项目分析"><a href="#2-项目分析" class="headerlink" title="2. 项目分析"></a>2. 项目分析</h2><h3 id="2-1-线程池工作原理"><a href="#2-1-线程池工作原理" class="headerlink" title="2.1 线程池工作原理"></a>2.1 线程池工作原理</h3><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/threadpoll/3.png" alt></p>
+<h2 id="2-项目分析"><a href="#2-项目分析" class="headerlink" title="2. 项目分析"></a>2. 项目分析</h2><h3 id="2-1-线程池工作原理"><a href="#2-1-线程池工作原理" class="headerlink" title="2.1 线程池工作原理"></a>2.1 线程池工作原理</h3><p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/threadpoll/3.png" alt></p>
 <p><strong>注意：</strong></p>
 <ul>
 <li>当线程数小于核心线程数时，就会创建线程，即使线程处于空闲时间。创建线程会加锁，源码中加锁是使用的CAS，在并发较高的情况下，会出现 CPU 自旋问题。</li>
@@ -409,7 +409,7 @@
 </ul>
 <h3 id="2-2-线程数配置理论支撑"><a href="#2-2-线程数配置理论支撑" class="headerlink" title="2.2 线程数配置理论支撑"></a>2.2 线程数配置理论支撑</h3><p>计算密集型和 IO 密集型的线程池参数设置肯定不同，看了《Java并发编程实战》和《Java并发编程的艺术》这两本书，书上的方案偏理论，难落地。</p>
 <p>Google 了一堆文章，大多是把这两本书上的内容用自己的话翻译了一下。总结下来，业界常用线程池参数设置方案如下图（截图来自于《美团技术团队》）：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/threadpoll/4.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/threadpoll/4.png" alt></p>
 <p>第一种方案很难去确定计算时间和等待时间的比例，第二种方案缺少理论支撑，并且一个应用内大多会有多个线程池。考虑到我们系统的流量还算平均，第三种方案可以试一试。</p>
 <p>而且发现国外不少文章在谈到线程池的时候会引用 “Little’s Law“（<strong>利特尔法则</strong>），第三种方案其实就是 “Little’s Law“ 思想。有兴趣可以自行搜索“利特尔法则”。</p>
 <p>实际项目中，因为业务场景不同，线程池的参数设置没有“银弹”，很难找到一个公式去设置。可以采用 “<strong>评估+压测+监控+动态调整</strong>”的方式处理。</p>
@@ -496,7 +496,7 @@
   <p><span>本文标题:</span><a href="/2020/09/25/项目线程池调优/">项目线程池调优</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2020年09月25日 - 22:09</p> -->
- <!-- <p><span>最后更新:</span>2022年03月10日 - 17:03</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 13:04</p> -->
   <p><span>原始链接:</span><a href="/2020/09/25/项目线程池调优/" title="项目线程池调优">https://zhaoxiaofa.com/2020/09/25/项目线程池调优/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2020/09/25/项目线程池调优/" aria-label="复制成功！"></i></span>
   </p>
@@ -675,7 +675,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

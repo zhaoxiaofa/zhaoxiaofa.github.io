@@ -87,26 +87,26 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_01.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_02.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_03.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_04.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_05.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_06.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_07.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_08.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_09.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_10.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_11.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_12.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_13.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_14.png">
-<meta property="og:updated_time" content="2020-01-15T15:22:51.447Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/resize_method_process.jpg">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_01.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_02.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_03.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_04.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_05.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_06.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_07.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_08.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_09.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_10.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_11.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_12.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_13.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_14.png">
+<meta property="og:updated_time" content="2022-04-27T06:35:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之resize方法">
 <meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之梳理put方法逻辑 已经详细梳理了 put 方法的逻辑，着重讲述了在遇到 hash 冲突时链表是如何一步一步变化的。但是遗留了两个问题，一是扩容方法，二是红黑树结构相关的逻辑。那么这一篇文章，我们就来看看 HashMap 是怎么扩容的。 2.4 resize在 putValue 方法当中就有 3 个地方使用到了 resize 方法  初始化数">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/resize_method_process.jpg">
 
 
 
@@ -414,7 +414,7 @@
 <p>翻译一下注释：初始化数组或者数组翻倍。如果是初始化（即数组为空），通过初始化的长度 initial capacity 和 threshold 来指定长度。否则，进行扩容，又因为每次扩容都是 2 倍，所以扩容之后元素要么还停留在原来的位置，要么移动 2 的幂次方。</p>
 <p><strong>具体扩容之后的偏移量这篇文章会细讲。</strong></p>
 <p>老规矩，先上一张图，辅助我们理解 resize 方法的大致流程。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/resize_method_process.jpg" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/resize_method_process.jpg" alt></p>
 <p>这张流程图只是描述了大致的流程，具体代码实现的细节我们对着源码来看，来，上源码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">    <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span> oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                 oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">        newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                  (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr;</span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"rawtypes"</span>,<span class="string">"unchecked"</span>&#125;)</span><br><span class="line">    Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">    table = newTab;</span><br><span class="line">    <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">            Node&lt;K,V&gt; e;</span><br><span class="line">            <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)</span><br><span class="line">                    newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">                    ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">                    Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; next;</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        next = e.next;</span><br><span class="line">                        <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                                loHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                loTail.next = e;</span><br><span class="line">                            loTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                                hiHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hiTail.next = e;</span><br><span class="line">                            hiTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j] = loHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j + oldCap] = hiHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>源码很长，有的讲源码的博客文章会在代码中写注释，但是我觉得很多东西一两行注释说不清楚。但是我这样写又会导致在看说明的时候还得往上翻看对应的哪一行代码，所以建议大家看的时候开两个窗口，一个看代码，一个看说明。</strong></p>
@@ -435,11 +435,11 @@
 <p>我们接着往下看第 21 行代码，只有 2 才会 newThr 等于 0 ，第 22 ~ 23 行代码是给 newThr 赋值。</p>
 <p>第 26 代码的意思是，无论是新创建初始化的还是扩容的，都将上面代码处理完毕之后得到的 newThr 赋值给 threshold 。</p>
 <p>第 28 ~ 29 行新建了一个 Node 数组，然后赋值给 table 。然后进入第 30 行代码，最关键的扩容方法。当然，只有 1 才能进入。我们画一张图，假设 HashMap 目前如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_01.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_01.png" alt></p>
 <p>第 31 行先对老数组进行遍历，将数组的每个 index 的值赋值给 e，第 33 行代码很容易理解，不为空才继续。图中 index 为 3 的位置为空，就不会进入到 if 分支来。</p>
 <p>第 35 行代码是判断 e.next 是否为空，其实就是判断 index 对应位置后面有没有挂链表或者红黑树，图中 index  2 和 4 没有挂链表，会进入第 36 行代码，e.hash &amp; (newCap - 1) 是根据新的数组长度再次进行 hash 算法算出新的 index 方法新数组对应位置上。<strong>这个操作被称作 rehash。</strong></p>
 <p>比如“张三”扩容前是通过 张三.hash &amp; (16 - 1) 算出的 index 为 2，那么此时 张三.hash &amp; (32 - 1) 可能算出来就是 18 了，如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_02.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_02.png" alt></p>
 <p>为什么是 18 呢？我们接下来会讲。当然，也有可能 rehash 之后还是在原来的位置 2 上。</p>
 <p>第 37 行代码是红黑树的 rehash ，我们后面单独讲。</p>
 <p>进入到第 39 行代码，也是这篇文章最重要的链表的 rehash 方法。在分析之前，我们来思考一下，为什么原先在 index 为 2 位置上的元素要么停留在原位，要么跑到 index 为 18 的位置上呢？我们来举个例子：</p>
@@ -474,34 +474,34 @@
 <p><strong>综上所述</strong>：在 resize 方法中，数组 rehash 时，要么停留在原位，要么移到 oldIndex + oldCap 的位置上。</p>
 <p>下面我们从第 39 行代码开始分析，我们以数组 index 为 1 的链表为例，首先定义了几个局部变量，然后进行循环，循环退出条件是链表遍历完毕。我们一步步画图分析。此时 j 的值为 1 。</p>
 <p>在 33 行代码中，首先是将指针 e 指向 index 为 1 的数组位置，44 代码将 next 指针指向 e.next ，那么图如下所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_03.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_03.png" alt></p>
 <p>第 45 行代码，e.hash &amp; oldCap ，这个非常非常关键。oldCap 为 16，因为此时 index 为 1，那么 e.hash 的后五位可能为 0 0001，也有可能为 1 0001，和 15 进行与运算之后都为 1 。</p>
 <p>0 0001 和 16 进行与运算为 0 ， 1 0001 和 16 进行与运算为 的结果为 16 ，不为 0。所以我们猜测，e.hash &amp; oldCap 等于 0 就是这个位置的元素不需要移位时的处理逻辑，而对应的 52 行代码的 else 就是需要移位的处理逻辑。</p>
 <p><strong>那我们就假设“赵小发”和“赵大发”不需要移位，即 (e.hash &amp; oldCap) == 0</strong>。</p>
 <p><strong>“赵二发”需要移位，即  (e.hash &amp; oldCap) != 0</strong>。</p>
 <p>进入“赵小发”的循环，此时会进入 45 行代码分支，执行 47 和 50 行代码后，如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_04.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_04.png" alt></p>
 <p>然后千万别忘了，在 59 行 while 循环里面有 e = next，这个时候把 e 指针指向 next ，最终执行完毕之后如下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_05.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_05.png" alt></p>
 <p>进入“赵二发”的循环，首先执行 44 行 next = e.next ，如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_06.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_06.png" alt></p>
 <p>然后进入到 52 行代码的分支。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_07.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_07.png" alt></p>
 <p>最后依然别忘了 59 的代码 e = next ，最终执行完毕后如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_08.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_08.png" alt></p>
 <p>再进入“赵大发”的循环，首先执行 44 行 next = e.next。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_09.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_09.png" alt></p>
 <p>然后会进入 45 行代码分支，但是进入 46 行判断时，此时 loTail 不为空，所以执行第 49 和 50 行代码。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_10.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_10.png" alt></p>
 <p>最后依然别忘了 59 的代码 e = next ，最终执行完毕后如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_11.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_11.png" alt></p>
 <p>最后执行完毕 e 指向 null ，此时退出 while 循环。</p>
 <p>最后我们来看 60 ~ 67 行代码。loTail 此时不为 null ，执行 61、62 行，将 loHead 放在新数组的 index 为 1 的位置上。而此时，“赵小发“的数组后面挂着”赵大发“，新数组就会变成下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_12.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_12.png" alt></p>
 <p>然后执行第 64 行代码，此时 hiTail 也不为空，执行 65 行代码，图就会变成下面这样子。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_13.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_13.png" alt></p>
 <p>执行第 66 行代码，将 hiHead 放到新数组的 1 + oldCap = 1 + 16 = 17 位置上，如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_resize_14.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_resize_14.png" alt></p>
 <p>这样一个链表的 rehash 算法就完全结束了。和我们之前预想的一样，“赵小发”和“赵大发”不需要移位，“赵二发”需要移位，且新位置等于 oldIndex + oldCap 。</p>
 <p>这篇文章到这就结束了，主要是画图一步步分析了在扩容的时候，链表是如何进行 rehash 的。</p>
 
@@ -523,7 +523,7 @@
   <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之resize方法/">Java集合—HashMap之resize方法</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月06日 - 22:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月15日 - 23:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之resize方法/" title="Java集合—HashMap之resize方法">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之resize方法/" aria-label="复制成功！"></i></span>
   </p>
@@ -702,7 +702,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

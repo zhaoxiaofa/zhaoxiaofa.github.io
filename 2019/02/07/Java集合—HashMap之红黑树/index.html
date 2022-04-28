@@ -87,20 +87,20 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_01.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_02.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_01.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_02.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_03.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_04.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_05.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_06.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_01.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_02.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_01.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_02.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_03.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_04.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_05.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_06.png">
 <meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/1dcbaaa72fba00afd6542b457b4bfae896a1a373/pictures/collection/hashmap/hashmap_tree_07.png">
-<meta property="og:updated_time" content="2020-01-18T04:38:28.281Z">
+<meta property="og:updated_time" content="2022-04-27T06:35:01.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之红黑树">
 <meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之resize方法 已经讲完了 HashMap 的扩容方法了，之前讲 HashMap 的文章中在遇到红黑树相关的部分都跳过了，那么这篇文章就把之前留下的坑填起来。 2.5 红黑树2.5.1 多大的数据量会转化为红黑树？我们首先想一想，为了降低 hash 冲突，HashMap 已经对 hash 算法进行了优化，而且我们使用的负载因子 0.75 已">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_01.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_01.png">
 
 
 
@@ -401,8 +401,8 @@
 <p>那么到底多大的数据量会出现呢？我闲来无事做了个试验。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashMapDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;String, String&gt; map = <span class="keyword">new</span> HashMap&lt;&gt;(<span class="number">16</span>);</span><br><span class="line">        <span class="keyword">int</span> max = <span class="number">100000000</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; max; i++) &#123;</span><br><span class="line">            String string = UUID.randomUUID().toString();</span><br><span class="line">            map.put(string, string);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如上述代码所示，循环一亿次，每次随机生成 key ，我在 HashMap 的 putVal 方法中的 treeifyBin(tab, hash) 这行代码打个断点，debug 一下，看什么时候会进入这个断点，就能看的什么时候进行树化，并记录下此时 size 的值。如下面截图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_01.png" alt></p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_02.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_01.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_02.png" alt></p>
 <p>此时，size 的值 为 1528475，即往 HashMap 中插入 1528475 条数据才会出现链表转化为红黑树。我们执行十次，最终记录的十次 size 如下所示：</p>
 <blockquote>
 <p>1528475、5654463、6267869、1495463、9770744、</p>
@@ -437,19 +437,19 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">treeifyBin</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> hash)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n, index; Node&lt;K,V&gt; e;</span><br><span class="line">    <span class="keyword">if</span> (tab == <span class="keyword">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)</span><br><span class="line">        resize();</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ((e = tab[index = (n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        TreeNode&lt;K,V&gt; hd = <span class="keyword">null</span>, tl = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            TreeNode&lt;K,V&gt; p = replacementTreeNode(e, <span class="keyword">null</span>);</span><br><span class="line">            <span class="keyword">if</span> (tl == <span class="keyword">null</span>)</span><br><span class="line">                hd = p;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                p.prev = tl;</span><br><span class="line">                tl.next = p;</span><br><span class="line">            &#125;</span><br><span class="line">            tl = p;</span><br><span class="line">        &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">if</span> ((tab[index] = hd) != <span class="keyword">null</span>)</span><br><span class="line">            hd.treeify(tab);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>第 3~4 行代码其实就是判断数组长度是否满足 64，如果不满足，进行扩容，而不是进行树化。</p>
 <p>然后进入到一个循环，遍历整个链表。老规矩，我们边画图，边分析。假设这个时候 HashMap 的底层结构如下图所示（链表太长，我直接用 Node1 ~ Node8 进行命名了）：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_01.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_01.png" alt></p>
 <p>这个时候，数组 index 为 1 的位置后面挂了长度为 8 的链表，并且数组长度为 64，满足要求，进行链表转红黑树。</p>
 <p>首先进入第 8 行代码，通过 replacementTreeNode 方法将一个普通的 Node 转化为 TreeNode ，此时指针 e 指向的 “1-赵小发”，就是对这个 Node 进行转化，转化后新生成的对象我们统一用红色 “TreeNode” 字样进行标识。p 指针指向新生成的对象，因为此时 tl 指针为 null ，所以进入第 10 行代码，hd 指针也指向新生成的对象。同样执行到第 15 行代码，tl 指针也指向新生成的对象。最后图就是变成下面这样子：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_02.png" alt> </p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_02.png" alt> </p>
 <p>然后执行第 16 行代码，e = e.next ，就变成了下面这张图。为了方便，我这里只截取了相关部分的图。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_03.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_03.png" alt></p>
 <p>此时 e 不为 null ，继续循环。</p>
 <p>再次进入第 8 行代码，此时转化的就是 Node1 节点了，此时 p 指针指向新创建的 TreeNode 对象，此时 tl 不为 null ，执行 第 12 ~ 13 代码，执行完毕之后如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_04.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_04.png" alt></p>
 <p>再执行第 15 行代码以及 16 行的 e = e.next ，tl 指针指向了新对象 ，e 指针指向 Node2 ，如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_05.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_05.png" alt></p>
 <p>如此一直循环下去，会一直创建 TreeNode 并最终生成一个双向链表，而 e 指针一直往后指，最终指向 Node8 。最终图大致如下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_tree_06.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_tree_06.png" alt></p>
 <p>此时 e.next 指向 null ，退出循环。</p>
 <p>执行第 17 行代码，tab[index] 此时就是数组 index 为 1 的位置，指向 hd 就变成了下面这样子了。</p>
 <p><img src="https://gitee.com/zhaoxiaofa/blog/raw/1dcbaaa72fba00afd6542b457b4bfae896a1a373/pictures/collection/hashmap/hashmap_tree_07.png" alt></p>
@@ -487,7 +487,7 @@
   <p><span>本文标题:</span><a href="/2019/02/07/Java集合—HashMap之红黑树/">Java集合—HashMap之红黑树</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月07日 - 23:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月18日 - 12:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2019/02/07/Java集合—HashMap之红黑树/" title="Java集合—HashMap之红黑树">https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/07/Java集合—HashMap之红黑树/" aria-label="复制成功！"></i></span>
   </p>
@@ -664,7 +664,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

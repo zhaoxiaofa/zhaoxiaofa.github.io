@@ -87,16 +87,16 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_11.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_12.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_13.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_14.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png">
-<meta property="og:updated_time" content="2020-01-05T14:47:52.143Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_11.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_12.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_13.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_14.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_15.png">
+<meta property="og:updated_time" content="2022-04-27T07:30:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于ZooKeeper的分布式锁">
 <meta name="twitter:description" content="1. 原理底层是基于 ZooKeeper 的临时顺序节点。 ZooKeeper 的节点类型可以分为持久节点、持久顺序节点、临时节点、以及临时顺序节点。在基于 Dubbo 的分布式系统中，使用 ZooKeeper 做注册中心，就是使用的临时节点。如果对 ZooKeeper 基础知识不了解的同学可以百度下相关知识点。 我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_11.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_11.png">
 
 
 
@@ -397,14 +397,14 @@
 <p>我们很容易理解为什么用临时节点，因为加锁就相当于临时增加一个节点，解锁就去掉这个临时节点。</p>
 <p>那为什么是顺序节点呢？我们先来画张图，看看 ZooKeeper 做分布式锁的原理。</p>
 <p>我们设置锁节点的父节点为 /distribute_lock/productId_lock 。distribute_lock 表示所有的分布式锁都放在这个节点下，productId_lock 表示这个是某个商品用到的锁，如果别的模块也需要用分布式锁，也可以对应创建节点。比如，用户系统可以设置为 /distribute_lock/userId_lock 。那么此时，ZooKeeper 的节点如下图所示。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_11.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_11.png" alt></p>
 <p><strong>注意：</strong> 这里的 distribute_lock 和 productId_lock 这两个节点是持久节点。我们最终是在 productId_lock 节点下创建临时节点。</p>
 <p>如果这个时候多个线程来同时加锁，会怎么样呢？ZooKeeper 的底层保证同一时间只有一个线程能创建临时节点，这一点类似于 Redis 的单线程。当其他线程来创建节点发现已经有一个临时节点了，就会等着。图就会变成下面这个样子。来，上图：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_12.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_12.png" alt></p>
 <p>如果不用顺序节点，没有创建节点成功的线程都会等着，等到线程1完成业务，解锁之后，其他所有的线程都会<strong>一拥而上</strong>去创建自己的节点。</p>
 <p>我们回忆一下，使用 Redission 分布式锁的时候是不是就是这样。一个线程加锁成功之后，其他的线程就等着，在死循环里不断尝试去加锁。但是这里有个问题，Redis 可是单机能抗 10 万并发的，而 ZooKeeper 是没有这么高性能的。所以如果这里等待的线程过多，当线程1删除节点解锁之后，其他所有线程同时争抢着创建节点，ZooKeeper 未必抗的住。所以，引入了顺序节点。</p>
 <p>如果使用临时<strong>顺序节点</strong>会怎样呢？来，上图：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_13.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_13.png" alt></p>
 <p>如上图，线程1表示第一个加锁成功的线程，线程2表示加锁失败的线程。如果使用的是临时顺序节点，上来不管三七二十一，先创建一个临时节点再说。然后再判断自己创建的子节点是不是第一个子节点，如果是，证明加锁成功，如果不是，加锁失败。加锁失败的线程会创建一个监听器，用来<strong>监听自己的上一个节点</strong>。</p>
 <p>这样，线程2加锁失败，监听线程1；线程3加锁失败，监听线程2；以此类推。。。</p>
 <p>那使用临时顺序节点，解锁的时候又会发生什么呢？线程1加锁成功后，执行自身的业务，执行完毕之后删除临时节点1，<strong>同时通知线程2</strong>，此时线程2就会去加锁。而此时临时节点1已经被删除了，线程2创建的临时节点就是第一个子节点，就会加锁成功。至于后面的线程，以此类推即可。</p>
@@ -438,9 +438,9 @@
 <p>第 9 行代码创建一个加锁对象，这个是<strong>可重入锁</strong>，后面源码分析的时候会讲到。</p>
 <p>第 10 行代码加锁，11 ~ 14 模拟执行业务代码，15 行解锁。</p>
 <p>执行一次，看看效果。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_14.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_14.png" alt></p>
 <p>这个是我使用命令行查看的节点状态，在 /distribute_lock 节点下有一个 /product01_lock 节点，我们创建的临时顺序节点就是 /product01_lock 的子节点。来，看一下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/zk_lock_15.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/zk_lock_15.png" alt></p>
 <p>如上图所示，有一个子节点，后面几位全是 0 ，我推测下一个子节点后几位应该是 00000000001 。上面这个截图是我在解锁之前截的，如果过了 30 秒，这个临时节点就会被删除了。</p>
 <p>在我们实际的使用过程中，会结合 Spring 去注册 CuratorFramework 的 bean ，之后的用法就是如 9 ~ 15 代码所示。实际的业务代码放在 try 里面就行，最后 finally 里面记得一定要释放锁即可。讲到这里，ZooKeeper 做分布式锁的原理和用户就大多讲完了。</p>
 <p>下一篇，我们讲 ZooKeeper 分布式锁源码，<a href="https://zhaoxiaofa.com/2019/08/30/Curator%E5%AE%9E%E7%8E%B0ZooKeeper%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E6%BA%90%E7%A0%81/#more">Curator实现ZooKeeper分布式锁源码</a> 。</p>
@@ -463,7 +463,7 @@
   <p><span>本文标题:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/">基于ZooKeeper的分布式锁</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 17:08</p> -->
- <!-- <p><span>最后更新:</span>2020年01月05日 - 22:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 15:04</p> -->
   <p><span>原始链接:</span><a href="/2019/08/30/基于ZooKeeper的分布式锁/" title="基于ZooKeeper的分布式锁">https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/08/30/基于ZooKeeper的分布式锁/" aria-label="复制成功！"></i></span>
   </p>
@@ -642,7 +642,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

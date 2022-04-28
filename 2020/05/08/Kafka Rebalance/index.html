@@ -87,20 +87,20 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 背景最近团队里的一个重 Kafka 项目频繁的发生 Rebalance ，导致经常性的出现消息堆积问题，峰值曾堆积过数千万条消息。因此来研究下 Kafka Rebalance 相关的问题。 2. Rebalance时机当 Kafka 遇到如下四种情况的时候，会触发 Rebalance 机制：  消费组成员发生了变更A：新消费者加入B：有消费者宕机 消费者无法在指定的时间之内完成消息的消费 消">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/partition.png">
 <meta property="og:image" content="https://img.kancloud.cn/f1/6f/f16fbcb798a53c21c3bf1bcd5b72b006_892x343.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/joinGroup1.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/syncGroup1.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-new.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-leave.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-down.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/Rebalance.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/okhttp.png">
-<meta property="og:updated_time" content="2022-01-11T13:09:41.000Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/joinGroup1.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/syncGroup1.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/group-new.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/group-leave.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/group-down.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/Rebalance.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/okhttp.png">
+<meta property="og:updated_time" content="2022-04-27T06:02:32.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka Rebalance">
 <meta name="twitter:description" content="1. 背景最近团队里的一个重 Kafka 项目频繁的发生 Rebalance ，导致经常性的出现消息堆积问题，峰值曾堆积过数千万条消息。因此来研究下 Kafka Rebalance 相关的问题。 2. Rebalance时机当 Kafka 遇到如下四种情况的时候，会触发 Rebalance 机制：  消费组成员发生了变更A：新消费者加入B：有消费者宕机 消费者无法在指定的时间之内完成消息的消费 消">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/partition.png">
 
 
 
@@ -429,7 +429,7 @@
 <h4 id="2-2-1-Consumer-超时测试"><a href="#2-2-1-Consumer-超时测试" class="headerlink" title="2.2.1 Consumer 超时测试"></a>2.2.1 Consumer 超时测试</h4><p>首先创建一个测试 topic（”consumer-delay-test“），分配 4 个 partition，脚本如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/kafka-topics.sh --create --partitions <span class="number">4</span> --replication-factor <span class="number">1</span> --topic consumer-delay-test --bootstrap-server localhost:<span class="number">9092</span></span><br></pre></td></tr></table></figure>
 <p>创建成功之后在 Kafka 的日志文件中可以看到有四个文件目录，如下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/partition.png" alt></p>
 <p>创建多个 Consumer，消费该 topic，为了更快的看到现象，将 <code>max.poll.interval.ms</code> 的值设置为 1 分钟，消费逻辑中线程 sleep 10s，具体代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">3</span>; i++) &#123;</span><br><span class="line">            <span class="keyword">int</span> finalI = i;</span><br><span class="line">            <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">                doConsumer(<span class="string">"consumerId-"</span> + finalI);</span><br><span class="line">            &#125;).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> KafkaConsumer <span class="title">buildConsumer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Properties props = <span class="keyword">new</span> Properties();</span><br><span class="line">        props.put(<span class="string">"bootstrap.servers"</span>, <span class="string">"localhost:9092"</span>);</span><br><span class="line">        props.put(<span class="string">"key.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"value.deserializer"</span>, <span class="string">"org.apache.kafka.common.serialization.StringDeserializer"</span>);</span><br><span class="line">        props.put(<span class="string">"enable.auto.commit"</span>, <span class="string">"true"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.commit.interval.ms"</span>, <span class="string">"1000"</span>);</span><br><span class="line">        props.put(<span class="string">"session.timeout.ms"</span>, <span class="string">"30000"</span>);</span><br><span class="line">        props.put(<span class="string">"auto.offset.reset"</span>, <span class="string">"latest"</span>);</span><br><span class="line">        props.put(<span class="string">"fetch.min.bytes"</span>, <span class="number">1000</span>);</span><br><span class="line">        props.put(<span class="string">"max.poll.interval.ms"</span>, <span class="number">1000</span> * <span class="number">60</span>);</span><br><span class="line">        <span class="comment">// groupId取传参</span></span><br><span class="line">        props.put(<span class="string">"group.id"</span>, <span class="string">"testDelay"</span>);</span><br><span class="line">        KafkaConsumer kafkaConsumer = <span class="keyword">new</span> KafkaConsumer&lt;&gt;(props);</span><br><span class="line">        kafkaConsumer.subscribe(Arrays.asList(<span class="string">"consumer-delay-test"</span>));</span><br><span class="line">        <span class="keyword">return</span> kafkaConsumer;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doConsumer</span><span class="params">(String consumerId)</span> </span>&#123;</span><br><span class="line">        KafkaConsumer kafkaConsumer = buildConsumer();</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            ConsumerRecords&lt;String, String&gt; consumerRecords = kafkaConsumer.poll(Duration.ofSeconds(<span class="number">1</span>));</span><br><span class="line">            <span class="keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : consumerRecords) &#123;</span><br><span class="line">                System.out</span><br><span class="line">                        .println(<span class="string">"=======receive: consumerId="</span> + consumerId + <span class="string">",key = "</span> + record.key() + <span class="string">", value = "</span> + record.value() +</span><br><span class="line">                                <span class="string">" offset==="</span> + record.offset());</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep(<span class="number">1000</span> * <span class="number">10</span>);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">                    e.printStackTrace();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>开始运行后，会发起 join group 的请求，成功 join 之后，会分配消费分区，初始化日志如下（仅节选部分日志）：</p>
@@ -464,16 +464,16 @@
 <h3 id="3-2-JoinGroup"><a href="#3-2-JoinGroup" class="headerlink" title="3.2 JoinGroup"></a>3.2 JoinGroup</h3><p>在这一步中，所有 Consumer 向 Coordinator 发送 JoinGroup 的请求，Coordinator 会在 Consumer 中选择一个作为 Leader，并将所有 Consumer 的信息发送给 Leader，由 Leader 进行消费分区的分配。</p>
 <p>注意：Coordinator 是 Broker 中的概念，Leader 是 Consumer 客户端的概念。</p>
 <p>流程图大致如下（图片来源于网络）：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/joinGroup1.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/joinGroup1.png" alt></p>
 <h3 id="3-3-SyncGroup"><a href="#3-3-SyncGroup" class="headerlink" title="3.3 SyncGroup"></a>3.3 SyncGroup</h3><p>在 JoinGroup 之后，选举出来的 Leader 会分配好消费方案，然后通过 SyncGroup 请求将分区消费方案发送给 Coordinator，非 Leader 也会发 SyncGroup 请求，只是内容为空。</p>
 <p>Coordinator 接收到分配方案之后会把方案塞进 SyncGroup 的 Response 中发给各个 Consumer。这样各 Consumer 都知道自己应该消费哪些分区了。</p>
 <p>流程图大致如下（图片来源于网络）：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/syncGroup1.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/syncGroup1.png" alt></p>
 <h3 id="3-3-Rebalance场景"><a href="#3-3-Rebalance场景" class="headerlink" title="3.3 Rebalance场景"></a>3.3 Rebalance场景</h3><h4 id="3-3-1-新成员加入（应用上线）"><a href="#3-3-1-新成员加入（应用上线）" class="headerlink" title="3.3.1 新成员加入（应用上线）"></a>3.3.1 新成员加入（应用上线）</h4><p>流程图大致如下（图片来源于网络，网络来自于《Apache Kafka 实战》）：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-new.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/group-new.png" alt></p>
 <p>图中，从成员2发起 JoinGroup 请求至成员2收到 SyncGroup 响应，期间 Consumer 处于 STW 状态，不会消费消息。</p>
-<h4 id="3-3-2-成员注定离开（应用下线）"><a href="#3-3-2-成员注定离开（应用下线）" class="headerlink" title="3.3.2 成员注定离开（应用下线）"></a>3.3.2 成员注定离开（应用下线）</h4><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-leave.png" alt></p>
-<h4 id="3-3-3-成员奔溃离开（消费超时）"><a href="#3-3-3-成员奔溃离开（消费超时）" class="headerlink" title="3.3.3 成员奔溃离开（消费超时）"></a>3.3.3 成员奔溃离开（消费超时）</h4><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/group-down.png" alt></p>
+<h4 id="3-3-2-成员注定离开（应用下线）"><a href="#3-3-2-成员注定离开（应用下线）" class="headerlink" title="3.3.2 成员注定离开（应用下线）"></a>3.3.2 成员注定离开（应用下线）</h4><p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/group-leave.png" alt></p>
+<h4 id="3-3-3-成员奔溃离开（消费超时）"><a href="#3-3-3-成员奔溃离开（消费超时）" class="headerlink" title="3.3.3 成员奔溃离开（消费超时）"></a>3.3.3 成员奔溃离开（消费超时）</h4><p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/group-down.png" alt></p>
 <h2 id="4-生产环境故障处理"><a href="#4-生产环境故障处理" class="headerlink" title="4. 生产环境故障处理"></a>4. 生产环境故障处理</h2><h3 id="4-1-不知名topic业务代码引起的故障"><a href="#4-1-不知名topic业务代码引起的故障" class="headerlink" title="4.1 不知名topic业务代码引起的故障"></a>4.1 不知名topic业务代码引起的故障</h3><h4 id="4-1-1-告警"><a href="#4-1-1-告警" class="headerlink" title="4.1.1 告警"></a>4.1.1 告警</h4><p>有一次收到了线上的电话告警，消息量大的一个 topic （消息量约 5 万/s）线上堆积了上千万条消息。在 Kafka 监控台可以看到集群在疯狂的 Rebalance ，几乎是 Rebalance 一次完毕之后立马又开始 Rebalance。<br>因为监控聚合后具体时间间隔不够精准，于是搜索了 Rebalance 相关的日志，日志大致如下：</p>
 <blockquote>
 <p><strong>August 15th 2020, 11:18:49.082</strong> message:2020-08-15 03:18:48, INFO, o.a.k.c.c.i.AbstractCoordinator , 916, maybeLeaveGroup [Consumer clientId=consumer-####-53, groupId=####] Member consumer-###### sending LeaveGroup request to coordinator ####### (id: ##### rack: null) due to consumer poll timeout has expired. This means the time between subsequent calls to poll() was longer than the configured <a href="http://max.poll.interval.ms/" target="_blank" rel="noopener">max.poll.interval.ms</a>, which typically implies that the poll loop is spending too much time processing messages. You can address this either by increasing <a href="http://max.poll.interval.ms/" target="_blank" rel="noopener">max.poll.interval.ms</a> or by reducing the maximum size of batches returned in poll() with max.poll.records.</p>
@@ -492,10 +492,10 @@
 <h4 id="4-1-4-感悟"><a href="#4-1-4-感悟" class="headerlink" title="4.1.4 感悟"></a>4.1.4 感悟</h4><p>对于自己负责的系统，边边角角都要照顾到，尤其是容易出现故障的地方。有时候，边缘业务也会对系统造成致命伤害。</p>
 <h3 id="4-2-请求三方授权接口耗时过高导致的故障"><a href="#4-2-请求三方授权接口耗时过高导致的故障" class="headerlink" title="4.2 请求三方授权接口耗时过高导致的故障"></a>4.2 请求三方授权接口耗时过高导致的故障</h3><h4 id="4-2-1-告警"><a href="#4-2-1-告警" class="headerlink" title="4.2.1 告警"></a>4.2.1 告警</h4><p>同样是一次线上 Kafka 消息堆积的电话告警，这次吸收了之前的经验后，首先排查是否有其他 topic 也出现了消息堆积，最终确认没有，确实是只有流量最大的 topic 消息堵塞了。</p>
 <h4 id="4-2-2-定位"><a href="#4-2-2-定位" class="headerlink" title="4.2.2 定位"></a>4.2.2 定位</h4><p>于是，找到对应堆积的 partition 对应的机器，Jstack 搜索对应 Consumer 的堆栈信息，定位到了阻塞在对外接口的 Http 请求上。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/Rebalance.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/Rebalance.png" alt></p>
 <h4 id="4-2-3-处理"><a href="#4-2-3-处理" class="headerlink" title="4.2.3 处理"></a>4.2.3 处理</h4><p>问题处理很简单，打开异步消费的开关即可，打开后线上立马恢复。</p>
 <h4 id="4-2-4-后续"><a href="#4-2-4-后续" class="headerlink" title="4.2.4 后续"></a>4.2.4 后续</h4><p>在处理完问题之后，后面分析了为什么会导致 http 请求阻塞这么久，后面在看代码的时候，发现了下面一坨代码，我震惊了。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/okhttp.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/okhttp.png" alt></p>
 <p>应该是因为笔误的原因，原先写代码的同学将 http 的超时时间设置为了 20000s，即 5.5 小时。这就是消息能阻塞如此之久的原因。你永远不知道你的前辈会给你准备什么样的惊喜。</p>
 <p>备注：后面我们对 OkHttp 做了详细的监控和参数调优，该类型问题已全部解决。</p>
 <h2 id="5-如何避免-Rebalance"><a href="#5-如何避免-Rebalance" class="headerlink" title="5. 如何避免 Rebalance"></a>5. 如何避免 Rebalance</h2><h3 id="5-1-Rebalance-的危害"><a href="#5-1-Rebalance-的危害" class="headerlink" title="5.1 Rebalance 的危害"></a>5.1 Rebalance 的危害</h3><p>先说说 Rebalance 的危害，大概如下：</p>
@@ -539,7 +539,7 @@
   <p><span>本文标题:</span><a href="/2020/05/08/Kafka Rebalance/">Kafka Rebalance</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2020年05月08日 - 22:05</p> -->
- <!-- <p><span>最后更新:</span>2022年01月11日 - 21:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2020/05/08/Kafka Rebalance/" title="Kafka Rebalance">https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2020/05/08/Kafka Rebalance/" aria-label="复制成功！"></i></span>
   </p>
@@ -714,7 +714,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

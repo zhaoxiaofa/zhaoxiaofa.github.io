@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码。 大致需求是这样的，客户表中类型 (type) 为 1 的手机号不能重复，但是其他类型的手机号可以重复，这就意味着 mobile 是不能加唯一索引的，mobile 和 type 也不能加联合唯一索引。 在插入客户时需要根据 mobile 和 type 为">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png">
-<meta property="og:updated_time" content="2021-10-27T14:45:37.446Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/synchronized/WX20200119-142736.png">
+<meta property="og:updated_time" content="2022-04-27T06:34:29.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Synchronized失效">
 <meta name="twitter:description" content="1. 前言前两天，有个群友遇到个问题，明明加了 synchronized 关键字，为什么就不起作用呢？锁怎么就失效了呢？然后我看了他发给我的代码。 大致需求是这样的，客户表中类型 (type) 为 1 的手机号不能重复，但是其他类型的手机号可以重复，这就意味着 mobile 是不能加唯一索引的，mobile 和 type 也不能加联合唯一索引。 在插入客户时需要根据 mobile 和 type 为">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/synchronized/WX20200119-142736.png">
 
 
 
@@ -394,7 +394,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>(rollbackFor = Exception.class)</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Result&lt;Object&gt; <span class="title">addCustomer</span><span class="params">(InsertCustomerReq req)</span> </span>&#123;</span><br><span class="line">  	Customer customer = dao.getCustomerByMobileAndTypeOne();</span><br><span class="line">  	<span class="keyword">if</span>(<span class="keyword">null</span> != customer)&#123;</span><br><span class="line">      dao.insert();</span><br><span class="line">      dao.insertOtherData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>看起来是不是考虑很周全，很完美？其实我看的 Transactional 注解之后，我已经知道是什么原因了。</p>
 <h2 id="2-为什么synchronized遇到-Transactional会失效？"><a href="#2-为什么synchronized遇到-Transactional会失效？" class="headerlink" title="2. 为什么synchronized遇到@Transactional会失效？"></a>2. 为什么synchronized遇到@Transactional会失效？</h2><h3 id="2-1-synchronized锁失效"><a href="#2-1-synchronized锁失效" class="headerlink" title="2.1 synchronized锁失效"></a>2.1 synchronized锁失效</h3><p>这个得从 @Transactional 说起，我们都知道 Transactional 的实现是基于 Spring 的 AOP 。Spring 会对 addCustomer 方法进行动态代理，执行前开始事务，然后执行 addCustomer 方法的业务逻辑，最后提交事务。而执行 addCustomer 方法的时候，先加锁，执行逻辑，再解锁。最后的大致流程图如下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/concurrency/synchronized/WX20200119-142736.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/concurrency/synchronized/WX20200119-142736.png" alt></p>
 <p>假设线程1先抢到锁，在解锁之后，<strong>这个时候事务还没有提交，数据库数据还没有更新</strong>。然后线程2获取到了锁，执行逻辑，执行业务逻辑的时候很有可能获取的还是旧数据，出现锁失效的情况。</p>
 <h3 id="2-2-分布式锁失效"><a href="#2-2-分布式锁失效" class="headerlink" title="2.2 分布式锁失效"></a>2.2 分布式锁失效</h3><p>大多数情况下，我们都是分布式系统，会使用分布式锁。比如使用 ZooKeeper 或者 Redis 实现的分布式锁。不熟悉分布式锁的同学可以看这几篇文章—— 。</p>
 <p>此时代码会变成这样：</p>
@@ -427,7 +427,7 @@
   <p><span>本文标题:</span><a href="/2019/02/21/Synchronized失效/">Synchronized失效</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月21日 - 23:02</p> -->
- <!-- <p><span>最后更新:</span>2021年10月27日 - 22:10</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2019/02/21/Synchronized失效/" title="Synchronized失效">https://zhaoxiaofa.com/2019/02/21/Synchronized失效/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/21/Synchronized失效/" aria-label="复制成功！"></i></span>
   </p>
@@ -602,7 +602,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

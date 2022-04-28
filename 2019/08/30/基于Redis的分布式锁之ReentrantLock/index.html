@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/redisson-lock.png">
-<meta property="og:updated_time" content="2019-10-30T09:53:21.625Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/redisson-lock.png">
+<meta property="og:updated_time" content="2022-04-27T07:31:25.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于Redis的分布式锁之ReentrantLock">
 <meta name="twitter:description" content="1. 原理利用Redis的setnx命令，此命令是原子性操作。 2. 加锁设置锁和设置过期时间应该是一个原子性操作，防止出现锁设置成功，但是执行设置锁过期时间失败导致的死锁现象。 伪代码：  setnx(key,value,expire)  key的取值：一般是业务id,比如商品编号等。 value的取值：机器id + 线程id 能唯一标识一个线程即可。 expire的取值：过期时间的取值大多根据">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/redisson-lock.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/redisson-lock.png">
 
 
 
@@ -522,7 +522,7 @@
 <p>通过 Config 类 或者配置文件中自定义 lockWatchdogTimeout 。比如在本次的测试中</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">config.setLockWatchdogTimeout(<span class="number">20</span> * <span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
 <p>设置 lockWatchdogTimeout 为20秒。再次执行发现，每隔大约7秒钟看门狗会续期一次。这个我测试过，确实如此。</p>
-<h2 id="7-总结一下，画个图"><a href="#7-总结一下，画个图" class="headerlink" title="7. 总结一下，画个图"></a>7. 总结一下，画个图</h2><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/distributed/redisson-lock.png" alt></p>
+<h2 id="7-总结一下，画个图"><a href="#7-总结一下，画个图" class="headerlink" title="7. 总结一下，画个图"></a>7. 总结一下，画个图</h2><p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/distributed/redisson-lock.png" alt></p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>官方GitHub：<a href="https://github.com/redisson/redisson" target="_blank" rel="noopener">https://github.com/redisson/redisson</a></p>
 <p>官方文档：<a href="https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers" target="_blank" rel="noopener">https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers</a></p>
 
@@ -544,7 +544,7 @@
   <p><span>本文标题:</span><a href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/">基于Redis的分布式锁之ReentrantLock</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年08月30日 - 16:08</p> -->
- <!-- <p><span>最后更新:</span>2019年10月30日 - 17:10</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 15:04</p> -->
   <p><span>原始链接:</span><a href="/2019/08/30/基于Redis的分布式锁之ReentrantLock/" title="基于Redis的分布式锁之ReentrantLock">https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/08/30/基于Redis的分布式锁之ReentrantLock/" aria-label="复制成功！"></i></span>
   </p>
@@ -719,7 +719,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

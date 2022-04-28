@@ -87,14 +87,14 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="2. 源码解析上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png">
-<meta property="og:updated_time" content="2020-01-15T15:22:35.945Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/put_method_process.jpg">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/bucket_to_linked1.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/bucket_to_linked2.png">
+<meta property="og:updated_time" content="2022-04-27T06:36:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之梳理put方法逻辑">
 <meta name="twitter:description" content="2. 源码解析上一篇文章 Java集合—HashMap之hash优化算法 已经讲了 HashMap 的 hash 优化算法，在讲优化算法的时候提到了 put 方法，这个最核心，最复杂的方法。这一篇我们来详细梳理下 put 方法的逻辑。 2.3 梳理put方法逻辑我们先贴出来 put 方法的代码： 123public V put(K key, V value) &amp;#123;    return pu">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/put_method_process.jpg">
 
 
 
@@ -396,7 +396,7 @@
 <p>最核心的还是调用了 putVal 方法。其中 onlyIfAbsent 表示是否替换相同 key 的旧 value 值，默认都是替换。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在详细分析源码之前，我们先画一张图。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/put_method_process.jpg" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/put_method_process.jpg" alt></p>
 <p>这张图中画出了大致的流程图，涉及到树结构的没有详细画出来，后面会专门写一篇文章处理的。结合这张图，我们再来看看代码。建议看这篇文章的时候打开 idea, 跟着我一起看 HashMap 的 put 方法的源码。</p>
 <p><strong>源码很长，有的讲源码的博客文章会在代码中写注释，但是我觉得很多东西一两行注释说不清楚。但是我这样写又会导致在看说明的时候还得往上翻看对应的哪一行代码，所以建议大家看的时候开两个窗口，一个看代码，一个看说明。</strong></p>
 <p>第 4 行代码，判断 table 是否为空，为空的话进行初始化扩容。 resize 方法后面详解。</p>
@@ -408,12 +408,12 @@
 <p>如果不是同一个 key ，进入第 13 行代码，判断是否为树结构，之后执行树结构的相关逻辑，后面我们单独来讲。</p>
 <p>如果既不是同一个 key ，也不是树结构，说明就是链表结构了，此时就会进入 15 行代码的分支。首先进入一个死循环，这个死循环依赖于 break 进行退出。<strong>这个循环的逻辑就是对链表进行遍历</strong>，binCount 依次增加。</p>
 <p>数组转链表的分析是这篇文章的一个重点，所以下面我们边看源码边画图。来上图：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked1.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/bucket_to_linked1.png" alt></p>
 <p>第 17 行代码，判断 p 的下一个节点是否为空，并把 p.next 赋值给 e 。</p>
 <p>我们假设是 tab[i] 第一次 hash 冲突，那么此时肯定是空，如图 A 所示。然后我们以传入的 key、value、hash 新建一个 Node ，此时就会如图 B 所示。然后第 19 行代码判断是否需要转化为树结构，这里我们跳过，后面细讲。因为是第一次 hash 冲突，此时不会树化，然后执行第 21 行代码，退出循环。</p>
 <p>我们假设  tab[i] 进入第二次 hash 冲突，进入到第 17 行代码，此时 p.next 就不为空了，就会进入到第 23 行代码的判断，我们假设不是同一个 key ，这个时候执行第 26 行代码，p 指针指向 e ，如图 C 所示。</p>
 <p>我们假设  tab[i] 进入第三次 hash 冲突，进入到第 17 行代码，我们看看图 C ，这个时候，p.next 又为空了，这个时候就和第一次 hash 冲突类似了。来，上图：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/bucket_to_linked2.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/bucket_to_linked2.png" alt></p>
 <p>第 17 行执行完毕如图 D，18 行执行完如图 E 。</p>
 <p>然后第四次 hash 冲突，这次执行逻辑和第二次 hash 冲突的逻辑一样，执行完之后如图 F 。如此这样周而复始的执行，链表的长度不断增长。</p>
 <p>第 29 ~ 34 行代码处理返回的旧值，就不用深究了。</p>
@@ -438,7 +438,7 @@
   <p><span>本文标题:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/">Java集合—HashMap之梳理put方法逻辑</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月06日 - 00:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月15日 - 23:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" title="Java集合—HashMap之梳理put方法逻辑">https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/06/Java集合—HashMap之梳理put方法逻辑/" aria-label="复制成功！"></i></span>
   </p>
@@ -615,7 +615,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

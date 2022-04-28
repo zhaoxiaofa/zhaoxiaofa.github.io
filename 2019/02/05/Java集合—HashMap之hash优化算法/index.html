@@ -87,13 +87,13 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 原理HashMap 底层是数组 + 链表 + 红黑树。 数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。 链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。 再来看看 HashMap 继承或实现了">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_02.png">
-<meta property="og:updated_time" content="2020-01-16T11:53:27.782Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_put_01.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_put_02.png">
+<meta property="og:updated_time" content="2022-04-27T06:35:24.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Java集合—HashMap之hash优化算法">
 <meta name="twitter:description" content="1. 原理HashMap 底层是数组 + 链表 + 红黑树。 数组我们很熟悉，支持随机访问，所以在最优情况下，即 HashMap 没有出现 hash 冲突，没有形成链表或红黑树结构，此时数据都存在数组中，get 方法的查询时间复杂度为 O(1) 。 链表查询时间复杂度 O(n) ，红黑树 O($logn$)。底层的数据结构和对应的时间复杂度是我们研究的基础。 再来看看 HashMap 继承或实现了">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_put_01.png">
 
 
 
@@ -462,7 +462,7 @@
 <p>onlyIfAbsent、evict 并不是核心的属性，可以忽略。</p>
 <p>很明显，第一次 put 的时候是满足第 4 行代码的判断的，此时会执行第 5 行代码。</p>
 <p>此时，resize 方法做的事情主要就是第一次给数组分配内存，可以看一下我 debug 的截图。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_01.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_put_01.png" alt></p>
 <p>在 resize 方法中， Node<k,v>[] newTab = (Node<k,v>[])new Node[newCap];  这行代码才是初始化数组，分配内存的操作。所以，这也回答了上面构造函数中的那个问题，HashMap 是在执行 put 方法时给 bucket 数组分配内存的。</k,v></k,v></p>
 <p>resize 方法执行完毕后，table 的 length 是 16 ，即第 5 行代码  n = (tab = resize()).length 的值为 16 。</p>
 <p>然后执行第 6 行代码，这个非常非常非常重要。</p>
@@ -473,7 +473,7 @@
 <p>0000 0000 0000 0000 0000 0000 0000 1001</p>
 </blockquote>
 <p>算出来的值 1001 ，二进制是 9 。然后将 9 赋值给 i ，而 i 就是数组的 index 角标。也就是说，key 为“赵小发”的这条数据会被存储在数组的 index 为 9 的那个 Node 里。来，截个图看一下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/collection/hashmap/hashmap_put_02.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/collection/hashmap/hashmap_put_02.png" alt></p>
 <p><strong>思考：</strong> (n - 1) &amp; hash 本质是啥？</p>
 <p>我们之前通过 h ^ (h &gt;&gt;&gt; 16)  算出来了一个 hash 值，但是这个 hash 值太大了，我们最终是要算出一个 index，而这个 index 必须在 0~(n - 1) 之间。那最先想到的应该就是取模算法了，对 n 取模，即 hash / n ,余数就是对应的 index 位置。那为什么不用取模算法呢？原因是性能没有位运算高。</p>
 <p>那  (n - 1) &amp; hash  为什么能保证算出来的值在 0~(n - 1) 之间呢？</p>
@@ -518,7 +518,7 @@
   <p><span>本文标题:</span><a href="/2019/02/05/Java集合—HashMap之hash优化算法/">Java集合—HashMap之hash优化算法</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2019年02月05日 - 00:02</p> -->
- <!-- <p><span>最后更新:</span>2020年01月16日 - 19:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2019/02/05/Java集合—HashMap之hash优化算法/" title="Java集合—HashMap之hash优化算法">https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2019/02/05/Java集合—HashMap之hash优化算法/" aria-label="复制成功！"></i></span>
   </p>
@@ -695,7 +695,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

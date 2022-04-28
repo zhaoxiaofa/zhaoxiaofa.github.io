@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 背景随着业务的增值，系统从 Kafka 读取消息的日常流量涨到了 8 万条/秒，高峰期整点流量涨到了 20万条/秒。CPU 也跟着水涨船高，如果不对系统进行优化，就只能靠堆机器解决了（当前机器集群为 15 * 4C8G）。 最开始，我们的思路是用火焰图分析下系统 CPU 的耗费处，原以为业务代码还有优化之处，没想到火焰图的最终结果显示，大部分的 CPU 都耗费在 Consumer 的 pol">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-02-24T11:50:43.278Z">
+<meta property="og:updated_time" content="2022-04-27T06:22:35.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="项目Kafka参数调优">
 <meta name="twitter:description" content="1. 背景随着业务的增值，系统从 Kafka 读取消息的日常流量涨到了 8 万条/秒，高峰期整点流量涨到了 20万条/秒。CPU 也跟着水涨船高，如果不对系统进行优化，就只能靠堆机器解决了（当前机器集群为 15 * 4C8G）。 最开始，我们的思路是用火焰图分析下系统 CPU 的耗费处，原以为业务代码还有优化之处，没想到火焰图的最终结果显示，大部分的 CPU 都耗费在 Consumer 的 pol">
@@ -388,9 +388,9 @@
       
         <h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><p>随着业务的增值，系统从 Kafka 读取消息的日常流量涨到了 8 万条/秒，高峰期整点流量涨到了 20万条/秒。CPU 也跟着水涨船高，如果不对系统进行优化，就只能靠堆机器解决了（当前机器集群为 15 * 4C8G）。</p>
 <p>最开始，我们的思路是用火焰图分析下系统 CPU 的耗费处，原以为业务代码还有优化之处，没想到火焰图的最终结果显示，大部分的 CPU 都耗费在 Consumer 的 poll 操作上。所以只能从 Kafka Consumer 下手了。</p>
-<p>于是，有了这篇文章——《<a href="https://zhaoxiaofa.com/2020/11/25/Kafka%E8%B0%83%E4%BC%98%E4%B8%8E%E8%AF%A6%E7%BB%86%E5%8F%82%E6%95%B0%E8%AF%B4%E6%98%8E/">Kafka 调优与详细参数说明</a>》。</p>
+<p>于是，有了这篇文章—— 《Kafka 调优与详细参数说明》。</p>
 <p>在写完《Kafka 调优与详细参数说明》之后，大概知道，如果要增加吞吐量，需要调高 <code>fetch.min.bytes</code> 的值，但是会增加延时，并且实际每次拉取消息条数和拉取数据量也并不清楚，简而言之，缺少监控。</p>
-<p>于是，有了下面这篇文章——《<a href="https://zhaoxiaofa.com/2021/11/25/Kafka%E4%B8%9A%E5%8A%A1%E7%9B%91%E6%8E%A7/">Kafka 业务监控</a>》。</p>
+<p>于是，有了下面这篇文章——《Kafka业务监控》。</p>
 <h2 id="2-调优"><a href="#2-调优" class="headerlink" title="2. 调优"></a>2. 调优</h2><p>在拿到业务监控数据后发现，每次 poll 确实只拉取了 1 条数据，数据大小只有 400Byte，平均延时大约 10ms，因为数据量较小、延时很低，所以调高  <code>fetch.min.bytes</code>  应该没问题。</p>
 <h3 id="2-1-调优参数"><a href="#2-1-调优参数" class="headerlink" title="2.1 调优参数"></a>2.1 调优参数</h3><p>在将 <code>fetch.min.bytes</code> 的值设置为 1024，在调整该参数值时，同时需要考虑调整 <code>fetch-max-wait</code> ，因为消息如果长时间无法达到  <code>fetch.min.bytes</code> ，poll 操作将会一直阻塞，直至达到  <code>fetch-max-wait</code>  的时间。</p>
 <p>但是结合自身业务，消息量非常大，几乎不会出现长时间无法达到  <code>fetch.min.bytes</code> 的情况。即使极端出现了这种情况， <code>fetch.min.bytes</code>  的默认值 500ms，这种程度的延时业务也是完全可以接受的。</p>
@@ -429,7 +429,7 @@
   <p><span>本文标题:</span><a href="/2021/11/25/项目Kafka参数调优/">项目Kafka参数调优</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2021年11月25日 - 22:11</p> -->
- <!-- <p><span>最后更新:</span>2022年02月24日 - 19:02</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2021/11/25/项目Kafka参数调优/" title="项目Kafka参数调优">https://zhaoxiaofa.com/2021/11/25/项目Kafka参数调优/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2021/11/25/项目Kafka参数调优/" aria-label="复制成功！"></i></span>
   </p>
@@ -606,7 +606,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

@@ -87,12 +87,12 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 背景最初是某公众号转发的一篇西安某小区业主关于“西安一码通崩溃”的文章，一群技术背景的小区业主分析故障原因，并提出了建设意见，个人觉得挺有意思的。 原文《西安一码通BUG分析——雲著君建言献策，盼一码通稳定运行》，详见参考资料第一条。 2. 原因分析外界其实很难分析出真正的原因，毕竟互联网公司故障很多对外的口径都是“网络问题”。 但从表象看，应该是流量骤增，打挂了服务，至于是链路的哪一环节，">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/project/healthcode/healthcode.png">
-<meta property="og:updated_time" content="2022-01-06T06:19:55.000Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/project/healthcode/healthcode.png">
+<meta property="og:updated_time" content="2022-04-27T06:33:21.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="技术视角看西安一码通">
 <meta name="twitter:description" content="1. 背景最初是某公众号转发的一篇西安某小区业主关于“西安一码通崩溃”的文章，一群技术背景的小区业主分析故障原因，并提出了建设意见，个人觉得挺有意思的。 原文《西安一码通BUG分析——雲著君建言献策，盼一码通稳定运行》，详见参考资料第一条。 2. 原因分析外界其实很难分析出真正的原因，毕竟互联网公司故障很多对外的口径都是“网络问题”。 但从表象看，应该是流量骤增，打挂了服务，至于是链路的哪一环节，">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/project/healthcode/healthcode.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/project/healthcode/healthcode.png">
 
 
 
@@ -400,7 +400,7 @@
 <h4 id="3-1-4-其他服务"><a href="#3-1-4-其他服务" class="headerlink" title="3.1.4 其他服务"></a>3.1.4 其他服务</h4><p>C 端个人信息的登记修改、后台修改个人数据、核酸检测登记、健康码计算引擎等服务，流量都很小。</p>
 <p>其中健康码计算引擎才是难度系数高的，根据各种算法规则定义一个人的健康码结果。</p>
 <h4 id="3-2-流量预估"><a href="#3-2-流量预估" class="headerlink" title="3.2 流量预估"></a>3.2 流量预估</h4><p>西安 1300 万人口，日活应该不超过 1000 万，高峰期 QPS 大约 10 万左右（我之前负责过的业务，日活 3000 多万，最高 QPS 也才 20万）。</p>
-<h4 id="3-3-架构设计"><a href="#3-3-架构设计" class="headerlink" title="3.3 架构设计"></a>3.3 架构设计</h4><h4 id="3-3-1-架构图"><a href="#3-3-1-架构图" class="headerlink" title="3.3.1 架构图"></a>3.3.1 架构图</h4><p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/project/healthcode/healthcode.png" alt></p>
+<h4 id="3-3-架构设计"><a href="#3-3-架构设计" class="headerlink" title="3.3 架构设计"></a>3.3 架构设计</h4><h4 id="3-3-1-架构图"><a href="#3-3-1-架构图" class="headerlink" title="3.3.1 架构图"></a>3.3.1 架构图</h4><p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/project/healthcode/healthcode.png" alt></p>
 <h3 id="3-4-详细设计"><a href="#3-4-详细设计" class="headerlink" title="3.4 详细设计"></a>3.4 详细设计</h3><h4 id="3-4-1-应用拆分设计"><a href="#3-4-1-应用拆分设计" class="headerlink" title="3.4.1 应用拆分设计"></a>3.4.1 应用拆分设计</h4><p>首先，架构图中的查询服务需和维护服务位于不同应用，这两个服务的流量级别不是一个等级的，分开部署便于弹性扩容。</p>
 <p>其次，如果条件（成本）允许，健康码查询服务最好也和行程码、核酸结果查询服务分属不同应用。</p>
 <h4 id="3-4-2-缓存设计"><a href="#3-4-2-缓存设计" class="headerlink" title="3.4.2 缓存设计"></a>3.4.2 缓存设计</h4><p>健康码、行程码、核酸结果这些查询接口都不是实时性要求很高的接口，所以都需要上缓存。</p>
@@ -459,7 +459,7 @@
   <p><span>本文标题:</span><a href="/2021/12/23/技术视角看西安一码通/">技术视角看西安一码通</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2021年12月23日 - 22:12</p> -->
- <!-- <p><span>最后更新:</span>2022年01月06日 - 14:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2021/12/23/技术视角看西安一码通/" title="技术视角看西安一码通">https://zhaoxiaofa.com/2021/12/23/技术视角看西安一码通/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2021/12/23/技术视角看西安一码通/" aria-label="复制成功！"></i></span>
   </p>
@@ -634,7 +634,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

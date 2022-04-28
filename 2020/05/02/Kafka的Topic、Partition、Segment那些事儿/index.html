@@ -87,14 +87,14 @@
 <meta property="og:site_name" content="赵小发">
 <meta property="og:description" content="1. 前言Topic 是一个逻辑概念，Partition 和 Segment 都是物理概念（有真实的日志文件）。 一个 Topic 可以认为是一类消息，每个 Topic 将被分成多个 Partition，每个 Partition 在存储层面是 log 日志文件。 任何发布到某个 Partition 的消息都会被追加到 log 文件的尾部，每条消息在文件中的位置称为 Offset（偏移量），写入操作">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/topic-partition.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/kafka-no-partition.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png">
-<meta property="og:updated_time" content="2022-01-11T07:38:58.000Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/topic-partition.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/kafka-no-partition.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/partition.png">
+<meta property="og:updated_time" content="2022-04-27T06:22:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka的Topic、Partition、Segment那些事儿">
 <meta name="twitter:description" content="1. 前言Topic 是一个逻辑概念，Partition 和 Segment 都是物理概念（有真实的日志文件）。 一个 Topic 可以认为是一类消息，每个 Topic 将被分成多个 Partition，每个 Partition 在存储层面是 log 日志文件。 任何发布到某个 Partition 的消息都会被追加到 log 文件的尾部，每条消息在文件中的位置称为 Offset（偏移量），写入操作">
-<meta name="twitter:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/topic-partition.png">
+<meta name="twitter:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/topic-partition.png">
 
 
 
@@ -394,19 +394,19 @@
 <p>一个 Topic 可以认为是一类消息，每个 Topic 将被分成多个 Partition，每个 Partition 在存储层面是 log 日志文件。</p>
 <p>任何发布到某个 Partition 的消息都会被追加到 log 文件的尾部，每条消息在文件中的位置称为 Offset（偏移量），写入操作是磁盘顺序写，比随机写的性能高很多。</p>
 <p>Topic 和 Partition 的关系图如下所示（图片来自于 Kafka 官方文档）：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/topic-partition.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/topic-partition.png" alt></p>
 <h2 id="2-为什么将-Topic-分成多个-Partition？"><a href="#2-为什么将-Topic-分成多个-Partition？" class="headerlink" title="2. 为什么将 Topic 分成多个 Partition？"></a>2. 为什么将 Topic 分成多个 Partition？</h2><blockquote>
 <p>原因：负载均衡 + 水平扩容</p>
 </blockquote>
 <p>如果不对 Topic 进行分区，将 Topic 的消息存储于一个 Broker，那么关于该 Topic 的所有读写请求都将由这一个 Broker 处理，如果 Topic 的消息量差距很大（非常常见），那么 Broker 的负载会及其不均。</p>
 <p>如下图示例：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/kafka-no-partition.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/kafka-no-partition.png" alt></p>
 <p>如果 Topic-A 消息量 50000/s，Topic-B 消息量 5000/s，Topic-C 消息量  1/s（这三个 Topic 的消息量取自于我负载的实际业务中），Broker 的流量很明显机器不均，对应机器系统水位天差地别。很明显，这不是我们希望的结果。 </p>
 <p>同理，此种架构无法支持水平扩容，如果 Topic-A 的流量增长到 100万/s，一个 Broker 节点是如何也扛不住的。</p>
 <p>因为，需要引入Partition ，假设一个 Topic 被分为 4 个 Partitions，Kafka 会根据一定的算法将 4 个 Partition 尽可能均匀的分布到不同的 Broker 上，极大的提高吞吐量，并且使得系统具备良好的水平扩展能力。</p>
 <h2 id="3-Segment-存在的意义是什么？"><a href="#3-Segment-存在的意义是什么？" class="headerlink" title="3. Segment 存在的意义是什么？"></a>3. Segment 存在的意义是什么？</h2><p>Partition 并不是最终的存储粒度，Partition 还可以细分为 Segment，一个 Partition 物理上由多个 Segment 组成的。</p>
 <h3 id="3-1-测试"><a href="#3-1-测试" class="headerlink" title="3.1 测试"></a>3.1 测试</h3><p>按照官网上的说明，我创建了一个测试 Topic，Partition 数量设置为 4，创建之后，在 <code>/tmp/kafka-logs</code>  目录下可以看到对应的 Topic 和 Partition，如下图所示：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/kafka/partition.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/kafka/partition.png" alt></p>
 <p>进入到其中的任何一个目录（如 <code>consumer-delay-test-0</code>），有如下文件：</p>
 <blockquote>
 <p>-rw-r—r—  1 zhaoxiaofa wheel 10485760 1 11 11:13 00000000000000000000.index<br>-rw-r—r—  1 zhaoxiaofa wheel     0 1 11 11:13 00000000000000000000.log<br>-rw-r—r—  1 zhaoxiaofa wheel 10485756 1 11 11:13 00000000000000000000.timeindex<br>-rw-r—r—  1 zhaoxiaofa wheel     8 1 11 11:13 leader-epoch-checkpoint<br>-rw-r—r—  1 zhaoxiaofa wheel    43 1 11 11:13 partition.metadata</p>
@@ -449,7 +449,7 @@
   <p><span>本文标题:</span><a href="/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/">Kafka的Topic、Partition、Segment那些事儿</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2020年05月02日 - 18:05</p> -->
- <!-- <p><span>最后更新:</span>2022年01月11日 - 15:01</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 14:04</p> -->
   <p><span>原始链接:</span><a href="/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/" title="Kafka的Topic、Partition、Segment那些事儿">https://zhaoxiaofa.com/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2020/05/02/Kafka的Topic、Partition、Segment那些事儿/" aria-label="复制成功！"></i></span>
   </p>
@@ -624,7 +624,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>

@@ -88,12 +88,12 @@
 <meta property="og:description" content="1. 前言其一，在做系统稳定性建设时，对日志进行优化，warn 日志中发现大量的 http 的 SocketTimeOutException，原因是”前辈“在写代码的时候直接 try catch 之后，打了 warn 日志。平时没有过多的关注 warn 日志，其实这个报错应该打 error 日志，需要引起关注。 其二，之前线上出问题排查时发现代码中将 Http 的超时时间误设置为 20 * 100">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://square.github.io/okhttp/assets/images/events%402x.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/tcp.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/stack-answer.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/question.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/answer.png">
-<meta property="og:image" content="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/connection.png">
-<meta property="og:updated_time" content="2022-03-14T13:57:17.881Z">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/tcp.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/stack-answer.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/question.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/answer.png">
+<meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/connection.png">
+<meta property="og:updated_time" content="2022-04-27T05:54:13.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OkHttp监控与调优">
 <meta name="twitter:description" content="1. 前言其一，在做系统稳定性建设时，对日志进行优化，warn 日志中发现大量的 http 的 SocketTimeOutException，原因是”前辈“在写代码的时候直接 try catch 之后，打了 warn 日志。平时没有过多的关注 warn 日志，其实这个报错应该打 error 日志，需要引起关注。 其二，之前线上出问题排查时发现代码中将 Http 的超时时间误设置为 20 * 100">
@@ -415,22 +415,22 @@
 <p>ESTABLISHED=500+ TIME_WAIT=18000+</p>
 </blockquote>
 <p>因为当时在生产环境执行的结果没有保存下来，所以我在自己的 Mac 上模拟执行了下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/tcp.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/tcp.png" alt></p>
 <p>生产环境的执行结果显示，TIME_WAIT 数量很高，说明大量的 TCP 链接主动关闭。因为和链接有关，所以查看了 Client 链接相关的配置，初步猜测和链接池（ConnectionPool）有关。</p>
 <p>查看了 OkHttpClient 构造参数的文档——详见 <a href="https://square.github.io/okhttp/4.x/okhttp/okhttp3/-ok-http-client/" target="_blank" rel="noopener">OkHttpClient</a> 。</p>
 <p>因为在构造函数里面有这样一项 ConnectionPool 配置，我们项目中的代码是没有这一行的，示例如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">builder.connectionPool(<span class="keyword">new</span> ConnectionPool(<span class="number">5</span>, <span class="number">5</span>, TimeUnit.MINUTES));</span><br></pre></td></tr></table></figure>
 <p>第一个参数是 <code>maxIdleConnections</code>，默认值是 5，换言之，我们上万并发的 Http 请求该值使用的是默认值。</p>
 <p>因此，Google 了 <code>maxIdleConnections</code> 值设置相关的一些文章，在 Stack Overflow 上找到了相关的内容。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/stack-answer.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/stack-answer.png" alt></p>
 <p>上图是 OkHttp 社区维护人员的回复，<code>For a starting point, set it to match the thread count in your servlet container.</code> 可以将值设置为服务器对应的线程数。详细链接见参考文档。</p>
 <p>同时，我 Google 了 ”okhttp connection pool“，同样在 Stack OverFlow 上找到了类似的内容。有开发人员提了一个关于 Connection Pool 的配置，问题如下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/question.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/question.png" alt></p>
 <p>同样是社区维护人员的回复，如下：</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/answer.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/answer.png" alt></p>
 <p>这次，这位老哥的回答是，可以直接尝试设置为 256。</p>
 <p>国内也有少量文章有涉及该值的配置，<a href="https://www.cnblogs.com/lujiango/p/11771319.html" target="_blank" rel="noopener">文章链接</a> 。</p>
-<p><img src="https://gitee.com/zhaoxiaofa/blog/raw/master/pictures/http/connection.png" alt></p>
+<p><img src="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/connection.png" alt></p>
 <h2 id="3-调优"><a href="#3-调优" class="headerlink" title="3. 调优"></a>3. 调优</h2><p>因为我们是在线程池里面异步调用的 Http 请求，所以按照查阅到的文章，可以将 <code>maxIdleConnections</code> 设置为线程池的线程数，因此抱着尝试的心态，设置该值为 200，灰度发布一台机器到线上。</p>
 <p>发布后，请求连接比立马涨上去了，达到了 5000，响应的错误日志也没了。整个 Http 接口的成功率几乎接近 100%。</p>
 <p>后续不断尝试调整该值大小，针对整点尖刺的场景，将该值调整到 400，目前线上稳定运行，请求连接比约 1万左右。</p>
@@ -445,7 +445,7 @@
 <h2 id="4-疑问"><a href="#4-疑问" class="headerlink" title="4. 疑问"></a>4. 疑问</h2><p><strong>但是这里，我有一个疑问：</strong></p>
 <p> <code>maxIdleConnections</code> 是指“最大空闲链接数”，而我的应用是一个有稳定大流量的系统，基本不怎么可能出现空闲链接。这个在之前线程池调优的过程中有深刻的体会。参考 —— <a href="https://zhaoxiaofa.com/2020/09/25/%E9%A1%B9%E7%9B%AE%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%B0%83%E4%BC%98/">项目线程池调优</a> 。</p>
 <p>那为什么<code>maxIdleConnections</code> 需要设置这么大的值呢？后面在复盘的时候也没有搞清楚根本原因，问题解决了，根因还是没找到。后续有时间还要研究下。</p>
-<h2 id="5-参考"><a href="#5-参考" class="headerlink" title="5. 参考"></a>5. 参考</h2><ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title=". 参考"></a>. 参考</h2><ol>
 <li><a href="https://square.github.io/okhttp/" target="_blank" rel="noopener">官方文档</a></li>
 <li><p><a href="https://github.com/square/okhttp/issues/3907" target="_blank" rel="noopener">https://github.com/square/okhttp/issues/3907</a></p>
 </li>
@@ -482,7 +482,7 @@
   <p><span>本文标题:</span><a href="/2021/09/03/OkHttp监控与调优/">OkHttp监控与调优</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2021年09月03日 - 23:09</p> -->
- <!-- <p><span>最后更新:</span>2022年03月14日 - 21:03</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月27日 - 13:04</p> -->
   <p><span>原始链接:</span><a href="/2021/09/03/OkHttp监控与调优/" title="OkHttp监控与调优">https://zhaoxiaofa.com/2021/09/03/OkHttp监控与调优/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2021/09/03/OkHttp监控与调优/" aria-label="复制成功！"></i></span>
   </p>
@@ -659,7 +659,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -703,7 +703,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-监控"><span class="nav-number">2.</span> <span class="nav-text">2. 监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-监控指标及Demo"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 监控指标及Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-线上监控"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 线上监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-调优"><span class="nav-number">3.</span> <span class="nav-text">3. 调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-疑问"><span class="nav-number">4.</span> <span class="nav-text">4. 疑问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-参考"><span class="nav-number">5.</span> <span class="nav-text">5. 参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-时隔一个月后的更新"><span class="nav-number">6.</span> <span class="nav-text">6. 时隔一个月后的更新</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-监控"><span class="nav-number">2.</span> <span class="nav-text">2. 监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-监控指标及Demo"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 监控指标及Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-线上监控"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 线上监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-调优"><span class="nav-number">3.</span> <span class="nav-text">3. 调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-疑问"><span class="nav-number">4.</span> <span class="nav-text">4. 疑问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">. 参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-时隔一个月后的更新"><span class="nav-number">6.</span> <span class="nav-text">6. 时隔一个月后的更新</span></a></li></ol></div>
             
 
           </div>
