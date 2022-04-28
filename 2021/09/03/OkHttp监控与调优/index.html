@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/question.png">
 <meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/answer.png">
 <meta property="og:image" content="https://zhaoxiaofa.oss-cn-hangzhou.aliyuncs.com/pictures/http/connection.png">
-<meta property="og:updated_time" content="2022-04-27T05:54:13.000Z">
+<meta property="og:updated_time" content="2022-04-28T11:31:27.003Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OkHttp监控与调优">
 <meta name="twitter:description" content="1. 前言其一，在做系统稳定性建设时，对日志进行优化，warn 日志中发现大量的 http 的 SocketTimeOutException，原因是”前辈“在写代码的时候直接 try catch 之后，打了 warn 日志。平时没有过多的关注 warn 日志，其实这个报错应该打 error 日志，需要引起关注。 其二，之前线上出问题排查时发现代码中将 Http 的超时时间误设置为 20 * 100">
@@ -445,7 +445,7 @@
 <h2 id="4-疑问"><a href="#4-疑问" class="headerlink" title="4. 疑问"></a>4. 疑问</h2><p><strong>但是这里，我有一个疑问：</strong></p>
 <p> <code>maxIdleConnections</code> 是指“最大空闲链接数”，而我的应用是一个有稳定大流量的系统，基本不怎么可能出现空闲链接。这个在之前线程池调优的过程中有深刻的体会。参考 —— <a href="https://zhaoxiaofa.com/2020/09/25/%E9%A1%B9%E7%9B%AE%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%B0%83%E4%BC%98/">项目线程池调优</a> 。</p>
 <p>那为什么<code>maxIdleConnections</code> 需要设置这么大的值呢？后面在复盘的时候也没有搞清楚根本原因，问题解决了，根因还是没找到。后续有时间还要研究下。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title=". 参考"></a>. 参考</h2><ol>
+<h2 id="5-参考"><a href="#5-参考" class="headerlink" title="5. 参考"></a>5. 参考</h2><ol>
 <li><a href="https://square.github.io/okhttp/" target="_blank" rel="noopener">官方文档</a></li>
 <li><p><a href="https://github.com/square/okhttp/issues/3907" target="_blank" rel="noopener">https://github.com/square/okhttp/issues/3907</a></p>
 </li>
@@ -482,7 +482,7 @@
   <p><span>本文标题:</span><a href="/2021/09/03/OkHttp监控与调优/">OkHttp监控与调优</a></p>
  <!--<p><span>文章作者:</span><a href="/" title="访问 zhaoxiaofa 的个人博客">zhaoxiaofa</a></p> -->
  <!-- <p><span>发布时间:</span>2021年09月03日 - 23:09</p> -->
- <!-- <p><span>最后更新:</span>2022年04月27日 - 13:04</p> -->
+ <!-- <p><span>最后更新:</span>2022年04月28日 - 19:04</p> -->
   <p><span>原始链接:</span><a href="/2021/09/03/OkHttp监控与调优/" title="OkHttp监控与调优">https://zhaoxiaofa.com/2021/09/03/OkHttp监控与调优/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="https://zhaoxiaofa.com/2021/09/03/OkHttp监控与调优/" aria-label="复制成功！"></i></span>
   </p>
@@ -703,7 +703,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-监控"><span class="nav-number">2.</span> <span class="nav-text">2. 监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-监控指标及Demo"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 监控指标及Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-线上监控"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 线上监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-调优"><span class="nav-number">3.</span> <span class="nav-text">3. 调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-疑问"><span class="nav-number">4.</span> <span class="nav-text">4. 疑问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">. 参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-时隔一个月后的更新"><span class="nav-number">6.</span> <span class="nav-text">6. 时隔一个月后的更新</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-监控"><span class="nav-number">2.</span> <span class="nav-text">2. 监控</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-监控指标及Demo"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 监控指标及Demo</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-线上监控"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 线上监控</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-调优"><span class="nav-number">3.</span> <span class="nav-text">3. 调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-疑问"><span class="nav-number">4.</span> <span class="nav-text">4. 疑问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-参考"><span class="nav-number">5.</span> <span class="nav-text">5. 参考</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-时隔一个月后的更新"><span class="nav-number">6.</span> <span class="nav-text">6. 时隔一个月后的更新</span></a></li></ol></div>
             
 
           </div>
